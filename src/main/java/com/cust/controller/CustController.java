@@ -25,7 +25,7 @@ public class CustController {
 	
 	@GetMapping("/login") //登入功能，指向前端的登入html
 	public String loginPage(){
-		return "/login";
+		return "login";
 	}	
 
 	@PostMapping("/loginCheck") //拿前端給的資料
@@ -41,7 +41,7 @@ public class CustController {
 			//檢查使用者帳號或密碼是否空白，空白就返回登入畫面
 			if(cust_account == null || cust_account.trim().isEmpty() || cust_password == null || cust_password.trim().isEmpty()){
 			model.addAttribute("errorMsg","帳號或密碼請勿空白");
-			return "/login";
+			return "login";
 			}
 			
 			//檢查使用者輸入的帳號和密碼都正確
@@ -49,13 +49,13 @@ public class CustController {
 			//輸入錯誤就返回登入畫面
 			if(custVO == null) {
 				model.addAttribute("errorMsg","帳號或密碼錯誤");
-				return "/login";
+				return "login";
 			}
 			//成功登入後記憶登入狀態
 			session.setAttribute("custVO",custVO);
 			//查詢正確就轉向登入成功的畫面
 			model.addAttribute("custVO",custVO);
-			return "/cust/loginSuccess";
+			return "loginSuccess";
 		}
 	
 	@GetMapping("/logout") //登出功能，指向前端的登入html
@@ -69,7 +69,7 @@ public class CustController {
 	public String registerPage(ModelMap model) {
 		// 先在model裡塞一個空的CustVO，當前端HTML載入時，Thymeleaf會跟這個空的物件進行綁定
 		model.addAttribute("custVO", new CustVO());
-		return "/register";
+		return "register";
 	}
 	
 	@PostMapping("/register")
@@ -79,7 +79,7 @@ public class CustController {
 		
 		//如果格式驗證有誤(和BindingResult一起使用)
 		if(result.hasErrors()) {
-			return "/register";
+			return "register";
 		}
 		
 		//註冊成功，重新導回登入頁面
@@ -89,7 +89,7 @@ public class CustController {
 		//如果Service檢查報錯，把訊息回傳
 		}catch(RuntimeException e) {
 			model.addAttribute("errorMsg",e.getMessage());
-			return "/register";
+			return "register";
 		}
 		
 		}

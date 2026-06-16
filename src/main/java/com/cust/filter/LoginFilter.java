@@ -18,7 +18,7 @@ public class LoginFilter extends OncePerRequestFilter{
 	@Override
 	protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException{
 		String uri = request.getRequestURI();
-		if(uri.equals("/cust/login") || uri.equals("/cust/logincheck") || uri.equals("/cust/register")) {
+		if(uri.equals("/cust/login") || uri.equalsIgnoreCase("/cust/loginCheck") || uri.equals("/cust/register")) {
 			return true;
 		}return false;
 	}
