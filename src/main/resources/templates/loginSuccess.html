@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-TW" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登入成功</title>
+    <style>
+    
+        :root {
+            --primary-color: #10b981; /* 成功改用綠色系 */
+            --primary-hover: #059669;
+            --bg-gradient: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+            --card-bg: rgba(255, 255, 255, 0.95);
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: var(--bg-gradient);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .success-card {
+            background: var(--card-bg);
+            padding: 3rem 2rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        .success-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+        h2 {
+            color: #1f2937;
+            margin-top: 0;
+            font-size: 1.8rem;
+        }
+        p {
+            color: #4b5563;
+            line-height: 1.6;
+            font-size: 1.1rem;
+        }
+        .user-name {
+            font-weight: bold;
+            color: var(--primary-color);
+            font-size: 1.4rem;
+        }
+        .logout-btn {
+            display: inline-block;
+            margin-top: 1.5rem;
+            padding: 0.75rem 1.5rem;
+            background-color: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+        .logout-btn:hover {
+            background-color: var(--primary-hover);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="success-card">
+        <div class="success-icon">🎉</div>
+        <h2>登入成功！</h2>
+        
+        <p>歡迎回來，<br>
+           <!-- 把model裡的custVO.cust_name印在這裡取代"測試員" -->
+           <span class="user-name" th:text="${custVO.cust_name}">測試員</span> 
+        </p>
+        
+        <!-- 點擊這個按鈕可以重新回到登入頁面 -->
+        <a th:href="@{/cust/login}" class="logout-btn">登出 / 返回登入頁</a>
+    </div>
+
+</body>
+</html>

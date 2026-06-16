@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-TW" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>會員登入</title>
+    <style>
+        
+        
+        :root {
+            --primary-color: #4F46E5;
+            --primary-hover: #4338CA;
+            --bg-gradient: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+            --card-bg: rgba(255, 255, 255, 0.95);
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: var(--bg-gradient);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .login-card {
+            background: var(--card-bg);
+            padding: 2.5rem 2rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            max-width: 380px;
+            text-align: center;
+        }
+        .login-card h2 {
+            margin-top: 0;
+            color: #1f2937;
+            font-size: 1.75rem;
+            margin-bottom: 1.5rem;
+        }
+        .form-group {
+            margin-bottom: 1.25rem;
+            text-align: left;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #4b5563;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 1rem;
+            box-sizing: border-box;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+        .submit-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.1s;
+            margin-top: 1rem;
+        }
+        .submit-btn:hover {
+            background-color: var(--primary-hover);
+        }
+        .submit-btn:active {
+            transform: scale(0.98);
+        }
+        .error-message {
+            color: #ef4444;
+            background-color: #fef2f2;
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-bottom: 1.25rem;
+            font-size: 0.9rem;
+            /* 預設我先讓他顯示，寫好 Thymeleaf 判斷後，沒有錯誤時它就會隱藏 */
+        }
+        .register-link { /* 註冊連結容器的樣式 */
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+        }
+        .register-link a { /* 容器內的超連結樣式 */
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .register-link a:hover { /* 滑鼠懸停在超連結上的效果 */
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <h2>會員登入</h2>
+        
+        <!-- 🎯 留給你練習：請在這裡加上 Thymeleaf 的 th:action 去對齊你的 Controller -->
+        <form action="#" method="post" th:action="@{/cust/loginCheck}">
+            
+            <!-- 🎯 留給你練習：請在這裡加上 Thymeleaf 判斷 model 裡的 "error" 字串是否存在，並印出內容 -->
+            <div class="error-message" th:if="${errorMsg != null}" th:text="${errorMsg}">
+                
+            </div>
+
+            <div class="form-group">
+                <label for="cust_account">帳號</label>
+                <!-- 注意：name 屬性必須跟 Controller 裡的 @RequestParam 完全一致 -->
+                <input type="text" id="cust_account" name="cust_account" placeholder="請輸入帳號">
+            </div>
+
+            <div class="form-group">
+                <label for="cust_password">密碼</label>
+                <input type="password" id="cust_password" name="cust_password" placeholder="請輸入密碼">
+            </div>
+
+            <button type="submit" class="submit-btn">會員登入</button>
+            <!-- 待完成的功能 -->
+            <!-- <button type="submit" class="submit-btn">會員註冊</button>
+            <button type="submit" class="submit-btn">第三方登入</button> -->
+            <div class
+            style="text-align: center; margin-top: 1.5rem; font-size: 0.9rem;">
+   			 還沒有帳號？ <a th:href="@{/cust/register}" style="color: var(--primary-color); text-decoration: none; font-weight: 600; hover: underline;">立即註冊</a>
+			</div>
+			
+        </form>
+    </div>
+
+</body>
+</html>
