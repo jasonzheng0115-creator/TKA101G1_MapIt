@@ -55,7 +55,7 @@ public class CustController {
 			session.setAttribute("custVO",custVO);
 			//查詢正確就轉向登入成功的畫面
 			model.addAttribute("custVO",custVO);
-			return "back-end/cust/loginSuccess";
+			return "/cust/loginSuccess";
 		}
 	
 	@GetMapping("/logout") //登出功能，指向前端的登入html

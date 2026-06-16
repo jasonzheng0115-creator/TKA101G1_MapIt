@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-TW" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>會員註冊</title>
+    <style>
+        :root {
+            --primary-color: #4F46E5;
+            --primary-hover: #4338CA;
+            --bg-gradient: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --error-color: #ef4444;
+        }
+        body {
+            margin: 0;
+            padding: 2rem 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: var(--bg-gradient);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            box-sizing: border-box;
+        }
+        .register-card {
+            background: var(--card-bg);
+            padding: 2.5rem 2rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            max-width: 480px;
+        }
+        .register-card h2 {
+            margin-top: 0;
+            color: #1f2937;
+            font-size: 1.75rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #4b5563;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 1rem;
+            box-sizing: border-box;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+        /* 性別 Radio 群組樣式 */
+        .radio-group {
+            display: flex;
+            gap: 1.5rem;
+            padding: 0.5rem 0;
+        }
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            color: #4b5563;
+        }
+        .radio-option input {
+            width: auto;
+            cursor: pointer;
+        }
+        .submit-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.1s;
+            margin-top: 1.5rem;
+        }
+        .submit-btn:hover {
+            background-color: var(--primary-hover);
+        }
+        .submit-btn:active {
+            transform: scale(0.98);
+        }
+        /* 欄位下方的紅字錯誤提示 */
+        .error-text {
+            color: var(--error-color);
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+            display: block;
+        }
+        /* 整張表單上方的全域錯誤（例如：帳號重複） */
+        .global-error {
+            color: var(--error-color);
+            background-color: #fef2f2;
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-bottom: 1.25rem;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+        .login-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+        }
+        .login-link a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="register-card">
+        <h2>會員註冊</h2>
+        
+        <!-- 全域錯誤訊息提示（像是 Service 拋出的帳號重複） -->
+        <div class="global-error" th:if="${errorMsg != null}" th:text="${errorMsg}"></div>
+
+        <!-- 🎯 th:object="${custVO}"：綁定 Controller 傳過來的會員物件 -->
+        <form th:action="@{/cust/register}" th:object="${custVO}" method="post">
+            
+            <!-- 帳號 -->
+            <div class="form-group">
+                <label for="cust_account">會員帳號</label>
+                <!-- 🎯 th:field="*{cust_account}" 等同於 id="cust_account" name="cust_account" 並且會自動帶入舊值 -->
+                <input type="text" th:field="*{cust_account}" placeholder="請輸入 3~32 碼大小寫英文或數字">
+                <!-- 🎯 如果此欄位有驗證錯誤，則印出 VO 內的 message -->
+                <span class="error-text" th:if="${#fields.hasErrors('cust_account')}" th:errors="*{cust_account}"></span>
+            </div>
+
+            <!-- 密碼 -->
+            <div class="form-group">
+                <label for="cust_password">會員密碼</label>
+                <div class="password-wrapper"> <!-- 新增wrapper外框，方便做定位 -->
+                <input type="password" th:field="*{cust_password}" placeholder="8~20碼，必須包含大小寫英文字母">
+                <span class="error-text" th:if="${#fields.hasErrors('cust_password')}" th:errors="*{cust_password}"></span>
+            </div>
+
+            <!-- 姓名 -->
+            <div class="form-group">
+                <label for="cust_name">真實姓名</label>
+                <input type="text" th:field="*{cust_name}" placeholder="請輸入您的姓名">
+                <span class="error-text" th:if="${#fields.hasErrors('cust_name')}" th:errors="*{cust_name}"></span>
+            </div>
+
+            <!-- 性別 -->
+            <div class="form-group">
+                <label>性別</label>
+                <div class="radio-group">
+                    <label class="radio-option">
+                        <input type="radio" th:field="*{cust_sex}" value="男"> 男
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" th:field="*{cust_sex}" value="女"> 女
+                    </label>
+                </div>
+                <span class="error-text" th:if="${#fields.hasErrors('cust_sex')}" th:errors="*{cust_sex}"></span>
+            </div>
+
+            <!-- 電話 -->
+            <div class="form-group">
+                <label for="cust_tel">手機號碼</label>
+                <input type="tel" th:field="*{cust_tel}" placeholder="例如: 0912345678">
+                <span class="error-text" th:if="${#fields.hasErrors('cust_tel')}" th:errors="*{cust_tel}"></span>
+            </div>
+
+            <!-- 電子郵件 -->
+            <div class="form-group">
+                <label for="cust_email">電子郵件 (Email)</label>
+                <input type="text" th:field="*{cust_email}" placeholder="例如: user@example.com">
+                <span class="error-text" th:if="${#fields.hasErrors('cust_email')}" th:errors="*{cust_email}"></span>
+            </div>
+
+            <!-- 身分證字號 -->
+            <div class="form-group">
+                <label for="cust_id_card">身分證字號</label>
+                <input type="text" th:field="*{cust_id_card}" placeholder="例如: A123456789">
+                <span class="error-text" th:if="${#fields.hasErrors('cust_id_card')}" th:errors="*{cust_id_card}"></span>
+            </div>
+
+            <!-- 生日 -->
+            <div class="form-group">
+                <label for="cust_birthday">出生日期</label>
+                <input type="date" th:field="*{cust_birthday}">
+                <span class="error-text" th:if="${#fields.hasErrors('cust_birthday')}" th:errors="*{cust_birthday}"></span>
+            </div>
+
+            <!-- 地址 -->
+            <div class="form-group">
+                <label for="cust_address">聯絡地址</label>
+                <input type="text" th:field="*{cust_address}" placeholder="請輸入您的地址(選填)">
+                <span class="error-text" th:if="${#fields.hasErrors('cust_address')}" th:errors="*{cust_address}"></span>
+            </div>
+
+            <button type="submit" class="submit-btn">立即註冊</button>
+        </form>
+
+        <div class="login-link">
+            已有帳號？ <a th:href="@{/cust/login}">立即登入</a>
+        </div>
+    </div>
+
+</body>
+</html>
