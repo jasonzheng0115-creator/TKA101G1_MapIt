@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>修改廠商資料</title>
+</head>
+<body>
+
+	<h2>修改廠商資料</h2>
+	<hr>
+	
+	<form th:action="@{/supplier/update}" th:object="${splrVO}" method="post">
+	
+		<input type="hidden" th:field="*{supplierId}" />
+		
+		<div>
+			<label>廠商編號:</label>
+			<span th:text="*{supplierId}"></span>
+		</div>
+		
+		<br>
+
+		<div>
+			<label>廠商名稱:</label>
+			<input type="text" th:field="*{supplierName}" placeholder="請輸入廠商名稱" />
+			<span style="color: red;" th:if="${#fields.hasErrors('supplierName')}" th:errors="*{supplierName}">名稱錯誤</span>
+		</div>
+		
+		<br>
+		
+		<div>
+			<label>聯絡人:</label>
+			<input type="text" th:field="*{supplierContact}" placeholder="請輸入聯絡人資料" />
+			<span style="color: red;" th:if="${#fields.hasErrors('supplierContact')}" th:errors="*{supplierContact}">聯絡人資料錯誤</span>
+		</div>
+		
+		<br>
+		
+		<div>
+			<label>廠商電話:</label>
+			<input type="text" th:field="*{supplierTel}" placeholder="請輸入廠商電話" />
+			<span style="color: red;" th:if="${#fields.hasErrors('supplierTel')}" th:errors="*{supplierTel}">廠商電話錯誤</span>
+		</div>
+		
+		<br>
+		
+		<div>
+			<label>廠商 Email:</label>
+			<input type="text" th:field="*{supplierEmail}" placeholder="請輸入廠商Email" />
+			<span style="color: red;" th:if="${#fields.hasErrors('supplierEmail')}" th:errors="*{supplierEmail}">廠商Email錯誤</span>
+		</div>
+		
+		<br>
+		
+		<div>
+			<label>廠商地址:</label>
+			<input type="text" th:field="*{supplierAddress}" placeholder="請輸入廠商地址" />
+			<span style="color: red;" th:if="${#fields.hasErrors('supplierAddress')}" th:errors="*{supplierAddress}">廠商地址錯誤</span>
+		</div>
+		
+		<br>
+		
+		<div>
+			<button type="submit">💾 確認修改</button>
+			<a th:href="@{/supplier/select_page}">❌ 取消返回</a>
+		</div>
+		
+	</form>
+	
+</body>
+</html>

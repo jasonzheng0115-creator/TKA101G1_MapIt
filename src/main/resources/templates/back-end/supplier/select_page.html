@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>廠商管理首頁</title>
+<style>
+	.menu-box { border: 1px solid #ccc; padding: 15px; margin-bottom: 15px; width: 400px; }
+	.error-msg { color: red; font-size: 14px; }
+
+</style>
+</head>
+<body>
+	
+	<h2>🏢 廠商管理首頁</h2>
+	<hr>
+	
+	<div class="menu-box">
+		<h3>常用功能</h3>
+		<ul>
+			<li><a th:href="@{/supplier/addSupplier}">➕ 新增廠商資料</a></li>
+			<br>
+			<li><a th:href="@{/supplier/listAllSupplier}">📋 列出所有廠商</a></li>
+		</ul>
+	</div>
+	
+	<div class="menu-box">
+		<h3>🔍 依廠商編號查詢</h3>
+		
+		<form th:action="@{/supplier/getOne_For_Display}" method="post">
+			<label>請輸入廠商編號</label>
+			<input type="text" name="supplierId" placeholder="請輸入編號..." th:value="${param.supplierId}" />
+			<button type="submit">送出查詢</button>
+			
+			<div class="error-msg" th:if="${errorMsg}" th:text="${errorMsg}"></div>
+		</form>
+	
+	</div>
+	
+</body>
+</html>
