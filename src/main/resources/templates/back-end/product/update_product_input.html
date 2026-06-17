@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>修改商品資料</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 30px; background-color: #f4f7f6; }
+        .container { max-width: 600px; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin: 0 auto; }
+        h2 { color: #333; border-bottom: 2px solid #ff9800; padding-bottom: 10px; color: #ff9800; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input[type="text"], input[type="number"], select { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+        .error { color: red; font-size: 14px; margin-top: 5px; display: block; }
+        .btn-submit { background-color: #ff9800; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-size: 16px; }
+        .btn-submit:hover { background-color: #e68a00; }
+        .btn-cancel { background-color: #999; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; font-size: 16px; margin-left: 10px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>✏️ 修改商品資料</h2>
+        
+        <form th:action="@{/product/update}" method="post" th:object="${prodVO}">
+            
+            <input type="hidden" th:field="*{productId}" />
+            <input type="hidden" th:field="*{purchasedQty}" />
+
+            <div class="form-group">
+                <label>所屬廠商：</label>
+					<select th:field="*{splrVO.supplierId}"> 
+					    <option th:each="splr : ${supplierList}" 
+					            th:value="${splr.supplierId}" 
+					            th:text="${splr.supplierId} + ' - ' + ${splr.supplierName}">
+					    </option>
+					</select>
+            </div>
+
+            <div class="form-group">
+                <label>商品名稱：</label>
+                <input type="text" th:field="*{productName}" />
+                <span th:if="${#fields.hasErrors('productName')}" th:errors="*{productName}" class="error"></span>
+            </div>
+
+            <div class="form-group">
+                <label>商品描述：</label>
+                <input type="text" th:field="*{productDesc}" />
+                <span th:if="${#fields.hasErrors('productDesc')}" th:errors="*{productDesc}" class="error"></span>
+            </div>
+
+            <div class="form-group">
+                <label>商品價格 ($)：</label>
+                <input type="number" th:field="*{productPrice}" min="0" />
+                <span th:if="${#fields.hasErrors('productPrice')}" th:errors="*{productPrice}" class="error"></span>
+            </div>
+
+            <div class="form-group">
+                <label>庫存數量：</label>
+                <input type="number" th:field="*{productQty}" min="0" />
+                <span th:if="${#fields.hasErrors('productQty')}" th:errors="*{productQty}" class="error"></span>
+            </div>
+
+            <div class="form-group">
+                <label>使用期限 (單位: 月數)：</label>
+                <input type="number" th:field="*{usePeriod}" min="0" />
+                <span th:if="${#fields.hasErrors('usePeriod')}" th:errors="*{usePeriod}" class="error"></span>
+            </div>
+
+            <div class="form-group">
+                <label>商品狀態：</label>
+                <select th:field="*{productStatus}">
+                    <option th:value="true">🟢 上架</option>
+                    <option th:value="false">🔴 下架</option>
+                </select>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <button type="submit" class="btn-submit">儲存修改</button>
+                <a th:href="@{/product/listAllProduct}" class="btn-cancel">取消</a>
+            </div>
+        </form>
+    </div>
+
+</body>
+</html>
