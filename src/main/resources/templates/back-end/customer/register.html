@@ -171,10 +171,13 @@
                 <label>性別</label>
                 <div class="radio-group">
                     <label class="radio-option">
-                        <input type="radio" th:field="*{cust_sex}" value="男"> 男
+                        <input type="radio" th:field="*{cust_sex}" value="M"> 男
                     </label>
                     <label class="radio-option">
-                        <input type="radio" th:field="*{cust_sex}" value="女"> 女
+                        <input type="radio" th:field="*{cust_sex}" value="F"> 女
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" th:field="*{cust_sex}" value="不透露"> 不透露
                     </label>
                 </div>
                 <span class="error-text" th:if="${#fields.hasErrors('cust_sex')}" th:errors="*{cust_sex}"></span>
