@@ -7,7 +7,7 @@
     <style>
     
         :root {
-            --primary-color: #10b981; /* 成功改用綠色系 */
+            --primary-color: #10b981;
             --primary-hover: #059669;
             --bg-gradient: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
             --card-bg: rgba(255, 255, 255, 0.95);
@@ -61,6 +61,23 @@
             font-weight: 600;
             transition: background-color 0.3s;
         }
+        .update-btn {
+            display: inline-block;
+            margin-top: 1.5rem;
+            margin-right: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background-color: white;
+            color: var(--primary-color);
+            text-decoration: none;
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .update-btn:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
         .logout-btn:hover {
             background-color: var(--primary-hover);
         }
@@ -74,9 +91,11 @@
         
         <p>歡迎回來，<br>
            <!-- 把model裡的custVO.cust_name印在這裡取代"測試員" -->
-           <span class="user-name" th:text="${custVO.cust_name}">測試員</span> 
+           <span class="user-name" th:text="${custVO.cust_name}"></span> 
         </p>
         
+        <!-- 點擊這個按鈕可以進入修改個人資料頁面 -->
+        <a th:href="@{/cust/updateProfile}" class="update-btn">修改個人資料</a>
         <!-- 點擊這個按鈕可以重新回到登入頁面 -->
         <a th:href="@{/cust/login}" class="logout-btn">登出 / 返回登入頁</a>
     </div>

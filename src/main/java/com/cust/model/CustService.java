@@ -18,8 +18,16 @@ public class CustService {
 	public void register(CustVO custVO) {
 		CustVO existId = repository.findByAccount(custVO.getCust_id());
 		if (existId != null) {
-			throw new RuntimeException("該會員已被註冊，請換一個帳號");
+			throw new RuntimeException("該帳號已被註冊，請換一個帳號");
 		}
-		repository.save(custVO);
+		repository.save(custVO); //custVO沒有ID傳進來時，會自動INSERT;custVO有ID時，會自動寫UPDATE
 	}
+	//會員資料修改
+	public void updateProfile(CustVO custVO) {
+		System.out.println("更新的會員ID：" + custVO.getCust_id());
+		System.out.println("更新的會員名字：" + custVO.getCust_name());
+		repository.save(custVO); //custVO沒有ID傳進來時，會自動INSERT;custVO有ID時，會自動寫UPDATE
+		}
+	
+	
 }
