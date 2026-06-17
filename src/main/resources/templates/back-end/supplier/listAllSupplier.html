@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>所有廠商清單</title>
+<style>
+	table { border-collapse: collapse; width: 80%; margin-top: 15px;}
+	th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+	th { background-color: #f2f2f2; }
+</style>
+</head>
+<body>
+	
+	<h2>📋 所有廠商清單資料</h2>
+	<hr>
+	
+	<div>
+		<a th:href="@{/supplier/select_page}">🔙 返回首頁</a>
+	</div>
+	
+	<table>
+		<thead>
+			<tr>
+				<th>廠商編號</th>
+				<th>廠商名稱</th>
+				<th>聯絡人</th>
+				<th>電話</th>
+				<th>Email</th>
+				<th>地址</th>
+				<th>操作功能</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:each="s : ${supplierListData}">
+				<td th:text="${s.supplierId}"></td>
+				<td th:text="${s.supplierName}"></td>
+				<td th:text="${s.supplierContact}"></td>
+				<td th:text="${s.supplierTel}"></td>
+				<td th:text="${s.supplierEmail}"></td>
+				<td th:text="${s.supplierAddress}"></td>
+				<td>
+					<form th:action="@{/supplier/getOne_For_Update}" method="post" style="display: inline;">
+						<input type="hidden" name="supplierId" th:value="${s.supplierId}">
+						<button type="submit">✍️ 修改</button>
+					</form>
+					
+					<form th:action="@{/supplier/delete}" method="post" style="display: inline;">
+						<input type="hidden" name="supplierId" th:value="${s.supplierId}">
+						<button type="submit" onclick="return confirm('確定要刪除嗎？');">🗑️ 刪除</button>
+					</form>
+				</td>
+			</tr>
+		
+		</tbody>
+	</table>
+
+</body>
+</html>

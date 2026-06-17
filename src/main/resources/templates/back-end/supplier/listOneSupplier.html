@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>廠商詳細資料</title>
+<style>
+	.detail-box { border: 1px solid #666; padding: 20px; width: 500px; background-color: #fafafa; }
+	.field-title { font-weight: bold; color: #333; display: inline-block; width: 100px; }
+</style>
+</head>
+<body>
+
+	<h2>🔍 廠商詳細資料</h2>
+	<hr>
+	
+	<div style="margin-bottom: 15px;">
+		<a th:href="@{/supplier/select_page}">🔙 返回主選單</a>
+	</div>
+	
+	<div class="detail-box" th:object="${splrVO}">
+		<p><span class="field-title">🏢 廠商編號:</span> <span th:text="*{supplierId}"></span></p>
+		<p><span class="field-title">✨ 廠商名稱:</span> <span th:text="*{supplierName}"></span></p>
+		<p><span class="field-title">👤 聯 絡 人:</span> <span th:text="*{supplierContact}"></span></p>
+		<p><span class="field-title">📞 廠商電話:</span> <span th:text="*{supplierTel}"></span></p>
+		<p><span class="field-title">✉️ Email:</span> <span th:text="*{supplierEmail}"></span></p>
+		<p><span class="field-title">📍 廠商地址:</span> <span th:text="*{supplierAddress}"></span></p>
+	</div>
+	
+
+
+</body>
+</html>
