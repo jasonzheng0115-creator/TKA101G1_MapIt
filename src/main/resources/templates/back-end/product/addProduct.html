@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>上架新商品</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 30px; background-color: #f4f7f6; }
+        .container { max-width: 600px; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin: 0 auto; }
+        h2 { color: #333; border-bottom: 2px solid #008CBA; padding-bottom: 10px; color: #008CBA; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input[type="text"], input[type="number"], select { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+        .error { color: red; font-size: 14px; margin-top: 5px; display: block; }
+        .btn-submit { background-color: #008CBA; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-size: 16px; }
+        .btn-submit:hover { background-color: #007B9A; }
+        .btn-cancel { background-color: #999; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; font-size: 16px; margin-left: 10px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>➕ 上架新商品</h2>
+        
+        <form th:action="@{/product/insert}" method="post" th:object="${prodVO}">
+            
+            <div class="form-group">
+                <label>選擇合作廠商：</label>
+                <select th:field="*{splrVO.supplierId}">
+                    <option value="">-- 請選擇廠商 --</option>
+                    <option th:each="supplier : ${supplierList}" 
+                            th:value="${supplier.supplierId}" 
+                            th:text="${supplier.supplierId} + ' - ' + ${supplier.supplierName}">
+                    </option>
+                </select>
+                <span th:if="${#fields.hasErrors('splrVO.supplierId')}" th:errors="*{splrVO.supplierId}" class="error"></span>
+            </div>
+
+            <div class="form-group">
+                <label>商品名稱：</label>
+                <input type="text" th:field="*{productName}" placeholder="請輸入商品名稱" />
+                <span th:if="${#fields.hasErrors('productName')}" th:errors="*{productName}" class="error"></span>
+            </div>
+
+            <div class="form-group">
+                <label>商品描述：</label>
+                <input type="text" th:field="*{productDesc}" placeholder="請輸入商品描述短語" />
+                <span th:if="${#fields.hasErrors('productDesc')}" th:errors="*{productDesc}" class="error"></span>
+            </div>
+
+            <div class="form-group">
+                <label>商品價格 ($)：</label>
+                <input type="number" th:field="*{productPrice}" min="0" placeholder="0" />
+                <span th:if="${#fields.hasErrors('productPrice')}" th:errors="*{productPrice}" class="error"></span>
+            </div>
+
+            <div class="form-group">
+                <label>上架庫存數量：</label>
+                <input type="number" th:field="*{productQty}" min="0" placeholder="0" />
+                <span th:if="${#fields.hasErrors('productQty')}" th:errors="*{productQty}" class="error"></span>
+            </div>
+
+            <div class="form-group">
+                <label>使用期限 (單位: 月數)：</label>
+                <input type="number" th:field="*{usePeriod}" min="0" placeholder="6" />
+                <span th:if="${#fields.hasErrors('usePeriod')}" th:errors="*{usePeriod}" class="error"></span>
+            </div>
+
+            <div class="form-group">
+                <label>商品狀態：</label>
+                <select th:field="*{productStatus}">
+                    <option th:value="true">🟢 直接上架</option>
+                    <option th:value="false">🔴 暫不上架（下架暫存）</option>
+                </select>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <button type="submit" class="btn-submit">確認新增</button>
+                <a th:href="@{/product/select_page}" class="btn-cancel">返回首頁</a>
+            </div>
+        </form>
+    </div>
+
+</body>
+</html>

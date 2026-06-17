@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>商品管理首頁</title>
+<style>
+	body { font-family: Arial, sans-serif; margin: 30px; background-color: #f4f7f6; }
+	h2 { color: #333; border-bottom: 2px solid #4CAF50; padding-bottom: 10px; }
+	.error { color: red; font-weight: bold; margin-bottom: 15px; }
+	.search-box { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; }
+	.search-box h3 { margin-top: 0; color: #4CAF50; }
+	.form-group { margin-bottom: 15px; }
+	label { display: inline-block; width: 120px; font-weight: bold; }
+	input[type="text"], input[type="number"], select { padding: 6px; width: 250px; border: 1px solid #ccc; border-radius: 4px; }
+	button, input[type="submit"] { background-color: #4CAF50; color: white; padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; }
+	button:hover, input[type="submit"]:hover { background-color: #45a049; }
+	.status-links { margin-top: 10px; }
+	.status-links a { text-decoration: none; background: #e7e7e7; color: black; padding: 8px 16px; border-radius: 4px; margin-right: 10px; display: inline-block; }
+	.status-links a:hover { background: #ddd; }
+</style>
+</head>
+<body>
+
+	<h2>📦 商品管理首頁</h2>
+	
+	<div class="error" th:if="${errorMsg}" th:text="${errorMsg}"></div>
+	
+	
+	
+	<div class="search-box">
+		<a th:href="@{/product/addProduct}" style="text-decoration: none;">
+		<button type="button">➕ 新增商品</button>
+		</a>
+		<a th:href="@{/product/listAllProduct}" style="text-decoration: none;">
+			<button type="button">📋 商品總覽</button>
+		</a>
+	</div>
+	
+	<div class="search-box">
+		<h3>🔍 單筆商品查詢</h3>
+		<form th:action="@{/product/getOne_For_Display}" method="post">
+			<div>
+				<label for="pruductId">輸入商品編號:</label>
+				<input type="number" id="productId" name="productId" placeholder="例如: 1" required>
+				<input type="submit" value="送出查詢"> 
+			</div>
+		</form>
+	</div>
+	
+	<div class="search-box">
+		<h3>🎯 萬用複合搜尋</h3>
+		<form th:action="@{/product/listProductByCompositeQuery}" method="post">
+			
+			<div class="form-group">
+				<label for="productName">商品名稱:</label>
+				<input type="text" id="productName" name="productName" placeholder="請輸入商品名稱關鍵字...">
+			</div>
+			
+			<div class="form-group">
+				<label for="supplierId">廠商名稱:</label>
+				<select id="supplierId" name="supplierId">
+					<option value="">-- 請選擇合作廠商 (選填) --</option>
+					<option th:each="splr : ${supplierList}"
+							th:value="${splr.supplierId}"
+							th:text="${splr.supplierId} + ' - ' + ${splr.supplierName}">
+					</option>
+				</select>
+			</div>
+			
+			<div class="form-group">
+				<label></label>
+				<input type="submit" value="開始搜尋">
+			</div>
+		</form>
+	</div>
+
+</body>
+</html>
