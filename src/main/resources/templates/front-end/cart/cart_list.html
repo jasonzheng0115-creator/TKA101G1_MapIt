@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>我的購物車</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/4.2.1/css/bootstrap.min.css}"/>
+</head>
+<body class="bg-light">
+
+<div class="container my-5">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h2 class="mb-0">🛒 我的購物車</h2>
+        </div>
+        <div class="card-body">
+
+            <div th:if="${#lists.isEmpty(cartList)}" class="text-center py-5">
+                <p class="text-muted h4">您的購物車目前空空如也...</p>
+                <a th:href="@{/prod/listAllProd}" class="btn btn-outline-primary mt-3">去逛逛商品</a>
+            </div>
+
+            <div th:if="${not #lists.isEmpty(cartList)}">
+                <table class="table table-hover align-middle">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>商品名稱</th>
+                            <th style="width: 150px;">單價</th>
+                            <th style="width: 180px;">數量</th>
+                            <th style="width: 150px;">小計</th>
+                            <th style="width: 100px;">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="item : ${cartList}">
+                            <td class="align-middle font-weight-bold" th:text="${item.product.productName}">商品名稱</td>
+                            
+                            <td class="align-middle" th:text="'NT$ ' + ${item.product.productPrice}">$0</td>
+                            
+                            <td class="align-middle">
+                                <form th:action="@{/cart/update}" method="post" class="form-inline">
+                                    <input type="hidden" name="productId" th:value="${item.product.productId}" />
+                                    <input type="number" name="quantity" th:value="${item.quantity}" 
+                                           class="form-control form-control-sm text-center" 
+                                           style="width: 70px;" min="1" onchange="this.form.submit()"/>
+                                    </form>
+                            </td>
+                            
+                            <td class="align-middle text-primary font-weight-bold" th:text="'NT$ ' + ${item.subtotal}">$0</td>
+                            
+                            <td class="align-middle">
+                                <form th:action="@{/cart/delete}" method="post">
+                                    <input type="hidden" name="productId" th:value="${item.product.productId}" />
+                                    <button type="submit" class="btn btn-danger btn-sm">🗑️ 刪除</button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <hr/>
+
+                <div class="row mt-4 align-items-center">
+                    <div class="col-md-6">
+                        <a th:href="@{/prod/listAllProd}" class="btn btn-secondary">◁ 繼續購物</a>
+                    </div>
+                    <div class="col-md-6 text-right">
+                        <h4 class="mb-3">總計金額：<span class="text-danger font-weight-bold" th:text="'NT$ ' + ${totalAmount}">$0</span></h4>
+                        
+                        <form th:action="@{/order/checkout}" method="post">
+                            <button type="submit" class="btn btn-success btn-lg btn-block shadow-sm">💳 前往結帳付款</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
