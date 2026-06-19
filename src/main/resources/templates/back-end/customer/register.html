@@ -140,7 +140,7 @@
         <div class="global-error" th:if="${errorMsg != null}" th:text="${errorMsg}"></div>
 
         <!-- 🎯 th:object="${custVO}"：綁定 Controller 傳過來的會員物件 -->
-        <form th:action="@{/cust/register}" th:object="${custVO}" method="post">
+        <form th:action="@{/cust/register}" th:object="${newCust}" method="post">
             
             <!-- 帳號 -->
             <div class="form-group">

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-TW" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>修改個人資料</title>
+    <style>
+        body { 
+        font-family: 'Segoe UI', Tahoma, sans-serif; 
+        background-color: #f4f7f6; 
+        display: flex; 
+        justify-content: center; 
+        align-items: center; 
+        height: 100vh; 
+        margin: 0; }
+        
+        .profile-card {
+        background: white;
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+        width: 100%;
+        max-width: 400px; 
+        }
+        h2 { text-align: center; color: #333; margin-bottom: 30px; }
+        
+        .form-group { margin-bottom: 20px; }
+        label {  display: block;  margin-bottom: 8px; color: #555; font-weight: bold; }
+        input { 
+        width: 100%; 
+        padding: 12px; 
+        border: 1px solid #ddd; 
+        border-radius: 6px; 
+        box-sizing: border-box; }
+        
+        .radio-group {
+            display: flex;
+            gap: 15px;
+            padding: 8px 0;
+        }
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            font-weight: normal;
+            margin-bottom: 0;
+            cursor: pointer;
+        }
+        .radio-group input[type="radio"] {
+            width: auto; 
+            margin: 0 5px 0 0;
+        }
+        
+        .btn-submit { 
+        width: 100%; 
+        padding: 14px; 
+        background-color: #4a90e2; 
+        color: white; border: none; 
+        border-radius: 6px; 
+        font-weight: bold; 
+        cursor: pointer; }
+        
+        .btn-cancel { 
+        width: 100%; 
+        padding: 14px; 
+        background-color: #f1f1f1; 
+        color: #333; border: none; 
+        border-radius: 6px; 
+        font-weight: bold; 
+        cursor: pointer; 
+        margin-top: 10px; 
+        display: block; 
+        text-align: center; 
+        text-decoration: none; 
+        box-sizing: border-box;}
+        
+        .field-error {color: #d9534f; font-size: 12px; margin-top: 5px;display: block;}
+		
+		.error-message { 
+		color: #d9534f; 
+		background-color: #fdf2f2; 
+		padding: 10px; 
+		border-radius: 6px; 
+		margin-bottom: 20px; 
+		text-align: center; 
+		font-size: 14px;}
+    </style>
+    
+</head>
+<body>
+    <div class="profile-card">
+        <h2>✏️ 修改個人資料</h2>
+
+        <!-- 🎯 任務：請補上 th:action 去找 Controller，以及 th:object 綁定資料箱子 -->
+        <form th:action="@{/cust/updateProfile}" method="post" th:object="${loginCust}">
+	        <!-- 放一次即可，因為使用者不能修改帳號密碼，所以讓舊資料原封不動送進SQL檢查 -->
+			<input type="hidden" th:field="*{cust_account}">
+			<input type="hidden" th:field="*{cust_password}">     
+            <div class="error-message" th:if="${errorMsg != null}" th:text="${errorMsg}"></div>
+         
+				
+            <div class="form-group">
+                <label>姓名：</label>
+                <input type="text" th:field="*{cust_name}" placeholder="請輸入姓名">
+                <span class="field-error" th:if="${#fields.hasErrors('cust_name')}" th:errors="*{cust_name}"></span>
+				       
+            </div>
+
+            <div class="form-group">
+                <label>性別：</label>
+                <div class="radio-group">
+                    <label><input type="radio" th:field="*{cust_sex}" value="M"> 男性</label>
+                    <label><input type="radio" th:field="*{cust_sex}" value="F"> 女性</label>
+                    <label><input type="radio" th:field="*{cust_sex}" value="不透露"> 不透露</label>
+                </div>
+                <span class="field-error" th:if="${#fields.hasErrors('cust_sex')}" th:errors="*{cust_sex}"></span>          
+            </div>
+			
+			<div class="form-group">
+                <label>電話：</label>
+                <input type="text" th:field="*{cust_tel}" placeholder="請輸入手機號碼">  
+                <span class="field-error" th:if="${#fields.hasErrors('cust_tel')}" th:errors="*{cust_tel}"></span>
+            </div>
+            
+            <div class="form-group">
+                <label>電子信箱：</label>
+                <input type="text" th:field="*{cust_email}" placeholder="請輸入電子信箱">   
+                <span class="field-error" th:if="${#fields.hasErrors('cust_email')}" th:errors="*{cust_email}"></span>    
+            </div>
+            
+            <div class="form-group">
+                <label>身分證字號：</label>
+                <input type="text" th:field="*{cust_id_card}" placeholder="請輸入身分證字號">     
+                <span class="field-error" th:if="${#fields.hasErrors('cust_id_card')}" th:errors="*{cust_id_card}"></span>     
+            </div>
+            
+            <div class="form-group">
+                <label>生日：</label>
+                <input type="text" th:field="*{cust_birthday}" placeholder="請輸入生日">
+                <span class="field-error" th:if="${#fields.hasErrors('cust_birthday')}" th:errors="*{cust_birthday}"></span>               
+            </div>
+            
+            <div class="form-group">
+                <label>信用卡號：</label>
+                <input type="text" th:field="*{cust_card}" placeholder="請輸入信用卡號">
+                <span class="field-error" th:if="${#fields.hasErrors('cust_card')}" th:errors="*{cust_card}"></span>   
+            </div>
+            
+            <div class="form-group">
+                <label>聯絡地址：</label>
+                <input type="text" th:field="*{cust_address}" placeholder="請輸入聯絡地址">
+                <span class="field-error" th:if="${#fields.hasErrors('cust_address')}" th:errors="*{cust_address}"></span>             
+            </div>
+			
+			
+            <button type="submit" class="btn-submit">💾 儲存修改</button>
+            <a th:href="@{/cust/loginSuccess}" class="btn-cancel">取消返回</a>
+        </form>
+    </div>
+</body>
+</html>

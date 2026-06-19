@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh-TW" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>會員管理後台</title>
+    <style>
+        /* 現代感 UI 設計系統 */
+        :root {
+            --primary: #4F46E5;
+            --primary-hover: #4338CA;
+            --bg-color: #F3F4F6;
+            --card-bg: #FFFFFF;
+            --text-main: #1F2937;
+            --text-muted: #6B7280;
+            --border-color: #E5E7EB;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        /* 搜尋卡片區塊 */
+        .search-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        .form-group {
+            display: inline-block;
+            margin-right: 20px;
+            margin-bottom: 15px;
+            vertical-align: bottom;
+        }
+        .form-group label {
+            display: block;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+        .form-group input, .form-group select {
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+            min-width: 200px;
+        }
+        .form-group input:focus, .form-group select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+        .btn-search {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 11px 24px;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-search:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+        .btn-clear {
+            background-color: #fff;
+            color: var(--text-muted);
+            border: 1px solid var(--border-color);
+            padding: 10px 24px;
+            border-radius: 6px;
+            font-size: 1rem;
+            text-decoration: none;
+            cursor: pointer;
+            margin-left: 10px;
+            transition: all 0.2s;
+        }
+        .btn-clear:hover {
+            background-color: #F9FAFB;
+            color: var(--text-main);
+        }
+        /* 表格卡片區塊 */
+        .table-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+        th {
+            background-color: #F9FAFB;
+            padding: 16px 20px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            border-bottom: 1px solid var(--border-color);
+        }
+        td {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-main);
+            vertical-align: middle;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        tr:hover td {
+            background-color: #F9FAFB;
+        }
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 9999px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+        /* 給啟動狀態的 CSS */
+        .status-active {
+            background-color: #D1FAE5;
+            color: #065F46;
+        }
+        /* 給停權狀態的 CSS */
+        .status-suspend {
+            background-color: #FEE2E2;
+            color: #991B1B;
+        }
+        .btn-action {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            background-color: #fff;
+            color: #374151;
+            transition: 0.2s;
+            text-decoration: none;
+        }
+        .btn-action:hover {
+            background-color: #F3F4F6;
+        }
+        .error-msg {
+            color: #B91C1C;
+            background-color: #FEF2F2;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #FCA5A5;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header-title">👥 員工專屬 - 會員管理中心</div>
+	
+    <!-- ========================================== -->
+    <!-- 教練留白 2：錯誤訊息防呆區塊                 -->
+    <!-- 提示：如果 Controller 傳來的 errorMsg 有東西才顯示此區塊 -->
+    <!-- ========================================== -->
+    <!-- 暫時隱藏它以免干擾你的視覺，寫好條件後可以把 style="display:none;" 刪掉 -->
+    <div class="error-msg" th:if="${errorMsg != null}">
+        ⚠️ <span th:text="${errorMsg}">[請在這裡印出 errorMsg 的內容]</span>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 教練留白 3：複合查詢表單區塊                 -->
+    <!-- 提示：補上 action 指向搜尋方法，method 改為 POST -->
+    <!-- ========================================== -->
+    <div class="search-card">
+        <form th:action="@{/cust/adminCustSearch}" method="POST">
+            <div class="form-group">
+                <label>會員帳號</label>
+                <!-- 提示：name 必須跟 Controller 接收的變數名稱一模一樣 -->
+                <input type="text" id="cust_account" name="cust_account" placeholder="請輸入帳號關鍵字">
+            </div>
+            
+            <div class="form-group">
+                <label>會員姓名</label>
+                <input type="text"id="cust_name" name="cust_name" placeholder="請輸入姓名關鍵字">
+            </div>
+
+            <div class="form-group">
+                <label>權限狀態</label>
+                <select name="cust_use">
+                    <option value="">-- 全部狀態 --</option>
+                    <option value="啟動">啟動</option>
+                    <option value="停權">停權</option>
+                </select>
+            </div>
+
+            <div class="form-group" style="margin-right: 0;">
+                <button type="submit" class="btn-search">🔍 開始查詢</button>
+                
+                <!-- 教練留白 4：點擊這個按鈕，應該要重新導向 @GetMapping 的「預設顯示全部」方法 -->
+                <a th:href="@{/cust/adminCustList}" class="btn-clear">清除重設</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 教練留白 5：會員清單表格區塊                 -->
+    <!-- ========================================== -->
+    <div class="table-card">
+        <table>
+            <thead>
+                <tr>
+                    <th>會員編號</th>
+                    <th>登入帳號</th>
+                    <th>真實姓名</th>
+                    <th>信箱</th>
+                    <th>權限狀態</th>
+                    <th>操作指令</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- 提示：請在這個 <tr> 加上 th:each 讓表格開始跑迴圈 -->
+                <tr th:each="cust:${custList}">
+                	<td th:text="${cust.cust_id}"></td>
+                    <td th:text="${cust.cust_account}"></td>
+                    <td th:text="${cust.cust_name}"></td>
+                    <td th:text="${cust.cust_email}"></td>
+                    
+                    <td>
+                        <!-- 用 th:classappend 或是 th:if 根據狀態讓「啟動」和「停權」顯示不同的顏色嗎？ -->
+                        <span class="status-badge" 
+                        	  th:text="${cust.cust_use}" 
+                        	  th:classappend="${cust.cust_use == '啟動'} ? 'status-active':'status-suspend'">
+                        </span>
+                    </td>
+                    
+                    <td>
+                        <!-- 進階挑戰：這裡可以留給未來做「查看詳情」或「停權按鈕」的預留空間 -->
+                        <a th:href="@{/cust/adminCustList}" class="btn-action">編輯狀態</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+</body>
+</html>
