@@ -13,9 +13,9 @@ public interface CustRepository extends JpaRepository<CustVO,Integer>{
 (value = "select * from customer where CUST_ACCOUNT= ?1 and BINARY CUST_PASSWORD = ?2", nativeQuery = true)
 CustVO loginCheck(String account, String password);
 
-@Query
-(value = "select CUST_ID from customer where CUST_ACCOUNT = ?1", nativeQuery = true)
-CustVO findByAccount(Integer id);
+@Query //會員註冊檢查帳號是否唯一+會員資料更新用
+(value = "select * from customer where CUST_ACCOUNT = ?1", nativeQuery = true)
+CustVO findByAccount(String account);
 
 }
 

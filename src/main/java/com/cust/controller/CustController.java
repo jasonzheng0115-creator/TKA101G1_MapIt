@@ -1,5 +1,9 @@
 package com.cust.controller;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -13,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.cust.model.CustService;
 import com.cust.model.CustVO;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
@@ -22,6 +27,7 @@ public class CustController {
 	
 	@Autowired //自動new CustService()
 	CustService custService;
+	
 	
 	@GetMapping("/login") //登入功能，指向前端的登入html
 	public String loginPage(){
@@ -49,19 +55,20 @@ public class CustController {
 				model.addAttribute("errorMsg","帳號或密碼錯誤");
 				return "/back-end/customer/login";
 			}
-			//成功登入後記憶登入狀態
-			session.setAttribute("custVO",custVO);
+			//成功登入後，存入session長期記憶，保持登入狀態
+			session.setAttribute("loginCust",custVO);
 			//查詢正確就轉向登入成功的畫面
-			model.addAttribute("custVO",custVO);
+			model.addAttribute("loginCust",custVO);
 			return "/back-end/customer/loginSuccess";
 		}
 	
-	@GetMapping("/loginSuccess")
+	
+	@GetMapping("/loginSuccess") //過濾器使用，讓使用者無法條過登入功能，直接透過網址登入
 	public String LoginSuccess(HttpSession session, ModelMap model) {
-		if(session.getAttribute("custVO") == null) {
+		if(session.getAttribute("loginCust") == null) {
 			return "/back-end/customer/login";
 		}
-		model.addAttribute("custVO",session.getAttribute("custVO"));
+		model.addAttribute("loginCust",session.getAttribute("loginCust"));
 		return "/back-end/customer/loginSuccess";
 	}
 	
@@ -72,15 +79,16 @@ public class CustController {
 		return "redirect:/cust/login";	
 	}
 	
+	
 	@GetMapping("/register") //註冊功能，指向前端的登入html
 	public String registerPage(ModelMap model) {
 		// 先在model裡塞一個空的CustVO，當前端HTML載入時，Thymeleaf會跟這個空的物件進行綁定
-		model.addAttribute("custVO", new CustVO());
+		model.addAttribute("newCust", new CustVO());
 		return "/back-end/customer/register";
 	}
 	@PostMapping("/register")
 	public String register(
-		@Valid @ModelAttribute("custVO") CustVO custVO,		
+		@Valid @ModelAttribute("newCust") CustVO custVO,		
 		BindingResult result,ModelMap model){		
 		//如果格式驗證有誤(和BindingResult一起使用)
 		if(result.hasErrors()) {
@@ -97,18 +105,19 @@ public class CustController {
 		}
 		}
 	
-	@GetMapping("/updateProfile")
+	
+	@GetMapping("/updateProfile") //修改個人資料功能，指向前端的登入html
 	public String updateProfile(HttpSession session,ModelMap model) {
 	//取得先前會員的就個人資料
-	CustVO oldData = (CustVO)session.getAttribute("custVO");
-	model.addAttribute("custVO", oldData);
+	CustVO oldData = (CustVO)session.getAttribute("loginCust");
+	model.addAttribute("loginCust", oldData);
 	return "/back-end/customer/updateProfile";
 	}
 	
 	@PostMapping("/updateProfile")
 	public String updateProfile(
 			//驗證前端傳來的新個人資料
-			@Valid @ModelAttribute("custVO") CustVO custVO,
+			@Valid @ModelAttribute("loginCust") CustVO custVO,
 			BindingResult result,HttpSession session,ModelMap model){
 			//如果錯誤退回給前端，提供錯誤提示資訊
 			if(result.hasErrors()) {
@@ -116,14 +125,76 @@ public class CustController {
 				return "/back-end/customer/updateProfile";
 			}
 			//正確話就拿出舊資料，為了要確認是要改哪一個會員id的個人資料
-			CustVO oldData = (CustVO)session.getAttribute("custVO");
+			CustVO oldData = (CustVO)session.getAttribute("loginCust");
 			custVO.setCust_id(oldData.getCust_id());
 			//把加上id的資料更新資料庫
 			custService.updateProfile(custVO);
 			//更新新的資料給
-			session.setAttribute("custVO",custVO);
+			session.setAttribute("loginCust",custVO);
 			return "redirect:/cust/loginSuccess";
-			
+	
+	}
+	@GetMapping("/adminCustList") //後台查詢所有會員資料功能，進入後台頁面，預設顯示所有會員
+	public String adminList(ModelMap model) {
+		//預設一個空的查找條件，讓複合查詢撈出所有已存在會員的資料
+		Map<String,String[]> emptyMap = new HashMap<>();
+		List<CustVO> list = custService.getAll(emptyMap);
+		
+		model.addAttribute("custList", list);
+		return "/back-end/customer/admin_customer_list";
+	}
+	
+	@PostMapping("/adminCustSearch") //
+	public String listAllEmp(HttpServletRequest req,ModelMap model) {
+		//把前端給的所有條件，用map裝起來
+		Map<String,String[]> map = req.getParameterMap();
+		//將map丟給service，並篩選出符合條件的會員資料
+		List<CustVO> list = custService.getAll(map);
+		//防呆，如果清單是空的，沒有任何符合條件的會員資料
+		if(list.isEmpty()) {
+			model.addAttribute("erroeMsg", "查無符合條件的會員資料");
+		}
+		model.addAttribute("custList", list);
+		return "/back-end/customer/admin_customer_list";
 		
 	}
+	
+	
+	
+	@GetMapping("/listAllCustomer")
+	public String listAllCustomer() {
+		return null;
+	}
+	
+	
+	
+	@GetMapping("/selectPage")
+	public String selectPage() {
+		return null;
+	}
+	@PostMapping("/selectPage")
+	public String selectPage(
+		ModelMap model) { 
+		
+		return null;
+	}
+	
+	@GetMapping("/ticket") //票券匣功能
+	public String ticket() {
+		return "/back-end/ticket/ticket";
+	}
+	
+	
+	@GetMapping("/message") //通知功能
+	public String message() {
+		return "/back-end/message/message";
+	}
+	
+	
+	@GetMapping("/orderHistory") //歷史訂單功能
+	public String orderHistory() {
+		return "/back-end/customer/orderHistory";
+	}
+	
 }
+

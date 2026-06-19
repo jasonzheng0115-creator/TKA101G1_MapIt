@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh-TW" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>我的票券匣</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.05); }
+        h2 { color: #333; border-bottom: 2px solid #10b981; padding-bottom: 10px; }
+        .ticket-card { border: 2px dashed #10b981; border-radius: 8px; padding: 20px; margin-bottom: 15px; display: flex; align-items: center; background-color: #f0fdf4; }
+        .ticket-info { flex: 1; }
+        .ticket-info h3 { margin: 0 0 10px 0; color: #059669; }
+        .ticket-info p { margin: 5px 0; color: #555; }
+        .qr-placeholder { width: 80px; height: 80px; background-color: white; border: 1px solid #ccc; display: flex; justify-content: center; align-items: center; font-size: 12px; color: #999; }
+        .btn-back { display: inline-block; margin-top: 20px; padding: 10px 20px; background-color: #f1f1f1; color: #333; text-decoration: none; border-radius: 6px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>🎟️ 我的票券匣-未完成僅預覽</h2>
+        
+        <!-- 這裡之後會用 th:each 來跑迴圈顯示票券 -->
+        <div class="ticket-card">
+            <div class="ticket-info">
+                <h3>高雄兩天一夜觀光套票</h3>
+                <p><strong>票券代碼：</strong> TK-99887766</p>
+                <p><strong>有效期限：</strong> 2026-12-31 前有效</p>
+                <p><strong>狀態：</strong> <span style="color: #059669; font-weight: bold;">可使用</span></p>
+            </div>
+            <div class="qr-placeholder">QR Code<br>佔位圖</div>
+        </div>
+
+        <a th:href="@{/cust/loginSuccess}" class="btn-back">返回會員中心</a>
+    </div>
+</body>
+</html>

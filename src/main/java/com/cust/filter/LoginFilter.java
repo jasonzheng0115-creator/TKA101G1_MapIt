@@ -36,7 +36,7 @@ public class LoginFilter extends OncePerRequestFilter{
 		//取得 session
 		HttpSession session = request.getSession();
 		//檢查使用者是否登入過
-		Object account = session.getAttribute("custVO");
+		Object account = session.getAttribute("loginCust");
 		//如果為null，代表未登入過
 		if(account == null) {
 			//session存入當前路徑，以便登入後跳轉回此路徑
