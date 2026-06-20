@@ -30,13 +30,13 @@ public class CartController {
 	
 	// 輔助方法：定義 Redis 的專屬號碼箱（Key）
 	private String getCartKey() {
-		return "cart:membr:1"; // 驗收 Demo 先寫死 1 號會員
+		return "cart:member:1"; // 驗收 Demo 先寫死 1 號會員
 	}
 	
 	// 1. 加入購物車 (數量自動累加)
 	@PostMapping("/add")
 	public String addToCart(
-			@RequestParam("prodId") Integer productId, 
+			@RequestParam("productId") Integer productId, 
 			@RequestParam("quantity") Integer quantity) {
 		
 		String key = getCartKey();                // 指定一個會員的購物車
@@ -86,11 +86,11 @@ public class CartController {
 	// 3. 修改數量
 	@PostMapping("/update")
 	public String updateCart(
-			@RequestParam("prodictId") Integer prodoctId, 
+			@RequestParam("productId") Integer productId, 
 			@RequestParam("quantity") Integer quantity) {
 		
 		String key = getCartKey();
-		String field = String.valueOf(prodoctId);
+		String field = String.valueOf(productId);
 		
 		if (quantity <= 0) {
 			redisTemplate.opsForHash().delete(key, field); // 數量變 0 直接移除
@@ -103,7 +103,7 @@ public class CartController {
 	
 	// 4. 手動刪除
 	@PostMapping("/delete")
-	public String deleteFormCart(@RequestParam("prodictId") Integer productId) {
+	public String deleteFormCart(@RequestParam("productId") Integer productId) {
 		String key = getCartKey();
 		redisTemplate.opsForHash().delete(key, String.valueOf(productId));
 		return "redirect:/cart/show";
