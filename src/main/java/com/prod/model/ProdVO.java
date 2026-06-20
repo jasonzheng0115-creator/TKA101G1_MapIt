@@ -60,6 +60,9 @@ public class ProdVO implements Serializable{
 	@Column(name = "USE_PERIOD")
 	private Integer usePeriod;
 	
+	@Column(name = "PRODUCT_IMG")
+	private String productImg;
+	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "SUPPLIER_ID", referencedColumnName = "SUPPLIER_ID")
 	private SplrVO splrVO;
@@ -127,6 +130,14 @@ public class ProdVO implements Serializable{
 	public void setUsePeriod(Integer usePeriod) {
 		this.usePeriod = usePeriod;
 	}
+	
+	public String getProductImg() {
+		return productImg;
+	}
+
+	public void setProductImg(String productImg) {
+		this.productImg = productImg;
+	}
 
 	public SplrVO getSplrVO() {
 		return splrVO;
@@ -140,7 +151,7 @@ public class ProdVO implements Serializable{
 	public String toString() {
 		return "ProdVO [productId=" + productId + ", productName=" + productName + ", productDesc=" + productDesc
 				+ ", productQty=" + productQty + ", purchasedQty=" + purchasedQty + ", productPrice=" + productPrice
-				+ ", productStatus=" + productStatus + ", usePeriod=" + usePeriod + "]";
+				+ ", productStatus=" + productStatus + ", usePeriod=" + usePeriod + ", productImg=" + productImg + "]";
 	}
 
 }
