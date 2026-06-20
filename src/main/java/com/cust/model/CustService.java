@@ -42,5 +42,10 @@ public class CustService {
 		return CustCompositeQuery.getAllC(map, entityManager);
 	}
 	
+	//後台員工資料修改
+	public CustVO getOneCust(Integer cust_id) {
+		return repository.findByCustId(cust_id);
+	}
+	
 	
 }

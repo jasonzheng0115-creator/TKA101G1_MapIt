@@ -78,3 +78,9 @@ Thumbs.db
 /test-output/
 /surefire-reports/
 /jacoco.exec
+
+##############################
+# sasha自行增加
+# Eclipse Workspace Metadata
+##############################
+.metadata/

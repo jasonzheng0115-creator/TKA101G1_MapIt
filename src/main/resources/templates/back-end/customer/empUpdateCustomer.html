@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="zh-TW" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>員工管理 - 編輯會員資料</title>
+    <style>
+        /* 簡約現代 UI 設計 */
+        :root {
+            --primary: #4F46E5;
+            --primary-hover: #4338CA;
+            --bg-color: #F9FAFB;
+            --card-bg: #FFFFFF;
+            --text-main: #111827;
+            --text-muted: #4B5563;
+            --border-color: #D1D5DB;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+        .form-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            width: 100%;
+            max-width: 600px;
+            padding: 32px;
+            box-sizing: border-box;
+        }
+        h2 {
+            margin-top: 0;
+            margin-bottom: 24px;
+            font-size: 1.5rem;
+            color: var(--primary);
+            border-bottom: 2px solid #F3F4F6;
+            padding-bottom: 12px;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+        label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-muted);
+        }
+        input, select {
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        input:focus, select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+        input[readonly] {
+            background-color: #F3F4F6;
+            color: #9CA3AF;
+            cursor: not-allowed;
+        }
+        .field-error {
+            color: #DC2626;
+            font-size: 0.8rem;
+            margin-top: 4px;
+        }
+        .btn-group {
+            margin-top: 32px;
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+        .btn-save {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .btn-save:hover {
+            background-color: var(--primary-hover);
+        }
+        .btn-back {
+            background-color: #FFFFFF;
+            color: var(--text-muted);
+            border: 1px solid var(--border-color);
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-decoration: none;
+            text-align: center;
+            transition: background-color 0.2s;
+        }
+        .btn-back:hover {
+            background-color: #F9FAFB;
+        }
+    </style>
+</head>
+
+<body>
+
+<script type="text/javascript">
+
+	/* 讓window.onload裡的程式碼，在網頁載入完成後才執行 */
+	window.onload = function(){
+		// ==========================================
+		// 🎯 GET 階段：網頁載入時自動去撈舊資料
+		// ==========================================
+		/* window.location.search 拿到網址列的 ?cust_id=3。
+		   urlParams 拿著這個字串進行解析*/
+		var urlParams = new URLSearchParams(window.location.search);
+		/* urlParams.get("cust_id") 把3拿出來，存進我們宣告的變數cust_id*/
+		var cust_id = urlParams.get("cust_id");		
+		/* 呼叫了fetch給後端地址：/customer/api/getOne?cust_id=3 */
+		fetch("/customer/api/getOne?cust_id=" + cust_id)
+			/* 拿到後端給的資料(responses)*/
+			.then(function(responses){
+				/* 把裡面的文字解析成JSON資料 */
+				return responses.json();
+		})
+		/* 拿到真正的會員資料(JSON)，塞入輸入框 */
+		.then(function(data){
+			/* 塞進網頁的輸入框裡 */
+			document.getElementById("cust_id").value = data.cust_id;
+			document.getElementById("cust_account").value = data.cust_account;
+			document.getElementById("cust_password").value = data.cust_password;
+			document.getElementById("cust_right").value = data.cust_right;
+			document.getElementById("cust_use").value = data.cust_use;
+			document.getElementById("cust_name").value = data.cust_name;
+			document.getElementById("cust_sex").value = data.cust_sex;
+			document.getElementById("cust_tel").value = data.cust_tel;
+			document.getElementById("cust_email").value = data.cust_email;
+			document.getElementById("cust_id_card").value = data.cust_id_card;
+			document.getElementById("cust_birthday").value = data.cust_birthday;
+			document.getElementById("cust_card").value = data.cust_card;
+			document.getElementById("cust_address").value = data.cust_address;
+		})
+		// ==========================================
+		// 🎯 POST 階段：當點擊「儲存修改」按鈕送出表單時
+		// ==========================================
+		/* 監聽表單的送出事件 (當按下儲存修改按鈕時) */
+		document.getElementById("updateForm").onsubmit = function(event){
+		/* 阻止瀏覽器預設的重整網頁行為*/
+		event.preventDefault();
+		
+		var payload = {
+			cust_id:document.getElementById("cust_id").value,
+			cust_account:document.getElementById("cust_account").value,
+			cust_password:document.getElementById("cust_password").value,
+			cust_right:document.getElementById("cust_right").value,
+			cust_use:document.getElementById("cust_use").value,
+			cust_name:document.getElementById("cust_name").value,
+			cust_sex:document.getElementById("cust_sex").value,
+			cust_tel:document.getElementById("cust_tel").value,
+			cust_email:document.getElementById("cust_email").value,
+			cust_id_card:document.getElementById("cust_id_card").value,
+			cust_birthday:document.getElementById("cust_birthday").value,
+			cust_card:document.getElementById("cust_card").value,
+			cust_address:document.getElementById("cust_address").value
+		}
+		
+		fetch("/customer/api/update",{
+		method:"POST",
+		headers: {"Content-Type": "application/json"},
+		body:JSON.stringify(payload)
+		})
+		
+		.then(function(responses){
+		return responses.text();	
+		})
+		.then(function(resultText){
+			if(resultText === "success"){
+				alert("🎉 會員資料修改成功！");
+				window.location.href = "/customer/empCustomerList";
+			}else{
+				alert("❌ 修改失敗，原因：" + resultText);
+			}
+	});
+	}
+	}
+	
+</script>
+
+<div class="form-card">
+    <h2>👥 員工後台 - 編輯會員資料</h2>
+    
+    <form id="updateForm">
+        
+        <!-- 核心隱藏欄位：這兩個欄位不開放員工修改，但必須帶回後端才能做 save() 更新 -->
+        <input type="hidden" id="cust_id" name="cust_id"/>
+        <input type="hidden" id="cust_password" name="cust_password"/>
+        
+        <div class="form-grid">
+            <div class="form-group">
+                <label>會員帳號 (不可修改)</label>
+                <input type="text" id="cust_account" name="cust_account" readonly />
+            </div>
+            
+            <div class="form-group">
+                <label>真實姓名</label>
+                <input type="text" id="cust_name" name="cust_name" placeholder="請輸入姓名" />
+            </div>
+            
+            <div class="form-group">
+                <label>性別</label>
+                <select id="cust_sex" name="cust_sex">
+                    <option value="M">男性</option>
+                    <option value="F">女性</option>
+                    <option value="不透露">不透露</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>手機號碼</label>
+                <input type="text" id="cust_tel" name="cust_tel" placeholder="例如: 0912345678" />
+            </div>
+            
+            <div class="form-group">
+                <label>電子郵件</label>
+                <input type="text" id="cust_email" name="cust_email" placeholder="example@email.com" />
+            </div>
+            
+            <div class="form-group">
+                <label>身份證字號</label>
+                <input type="text" id="cust_id_card" name="cust_id_card" placeholder="請輸入身份證字號" />
+            </div>
+            
+            <div class="form-group">
+                <label>會員生日</label>
+                <input type="date" id="cust_birthday" name="cust_birthday" />
+               
+            </div>
+            
+            <div class="form-group">
+                <label>權限狀態</label>
+                <select id="cust_use" name="cust_use">
+                    <option value="啟動">啟動</option>
+                    <option value="未啟動">未啟動</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>權限等級</label>
+                <select id="cust_right" name="cust_right">
+                    <option value="正常">正常</option>
+                    <option value="停權">停權</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>信用卡號</label>
+                <input type="text" id="cust_card" name="cust_card" placeholder="請輸入信用卡號" />
+            </div>
+            
+            <div class="form-group full-width">
+                <label>聯絡地址</label>
+                <input type="text" id="cust_address" name="cust_address" placeholder="請輸入完整地址" />   
+            </div>
+        </div>
+        
+        <div class="btn-group">
+            <a th:href="@{/customer/empCustomerList}" class="btn-back">返回列表</a>
+            <button type="submit" class="btn-save">💾 儲存修改</button>
+        </div>
+    </form>
+</div>
+
+</body>
+</html>

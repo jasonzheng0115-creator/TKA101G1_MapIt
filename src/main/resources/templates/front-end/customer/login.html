@@ -112,7 +112,7 @@
         <h2>會員登入</h2>
         
         <!-- 🎯 留給你練習：請在這裡加上 Thymeleaf 的 th:action 去對齊你的 Controller -->
-        <form action="#" method="post" th:action="@{/cust/loginCheck}">
+        <form action="#" method="post" th:action="@{/customer/loginCheck}">
             
             <!-- 🎯 留給你練習：請在這裡加上 Thymeleaf 判斷 model 裡的 "error" 字串是否存在，並印出內容 -->
             <div class="error-message" th:if="${errorMsg != null}" th:text="${errorMsg}">
@@ -132,11 +132,11 @@
 
             <button type="submit" class="submit-btn">會員登入</button>
             <!-- 待完成的功能 -->
-            <!-- <button type="submit" class="submit-btn">會員註冊</button>
-            <button type="submit" class="submit-btn">第三方登入</button> -->
+            <button type="submit" class="submit-btn">第三方登入-待完成</button>
+            
             <div class
             style="text-align: center; margin-top: 1.5rem; font-size: 0.9rem;">
-   			 還沒有帳號？ <a th:href="@{/cust/register}" style="color: var(--primary-color); text-decoration: none; font-weight: 600; hover: underline;">立即註冊</a>
+   			 還沒有帳號？ <a th:href="@{/customer/register}" style="color: var(--primary-color); text-decoration: none; font-weight: 600; hover: underline;">立即註冊</a>
 			</div>
 			
         </form>

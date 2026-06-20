@@ -18,7 +18,7 @@ public class LoginFilter extends OncePerRequestFilter{
 	@Override
 	protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException{
 		String uri = request.getRequestURI();
-		if(uri.equals("/cust/login") || uri.equalsIgnoreCase("/cust/loginCheck") || uri.equals("/cust/register")) {
+		if(uri.equals("/customer/login") || uri.equalsIgnoreCase("/customer/loginCheck") || uri.equals("/customer/register")) {
 			return true;
 		}return false;
 	}
@@ -42,7 +42,7 @@ public class LoginFilter extends OncePerRequestFilter{
 			//session存入當前路徑，以便登入後跳轉回此路徑
 			session.setAttribute("location", uri);
 			//重導向到登入頁
-			response.sendRedirect(request.getContextPath() + "/cust/login");
+			response.sendRedirect(request.getContextPath() + "/customer/login");
 		}else {
 			//已登入，繼續下一個過濾器或Controller
 			filterChain.doFilter(request, response);

@@ -140,7 +140,7 @@
         <div class="global-error" th:if="${errorMsg != null}" th:text="${errorMsg}"></div>
 
         <!-- 🎯 th:object="${custVO}"：綁定 Controller 傳過來的會員物件 -->
-        <form th:action="@{/cust/register}" th:object="${newCust}" method="post">
+        <form th:action="@{/customer/register}" th:object="${newCust}" method="post">
             
             <!-- 帳號 -->
             <div class="form-group">
@@ -222,7 +222,7 @@
         </form>
 
         <div class="login-link">
-            已有帳號？ <a th:href="@{/cust/login}">立即登入</a>
+            已有帳號？ <a th:href="@{/customer/login}">立即登入</a>
         </div>
     </div>
 
