@@ -195,7 +195,7 @@
     <!-- 提示：補上 action 指向搜尋方法，method 改為 POST -->
     <!-- ========================================== -->
     <div class="search-card">
-        <form th:action="@{/cust/adminCustSearch}" method="POST">
+        <form th:action="@{/customer/empCustomerList}" method="POST">
             <div class="form-group">
                 <label>會員帳號</label>
                 <!-- 提示：name 必須跟 Controller 接收的變數名稱一模一樣 -->
@@ -212,7 +212,7 @@
                 <select name="cust_use">
                     <option value="">-- 全部狀態 --</option>
                     <option value="啟動">啟動</option>
-                    <option value="停權">停權</option>
+                    <option value="未啟動">未啟動</option>
                 </select>
             </div>
 
@@ -220,7 +220,7 @@
                 <button type="submit" class="btn-search">🔍 開始查詢</button>
                 
                 <!-- 教練留白 4：點擊這個按鈕，應該要重新導向 @GetMapping 的「預設顯示全部」方法 -->
-                <a th:href="@{/cust/adminCustList}" class="btn-clear">清除重設</a>
+                <a th:href="@{/customer/empCustomerList}" class="btn-clear">清除重設</a>
             </div>
         </form>
     </div>
@@ -250,15 +250,21 @@
                     
                     <td>
                         <!-- 用 th:classappend 或是 th:if 根據狀態讓「啟動」和「停權」顯示不同的顏色嗎？ -->
-                        <span class="status-badge" 
-                        	  th:text="${cust.cust_use}" 
-                        	  th:classappend="${cust.cust_use == '啟動'} ? 'status-active':'status-suspend'">
+                        <span class="status-badge status-active" 
+                        	  th:if = "${cust.cust_use == '啟動'}"
+                        	  th:text = '${cust.cust_use}'>
+                        	  
+                        </span>	  
+                        <span class="status-badge status-suspend" 
+                        	  th:if = "${cust.cust_use == '未啟動'}"
+                        	  th:text = '${cust.cust_use}'>
                         </span>
                     </td>
                     
                     <td>
                         <!-- 進階挑戰：這裡可以留給未來做「查看詳情」或「停權按鈕」的預留空間 -->
-                        <a th:href="@{/cust/adminCustList}" class="btn-action">編輯狀態</a>
+                        <a th:href="@{/customer/empUpdateCustomer(cust_id=${cust.cust_id})}"
+                           class="btn-action">編輯狀態</a>
                     </td>
                 </tr>
             </tbody>

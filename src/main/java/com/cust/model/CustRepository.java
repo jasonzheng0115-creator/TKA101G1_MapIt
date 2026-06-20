@@ -1,5 +1,7 @@
 package com.cust.model;
 
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -16,6 +18,10 @@ CustVO loginCheck(String account, String password);
 @Query //會員註冊檢查帳號是否唯一+會員資料更新用
 (value = "select * from customer where CUST_ACCOUNT = ?1", nativeQuery = true)
 CustVO findByAccount(String account);
+
+@Query //
+(value = "select * from customer where CUST_ID = ?1", nativeQuery = true)
+CustVO findByCustId(Integer id);
 
 }
 

@@ -2,6 +2,8 @@ package com.cust.model;
 
 import java.sql.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -69,6 +71,7 @@ public class CustVO implements java.io.Serializable{
 	@Pattern(regexp = "^[A-Z][1-2][0-9]{8}$", message = "國民身分證格式輸入錯誤")
 	private String cust_id_card;
 	
+	@JsonFormat(pattern="yyyy-MM-dd", timezone="GMT+8")
 	@NotNull(message="會員生日，請勿空白")
 	@Column(name = "CUST_BIRTHDAY")
 	private Date cust_birthday;

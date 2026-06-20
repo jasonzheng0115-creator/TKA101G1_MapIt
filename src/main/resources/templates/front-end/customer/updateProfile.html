@@ -90,7 +90,7 @@
         <h2>✏️ 修改個人資料</h2>
 
         <!-- 🎯 任務：請補上 th:action 去找 Controller，以及 th:object 綁定資料箱子 -->
-        <form th:action="@{/cust/updateProfile}" method="post" th:object="${loginCust}">
+        <form th:action="@{/customer/updateProfile}" method="post" th:object="${loginCust}">
 	        <!-- 放一次即可，因為使用者不能修改帳號密碼，所以讓舊資料原封不動送進SQL檢查 -->
 			<input type="hidden" th:field="*{cust_account}">
 			<input type="hidden" th:field="*{cust_password}">     
@@ -152,7 +152,7 @@
 			
 			
             <button type="submit" class="btn-submit">💾 儲存修改</button>
-            <a th:href="@{/cust/loginSuccess}" class="btn-cancel">取消返回</a>
+            <a th:href="@{/customer/loginSuccess}" class="btn-cancel">取消返回</a>
         </form>
     </div>
 </body>
