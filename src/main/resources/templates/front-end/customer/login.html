@@ -104,6 +104,22 @@
         .register-link a:hover { /* 滑鼠懸停在超連結上的效果 */
             text-decoration: underline;
         }
+        .password-wrapper {
+            position: relative;
+        }
+        .password-wrapper input {
+            padding-right: 40px;
+        }
+        .eye-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            user-select: none;
+            font-size: 1.25rem;
+            color: #6b7280;
+        }
     </style>
 </head>
 <body>
@@ -127,20 +143,32 @@
 
             <div class="form-group">
                 <label for="cust_password">密碼</label>
-                <input type="password" id="cust_password" name="cust_password" placeholder="請輸入密碼">
+                <div class="password-wrapper">
+                    <input type="password" id="cust_password" name="cust_password" placeholder="請輸入密碼">
+                    <span id="togglePassword" class="eye-icon">😐</span>
+                </div>
             </div>
 
             <button type="submit" class="submit-btn">會員登入</button>
             <!-- 待完成的功能 -->
             <button type="submit" class="submit-btn">第三方登入-待完成</button>
             
-            <div class
+            <div
             style="text-align: center; margin-top: 1.5rem; font-size: 0.9rem;">
    			 還沒有帳號？ <a th:href="@{/customer/register}" style="color: var(--primary-color); text-decoration: none; font-weight: 600; hover: underline;">立即註冊</a>
 			</div>
 			
         </form>
     </div>
+    <script>
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('cust_password');
 
+        togglePassword.onclick = function() {
+            const type = passwordInput.type === 'password' ? 'text' : 'password';
+            passwordInput.type = type;
+            this.textContent = type === 'password' ? '😐' : '😑';
+        };
+    </script>
 </body>
 </html>

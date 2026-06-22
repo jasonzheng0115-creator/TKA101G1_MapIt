@@ -82,6 +82,19 @@
 		margin-bottom: 20px; 
 		text-align: center; 
 		font-size: 14px;}
+		/* 會員頭貼 */
+		.avatar-container {
+		 margin-bottom: 15px;
+		 text-align: center;
+		}
+		.avatar-preview{
+    	width: 100px;
+    	height: 100px;
+    	border-radius: 50%;
+    	object-fit: cover;
+    	border: 2px solid #ddd;		
+		}
+		
     </style>
     
 </head>
@@ -89,13 +102,28 @@
     <div class="profile-card">
         <h2>✏️ 修改個人資料</h2>
 
-        <!-- 🎯 任務：請補上 th:action 去找 Controller，以及 th:object 綁定資料箱子 -->
-        <form th:action="@{/customer/updateProfile}" method="post" th:object="${loginCust}">
+        <!-- th:action 去找 Controller，以及 th:object 綁定資料箱子 -->
+        <form th:action="@{/customer/updateProfile}" method="post" th:object="${loginCust}" enctype="multipart/form-data">
 	        <!-- 放一次即可，因為使用者不能修改帳號密碼，所以讓舊資料原封不動送進SQL檢查 -->
 			<input type="hidden" th:field="*{cust_account}">
 			<input type="hidden" th:field="*{cust_password}">     
             <div class="error-message" th:if="${errorMsg != null}" th:text="${errorMsg}"></div>
-         
+         	
+         	<div class="form-group">
+         	<label>上傳頭像：</label>
+         	<div class="avatar-container">
+         		<!-- 靠th:src判斷，如果資料庫裡有路徑就顯示，否則顯示預設頭像 -->
+         		<img id="avatarPreview" class="avatar-preview"
+         			 th:src="${loginCust.cust_img != null ? loginCust.cust_img:'/images/default_custAvatar.jpg'}">
+         	</div>
+         	<!-- 檔案上傳按鈕 
+	   		accept="image/*":限制只能選取圖片檔案
+			onchange:瀏覽器事件，選好照片按下確定，值改變後觸發
+			previewImage(this):觸發後去呼叫JS函數(previewImage)，並把this(上傳按鈕本身)當作硬幣投入函數中，讓JS知道要去讀取圖片檔案 -->
+         	<input type="file" name="cust_img_file" id="cust_img_file" accept="image/*" onchange="previewImage(this)">
+         	<input type="hidden" id="remove_img_flag" name="remove_img_flag" value="false">
+         	<button type="button" id="btnDeleteAvatar" onclick="removeAvatar()">刪除頭像</button>
+         	</div>
 				
             <div class="form-group">
                 <label>姓名：</label>
@@ -155,5 +183,33 @@
             <a th:href="@{/customer/loginSuccess}" class="btn-cancel">取消返回</a>
         </form>
     </div>
+    
+    <script>
+    	/* 接html裡previewImage(this)，this=input=上傳的照片 */
+	    function previewImage(input){
+    		/* 只要使用者選照片了，就把值改為false */
+    		document.getElementById("remove_img_flag").value = "false"
+	    	if(input.files && input.files[0]){
+	    		var reader = new FileReader(); /* 建立檔案讀取器 */
+	    		/* reader.onload(當圖片讀取完成)，就觸發產生event(事件)*/
+	    		reader.onload = function(event){ /* target:讀取器，把result(讀取結果)拿出來 */
+	    			document.getElementById("avatarPreview").src = event.target.result;
+	    		}
+	    		/* 將reader用JS內建的方法將圖片的二進位轉換成Base64文字網址，再把網址給th:src還原 */
+	    		reader.readAsDataURL(input.files[0]);
+	    	}
+	    }
+    	
+    	function removeAvatar(){
+    		//將畫面的預覽圖換成預設頭像
+    		document.getElementById("avatarPreview").src="/images/default_custAvatar.jpg";
+    		//清空檔案上傳按鈕裡面的選取檔案
+    		document.getElementById("cust_img_file").value="";
+    		//將隱藏信封改為true
+    		document.getElementById("remove_img_flag").value="true";
+    		
+    	}
+    </script>
+    
 </body>
 </html>
