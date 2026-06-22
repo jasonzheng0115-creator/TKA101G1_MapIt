@@ -2,8 +2,6 @@ package com.cust.model;
 
 import java.util.*;
 
-import org.hibernate.Session;
-import org.hibernate.Transaction;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;

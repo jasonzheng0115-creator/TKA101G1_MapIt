@@ -24,7 +24,6 @@ public class LoginFilter extends OncePerRequestFilter{
 	}
 	
 	
-	
 	@Override //做filter的基礎
 	protected void doFilterInternal(
 		HttpServletRequest request,
