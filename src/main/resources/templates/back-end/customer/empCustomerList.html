@@ -199,17 +199,17 @@
             <div class="form-group">
                 <label>會員帳號</label>
                 <!-- 提示：name 必須跟 Controller 接收的變數名稱一模一樣 -->
-                <input type="text" id="cust_account" name="cust_account" placeholder="請輸入帳號關鍵字">
+                <input type="text" id="custAccount" name="custAccount" placeholder="請輸入帳號關鍵字">
             </div>
             
             <div class="form-group">
                 <label>會員姓名</label>
-                <input type="text"id="cust_name" name="cust_name" placeholder="請輸入姓名關鍵字">
+                <input type="text"id="custName" name="custName" placeholder="請輸入姓名關鍵字">
             </div>
 
             <div class="form-group">
                 <label>權限狀態</label>
-                <select name="cust_use">
+                <select name="custUse">
                     <option value="">-- 全部狀態 --</option>
                     <option value="啟動">啟動</option>
                     <option value="未啟動">未啟動</option>
@@ -243,27 +243,27 @@
             <tbody>
                 <!-- 提示：請在這個 <tr> 加上 th:each 讓表格開始跑迴圈 -->
                 <tr th:each="cust:${custList}">
-                	<td th:text="${cust.cust_id}"></td>
-                    <td th:text="${cust.cust_account}"></td>
-                    <td th:text="${cust.cust_name}"></td>
-                    <td th:text="${cust.cust_email}"></td>
+                	<td th:text="${cust.custId}"></td>
+                    <td th:text="${cust.custAccount}"></td>
+                    <td th:text="${cust.custName}"></td>
+                    <td th:text="${cust.custEmail}"></td>
                     
                     <td>
                         <!-- 用 th:classappend 或是 th:if 根據狀態讓「啟動」和「停權」顯示不同的顏色嗎？ -->
                         <span class="status-badge status-active" 
-                        	  th:if = "${cust.cust_use == '啟動'}"
-                        	  th:text = '${cust.cust_use}'>
+                        	  th:if = "${cust.custUse == '啟動'}"
+                        	  th:text = '${cust.custUse}'>
                         	  
                         </span>	  
                         <span class="status-badge status-suspend" 
-                        	  th:if = "${cust.cust_use == '未啟動'}"
-                        	  th:text = '${cust.cust_use}'>
+                        	  th:if = "${cust.custUse == '未啟動'}"
+                        	  th:text = '${cust.custUse}'>
                         </span>
                     </td>
                     
                     <td>
                         <!-- 進階挑戰：這裡可以留給未來做「查看詳情」或「停權按鈕」的預留空間 -->
-                        <a th:href="@{/customer/empUpdateCustomer(cust_id=${cust.cust_id})}"
+                        <a th:href="@{/customer/empUpdateCustomer(custId=${cust.custId})}"
                            class="btn-action">編輯狀態</a>
                     </td>
                 </tr>

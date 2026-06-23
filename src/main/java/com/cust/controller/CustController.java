@@ -44,17 +44,17 @@ public class CustController {
 		//@Request...貼標籤，指定要前端這兩筆資料(需前端對應)
 		//HttpSession用來記憶已登入的狀態，到其他頁面不需重新登入
 		//ModelMap用來把資料或錯誤訊息，打包送回給前端	
-		@RequestParam("cust_account") String cust_account,
-		@RequestParam("cust_password") String cust_password,
+		@RequestParam("custAccount") String custAccount,
+		@RequestParam("custPassword") String custPassword,
 		HttpSession session,
 		ModelMap model) {
 			//檢查使用者帳號或密碼是否空白，空白就返回登入畫面
-			if(cust_account == null || cust_account.trim().isEmpty() || cust_password == null || cust_password.trim().isEmpty()){
+			if(custAccount == null || custAccount.trim().isEmpty() || custPassword == null || custPassword.trim().isEmpty()){
 			model.addAttribute("errorMsg","帳號或密碼請勿空白");
 			return "/front-end/customer/login";
 			}
 			//檢查使用者輸入的帳號和密碼都正確
-			CustVO custVO = custService.login(cust_account, cust_password);
+			CustVO custVO = custService.login(custAccount, custPassword);
 			//輸入錯誤就返回登入畫面
 			if(custVO == null) {
 				model.addAttribute("errorMsg","帳號或密碼錯誤");
@@ -136,13 +136,13 @@ public class CustController {
 			}
 			//正確話就拿出舊資料，為了要確認是要改哪一個會員id的個人資料
 			CustVO oldData = (CustVO)session.getAttribute("loginCust");
-			custVO.setCust_id(oldData.getCust_id());
+			custVO.setCustId(oldData.getCustId());
 			//如果使用者選擇移除頭像
 			if("true".equals(removeImgFlag)) {
-				custVO.setCust_img(null);
+				custVO.setCustImg(null);
 			}else if(file.isEmpty()) {
 				//使用者沒有選新照片，沿用原本舊照片的路徑
-				custVO.setCust_img(oldData.getCust_img());
+				custVO.setCustImg(oldData.getCustImg());
 			}else{ 
 				//使用者選新照片
 				try {
@@ -159,13 +159,13 @@ public class CustController {
 				//取出副檔名
 				String fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
 				//合成唯一的黨名
-				String newFileName = "avatar_"+custVO.getCust_id()+fileExtension;
+				String newFileName = "avatar_"+custVO.getCustId()+fileExtension;
 				//建立目的地的file物件，不能用+號，因為照片命名回黏在一起，不會存進指定的資料夾裡，也不能用"/"拼，因為不同作業系統會用\/，符號不同容易錯誤
 				File saveFile = new File(uploadDirectory,newFileName);
 				//複製檔案存入硬碟
 				file.transferTo(saveFile);
 				//將虛擬相對路徑存入資料庫
-				custVO.setCust_img("/uploads/avatars/" + newFileName);
+				custVO.setCustImg("/uploads/avatars/" + newFileName);
 				} catch(Exception e) {
 					e.printStackTrace();
 					model.addAttribute("errorMsg", "照片上傳失敗:" + e.getMessage());
@@ -215,8 +215,8 @@ public class CustController {
 	@GetMapping("/api/getOne") 
 	@ResponseBody //這個標籤是指只給JSON資料，不給HTML網頁
 	public CustVO getOneCustomerJson(
-		@RequestParam("cust_id") Integer cust_id) {
-		return custService.getOneCust(cust_id);
+		@RequestParam("custId") Integer custId) {
+		return custService.getOneCust(custId);
 	}
 	@PostMapping("/api/update") //把要前端要修改JSON格式的新資料接進來
 	@ResponseBody

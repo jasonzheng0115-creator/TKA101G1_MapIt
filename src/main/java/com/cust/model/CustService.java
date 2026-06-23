@@ -24,7 +24,7 @@ public class CustService {
 	}
 	//會員註冊
 	public void register(CustVO custVO) {
-		CustVO existId = repository.findByAccount(custVO.getCust_account());
+		CustVO existId = repository.findByAccount(custVO.getCustAccount());
 		if (existId != null) {
 			throw new RuntimeException("該帳號已被註冊，請換一個帳號");
 		}
@@ -32,8 +32,8 @@ public class CustService {
 	}
 	//會員資料修改
 	public void updateProfile(CustVO custVO) {
-		System.out.println("更新的會員ID：" + custVO.getCust_id());
-		System.out.println("更新的會員名字：" + custVO.getCust_name());
+		System.out.println("更新的會員ID：" + custVO.getCustId());
+		System.out.println("更新的會員名字：" + custVO.getCustName());
 		repository.save(custVO); //custVO沒有ID傳進來時，會自動INSERT;custVO有ID時，會自動寫UPDATE
 		}
 	
@@ -43,8 +43,8 @@ public class CustService {
 	}
 	
 	//後台員工資料修改
-	public CustVO getOneCust(Integer cust_id) {
-		return repository.findByCustId(cust_id);
+	public CustVO getOneCust(Integer custId) {
+		return repository.findByCustId(custId);
 	}
 	
 	

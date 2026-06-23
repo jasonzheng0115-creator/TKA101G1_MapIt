@@ -136,15 +136,15 @@
             </div>
 
             <div class="form-group">
-                <label for="cust_account">帳號</label>
+                <label for="custAccount">帳號</label>
                 <!-- 注意：name 屬性必須跟 Controller 裡的 @RequestParam 完全一致 -->
-                <input type="text" id="cust_account" name="cust_account" placeholder="請輸入帳號">
+                <input type="text" id="custAccount" name="custAccount" placeholder="請輸入帳號">
             </div>
 
             <div class="form-group">
-                <label for="cust_password">密碼</label>
+                <label for="custPassword">密碼</label>
                 <div class="password-wrapper">
-                    <input type="password" id="cust_password" name="cust_password" placeholder="請輸入密碼">
+                    <input type="password" id="custPassword" name="custPassword" placeholder="請輸入密碼">
                     <span id="togglePassword" class="eye-icon">😐</span>
                 </div>
             </div>
@@ -162,7 +162,7 @@
     </div>
     <script>
         const togglePassword = document.getElementById('togglePassword');
-        const passwordInput = document.getElementById('cust_password');
+        const passwordInput = document.getElementById('custPassword');
 
         togglePassword.onclick = function() {
             const type = passwordInput.type === 'password' ? 'text' : 'password';
