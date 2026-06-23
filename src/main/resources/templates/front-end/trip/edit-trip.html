@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>編輯行程 - 行程排版區</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background: linear-gradient(160deg, #E8ECF1 0%, #F5F3F0 50%, #EAE8E4 100%);
+            min-height: 100vh;
+            color: #3D4F5F;
+            padding: 24px;
+        }
+
+        /* ===== 頂部資訊列 ===== */
+        .header {
+            background: rgba(255, 255, 255, 0.72);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(123, 143, 161, 0.12);
+            border-radius: 16px;
+            padding: 24px 30px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(90, 122, 138, 0.06);
+        }
+
+        .trip-info h2 {
+            font-size: 20px;
+            font-weight: 500;
+            color: #4A6274;
+            margin-bottom: 6px;
+        }
+
+        .trip-info p {
+            font-size: 13px;
+            font-weight: 300;
+            color: #8C9DAA;
+        }
+
+        .trip-info .status-tag {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 400;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* ===== 按鈕共用 ===== */
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 13px;
+            font-family: 'Noto Sans TC', sans-serif;
+            font-weight: 400;
+            text-decoration: none;
+            border-radius: 20px;
+            border: 1.5px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 0.5px;
+            color: white;
+        }
+
+        .btn-add {
+            background: #7B8FA1;
+            border-color: #7B8FA1;
+        }
+
+        .btn-add:hover {
+            background: #6A7F91;
+            box-shadow: 0 4px 16px rgba(123, 143, 161, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .btn-back {
+            background: transparent;
+            color: #8C9DAA;
+            border-color: rgba(123, 143, 161, 0.25);
+        }
+
+        .btn-back:hover {
+            background: rgba(123, 143, 161, 0.08);
+            border-color: #7B8FA1;
+            color: #5A7A8A;
+        }
+
+        /* ===== 主要內容區：左右分割 ===== */
+        .main-container {
+            display: flex;
+            gap: 20px;
+            height: 70vh;
+        }
+
+        .left-panel {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(123, 143, 161, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            overflow-y: auto;
+            box-shadow: 0 4px 20px rgba(90, 122, 138, 0.06);
+        }
+
+        .left-panel h3 {
+            font-size: 15px;
+            font-weight: 500;
+            color: #4A6274;
+            margin-bottom: 16px;
+        }
+
+        .right-panel {
+            flex: 1;
+            background: rgba(123, 143, 161, 0.06);
+            border: 1px dashed rgba(123, 143, 161, 0.2);
+            border-radius: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #B4BCC3;
+            font-size: 15px;
+            font-weight: 300;
+        }
+
+        /* ===== 彈出視窗 (Modal) ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(61, 79, 95, 0.4);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(123, 143, 161, 0.12);
+            border-radius: 20px;
+            padding: 32px;
+            width: 540px;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 12px 48px rgba(90, 122, 138, 0.15);
+        }
+
+        .modal-content h3 {
+            font-size: 18px;
+            font-weight: 500;
+            color: #4A6274;
+            margin-bottom: 20px;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 18px;
+            right: 24px;
+            font-size: 22px;
+            cursor: pointer;
+            color: #B4BCC3;
+            transition: color 0.2s;
+            background: none;
+            border: none;
+            font-family: inherit;
+        }
+
+        .close-btn:hover {
+            color: #8B6060;
+        }
+
+        /* 搜尋框 */
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 12px 16px;
+            font-size: 14px;
+            font-family: 'Noto Sans TC', sans-serif;
+            color: #3D4F5F;
+            background: rgba(255, 255, 255, 0.7);
+            border: 1.5px solid rgba(123, 143, 161, 0.2);
+            border-radius: 10px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-box input:focus {
+            border-color: #7B8FA1;
+            box-shadow: 0 0 0 3px rgba(123, 143, 161, 0.1);
+        }
+
+        .search-box input::placeholder {
+            color: #B4BCC3;
+            font-weight: 300;
+        }
+
+        .btn-search {
+            padding: 10px 20px;
+            font-size: 13px;
+            font-family: 'Noto Sans TC', sans-serif;
+            font-weight: 400;
+            color: #FFFFFF;
+            background: #7B8FA1;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-search:hover {
+            background: #6A7F91;
+        }
+
+        .search-results {
+            margin-top: 15px;
+            border-top: 1px solid rgba(123, 143, 161, 0.1);
+            padding-top: 15px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ====== 頂部資訊列 ====== -->
+    <div class="header">
+        <div class="trip-info">
+            <h2 th:text="${trip.tripName}">東京五天四夜櫻花祭</h2>
+            <p>
+                出發日期：<span th:text="${trip.tripDate}">2026-04-02</span>
+                &nbsp;|&nbsp;
+                <span th:text="${trip.tripStatus ? '🌍 公開' : '🔒 私有'}">公開</span>
+            </p>
+        </div>
+        <div class="header-actions">
+            <button class="btn btn-add" onclick="openModal()">＋ 加入新景點</button>
+            <a th:href="@{/trip/my-trips}" class="btn btn-back">← 返回列表</a>
+        </div>
+    </div>
+
+    <!-- ====== 左右分割主內容 ====== -->
+    <div class="main-container">
+        <div class="left-panel">
+            <h3>📍 行程明細</h3>
+            <div id="tripItemList">
+                <p style="color: #B4BCC3; font-weight: 300; text-align: center; padding: 40px 0;">
+                    目前還沒有加入任何景點，請點擊上方按鈕開始搜尋
+                </p>
+            </div>
+        </div>
+
+        <div class="right-panel">
+            <h3>🗺️ Google Map 預留區</h3>
+        </div>
+    </div>
+
+    <!-- ====== 搜尋景點彈出視窗 ====== -->
+    <div id="searchModal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <h3>🔍 搜尋景點</h3>
+
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="輸入景點名稱（例如：東京鐵塔、清水寺）">
+                <button class="btn-search" onclick="searchAttractions()">搜尋</button>
+            </div>
+
+            <div id="searchResults" class="search-results">
+                <p style="color: #B4BCC3; text-align: center; font-weight: 300;">請輸入關鍵字開始搜尋...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== JavaScript（邏輯完全不變，只更新 inline style 配色） ====== -->
+    <script>
+        const modal = document.getElementById('searchModal');
+        const searchInput = document.getElementById('searchInput');
+
+        searchInput.addEventListener('keypress', function (event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                searchAttractions();
+            }
+        });
+
+        function openModal() {
+            modal.style.display = 'flex';
+            searchInput.focus();
+        }
+
+        function closeModal() {
+            modal.style.display = 'none';
+            searchInput.value = '';
+            document.getElementById('searchResults').innerHTML = '<p style="color: #B4BCC3; text-align: center; font-weight: 300;">請輸入關鍵字開始搜尋...</p>';
+        }
+
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+
+        function searchAttractions() {
+            const keyword = document.getElementById('searchInput').value;
+            const resultsDiv = document.getElementById('searchResults');
+
+            if (!keyword.trim()) {
+                resultsDiv.innerHTML = '<p style="color: #8B6060; text-align: center;">請輸入關鍵字！</p>';
+                return;
+            }
+
+            resultsDiv.innerHTML = '<p style="color: #8C9DAA; text-align: center; font-weight: 300;">⏳ 搜尋中，請稍候...</p>';
+
+            fetch(`/api/attractions/search?keyword=${keyword}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length === 0) {
+                        resultsDiv.innerHTML = '<p style="color: #8C9DAA; text-align: center; font-weight: 300;">找不到相關景點，換個關鍵字試試看？</p>';
+                        return;
+                    }
+
+                    let html = '<ul style="list-style: none; padding: 0; margin: 0;">';
+
+                    data.forEach(attr => {
+                        const openTimeHtml = getOpenStatusHtml(attr.openTime);
+
+                        html += `
+                        <li style="border-bottom: 1px solid rgba(123,143,161,0.1); padding: 16px 0; display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <h4 style="margin: 0 0 5px 0; color: #4A6274; font-weight: 500; font-size: 15px;">
+                                    ${attr.attrName}
+                                    <span style="font-size: 12px; color: #C4A35A;">⭐ ${attr.avgStars} (${attr.attrVotes}人評分)</span>
+                                </h4>
+                                <p style="margin: 0; font-size: 13px; color: #8C9DAA; font-weight: 300;">📍 ${attr.regionId} | ${attr.categoryId}</p>
+                                <p style="margin: 4px 0 0 0; font-size: 12px; color: #B4BCC3; font-weight: 300;">${attr.attrAddress}</p>
+                                <p style="margin: 4px 0 0 0; font-size: 12px;">🕒 ${openTimeHtml}</p>
+                            </div>
+                            <button class="btn btn-add" style="padding: 7px 16px; font-size: 12px;"
+                                    onclick="addArrcToTrip(${attr.attrId})">加入</button>
+                        </li>
+                    `;
+                    });
+
+                    html += '</ul>';
+                    resultsDiv.innerHTML = html;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    resultsDiv.innerHTML = '<p style="color: #8B6060; text-align: center;">系統發生異常，請稍後再試！</p>';
+                });
+        }
+
+        function addArrcToTrip(attrId) {
+            const urlParts = window.location.pathname.split('/');
+            const tripId = urlParts[urlParts.length - 1];
+
+            const formData = new FormData();
+            formData.append('tripId', tripId);
+            formData.append('attrId', attrId);
+
+            fetch('/api/trip-items/add', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        closeModal();
+                        loadTripItems();
+                    } else {
+                        alert("❌ 發生錯誤：" + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("❌ 連線異常，請稍後再試！");
+                });
+        }
+
+        function loadTripItems() {
+            const urlParts = window.location.pathname.split('/');
+            const tripId = urlParts[urlParts.length - 1];
+
+            fetch(`/api/trip-items/${tripId}`)
+                .then(response => response.json())
+                .then(data => {
+                    const listDiv = document.getElementById('tripItemList');
+
+                    if (data.length === 0) {
+                        listDiv.innerHTML = '<p style="color: #B4BCC3; font-weight: 300; text-align: center; padding: 40px 0;">目前還沒有加入任何景點，請點擊上方按鈕開始搜尋</p>';
+                        return;
+                    }
+
+                    let html = '';
+                    data.forEach(item => {
+                        html += `
+                        <div style="background: rgba(255,255,255,0.5); border: 1px solid rgba(123,143,161,0.1); padding: 16px 20px; margin-bottom: 10px; border-left: 4px solid #7B8FA1; border-radius: 12px; transition: all 0.3s ease;">
+                            
+                            <!-- 上半部：標題與刪除按鈕 -->
+                            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                                <div style="display: flex; align-items: center; gap: 16px;">
+                                    <div style="background: #7B8FA1; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 500; font-size: 13px; flex-shrink: 0;">
+                                        ${item.seqNo}
+                                    </div>
+                                    <div>
+                                        <h4 style="margin: 0 0 4px 0; color: #4A6274; font-weight: 500; font-size: 15px;">${item.attrName}</h4>
+                                        <p style="margin: 0; font-size: 12px; color: #8C9DAA; font-weight: 300;">${item.attrAddress}</p>
+                                    </div>
+                                </div>
+                                <button onclick="deleteTripItem(${item.itemId})" style="background: transparent; border: none; font-size: 16px; cursor: pointer; color: #c95c5c; padding: 5px;" title="移除景點">🗑️</button>
+                            </div>
+
+                            <!-- 下半部：新增的時間與備註編輯區 -->
+                            <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; background: rgba(255,255,255,0.7); padding: 10px; border-radius: 8px;">
+                                <div>
+                                    <label style="font-size: 11px; color: #8C9DAA; display: block; margin-bottom: 4px;">抵達時間</label>
+                                    <input type="datetime-local" id="arr_${item.itemId}" value="${item.arrivalTime}" style="padding: 6px; font-size: 12px; border: 1px solid #D1D8DD; border-radius: 6px; outline: none; color: #4A6274;">
+                                </div>
+                                <div>
+                                    <label style="font-size: 11px; color: #8C9DAA; display: block; margin-bottom: 4px;">離開時間</label>
+                                    <input type="datetime-local" id="dep_${item.itemId}" value="${item.depTime}" style="padding: 6px; font-size: 12px; border: 1px solid #D1D8DD; border-radius: 6px; outline: none; color: #4A6274;">
+                                </div>
+                                <div style="flex: 1; min-width: 150px;">
+                                    <label style="font-size: 11px; color: #8C9DAA; display: block; margin-bottom: 4px;">專屬備忘錄</label>
+                                    <input type="text" id="note_${item.itemId}" value="${item.itemNote}" placeholder="例如：記得買門票..." style="padding: 6px; font-size: 12px; width: 100%; border: 1px solid #D1D8DD; border-radius: 6px; outline: none; color: #4A6274;">
+                                </div>
+                                <div>
+                                    <button onclick="updateTripItem(${item.itemId})" class="btn btn-add" style="padding: 6px 14px; font-size: 12px; border-radius: 6px;">💾 儲存</button>
+                                </div>
+                            </div>
+
+                        </div>
+                    `;
+                    });
+
+
+
+                    listDiv.innerHTML = html;
+                })
+                .catch(error => console.error('Error fetching items:', error));
+        }
+
+        function deleteTripItem(itemId) {
+            if (!confirm('確定要從行程中移除這個景點嗎？')) {
+                return;
+            }
+
+            // 發送 DELETE 請求到我們剛剛寫的 API
+            fetch(`/api/trip-items/${itemId}`, {
+                method: 'DELETE'
+            })
+                .then(response => {
+                    if (response.ok) {
+                        // 刪除成功，重新載入清單 (這時候後端已經把 seqNo 重新排好了)
+                        loadTripItems();
+                    } else {
+                        return response.text().then(text => { throw new Error(text) });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("❌ 刪除失敗：" + error.message);
+                });
+        }
+
+        function updateTripItem(itemId) {
+            // 透過動態生成的 ID 抓取這三個輸入框的值
+            const arrTime = document.getElementById(`arr_${itemId}`).value;
+            const depTime = document.getElementById(`dep_${itemId}`).value;
+            const note = document.getElementById(`note_${itemId}`).value;
+
+            // 把資料包裝成 JSON 送給我們寫的 PUT API
+            fetch(`/api/trip-items/${itemId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json' // 告訴後端我們傳的是 JSON
+                },
+                body: JSON.stringify({
+                    arrivalTime: arrTime,
+                    depTime: depTime,
+                    itemNote: note
+                })
+            })
+                .then(response => {
+                    if (response.ok) {
+                        // 偷偷顯示一個成功的小提示（不重新整理畫面，體驗更好）
+                        alert('💾 儲存成功！');
+                    } else {
+                        return response.text().then(text => { throw new Error(text) });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("❌ 更新失敗：" + error.message);
+                });
+        }
+
+
+
+        window.onload = function () {
+            loadTripItems();
+        };
+
+        function getOpenStatusHtml(openTimeStr) {
+            if (!openTimeStr) {
+                return `<span style="color: #B4BCC3;">無營業時間資訊</span>`;
+            }
+            if (openTimeStr === '24小時開放') {
+                return `<span style="color: #5A8A9E;">24小時開放</span>`;
+            }
+            if (openTimeStr === '已歇業') {
+                return `<span style="color: #8B6060; font-weight: 500;">已歇業</span>`;
+            }
+
+            const timeRegex = /^(\d{2}):(\d{2})-(\d{2}):(\d{2})$/;
+            const match = openTimeStr.match(timeRegex);
+
+            if (match) {
+                const now = new Date();
+                const nowMin = now.getHours() * 60 + now.getMinutes();
+                const startH = parseInt(match[1], 10);
+                const startM = parseInt(match[2], 10);
+                let endH = parseInt(match[3], 10);
+                const endM = parseInt(match[4], 10);
+                const startMin = startH * 60 + startM;
+                let endMin = endH * 60 + endM;
+
+                if (endH === 0 && endM === 0) {
+                    endMin = 24 * 60;
+                }
+
+                let isOpen = false;
+                if (startMin < endMin) {
+                    isOpen = (nowMin >= startMin && nowMin < endMin);
+                } else {
+                    isOpen = (nowMin >= startMin || nowMin < endMin);
+                }
+
+                if (isOpen) {
+                    return `<span style="color: #5A8A9E; font-weight: 500;">營業中</span> <span style="color: #5A8A9E;">${openTimeStr}</span>`;
+                } else {
+                    return `<span style="color: #8B6060; font-weight: 500;">已打烊</span> <span style="color: #8B6060;">${openTimeStr}</span>`;
+                }
+            }
+
+            return `<span style="color: #B4BCC3;">${openTimeStr}</span>`;
+        }
+    </script>
+
+</body>
+
+</html>

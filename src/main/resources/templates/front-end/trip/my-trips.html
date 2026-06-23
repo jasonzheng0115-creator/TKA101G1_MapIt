@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>我的行程清單</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background: linear-gradient(160deg, #E8ECF1 0%, #F5F3F0 50%, #EAE8E4 100%);
+            min-height: 100vh;
+            color: #3D4F5F;
+        }
+
+        /* ===== 導覽列（與首頁統一） ===== */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 40px;
+            background: rgba(255, 255, 255, 0.72);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(123, 143, 161, 0.15);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .navbar .logo {
+            font-size: 18px;
+            font-weight: 500;
+            color: #5A7A8A;
+            letter-spacing: 1px;
+            text-decoration: none;
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .user-info {
+            font-size: 13px;
+            font-weight: 300;
+            color: #7B8FA1;
+        }
+
+        /* ===== 按鈕共用 ===== */
+        .btn {
+            display: inline-block;
+            padding: 9px 22px;
+            font-size: 13px;
+            font-family: 'Noto Sans TC', sans-serif;
+            font-weight: 400;
+            text-decoration: none;
+            border-radius: 20px;
+            border: 1.5px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-home {
+            background: transparent;
+            color: #8C9DAA;
+            border-color: rgba(123, 143, 161, 0.25);
+        }
+
+        .btn-home:hover {
+            background: rgba(123, 143, 161, 0.08);
+            border-color: #7B8FA1;
+            color: #5A7A8A;
+        }
+
+        .btn-create {
+            background: #7B8FA1;
+            color: #FFFFFF;
+            border-color: #7B8FA1;
+        }
+
+        .btn-create:hover {
+            background: #6A7F91;
+            box-shadow: 0 4px 16px rgba(123, 143, 161, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .btn-edit {
+            background: transparent;
+            color: #7B8FA1;
+            border-color: #7B8FA1;
+            font-size: 12px;
+            padding: 7px 18px;
+        }
+
+        .btn-edit:hover {
+            background: #7B8FA1;
+            color: #FFFFFF;
+        }
+
+        /* ===== 區塊 A：請先登入 ===== */
+        .login-prompt {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 140px 20px;
+            position: relative;
+        }
+
+        .login-prompt::before {
+            content: '';
+            position: absolute;
+            width: 280px;
+            height: 280px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(123, 143, 161, 0.08) 0%, transparent 70%);
+            animation: float 7s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-18px);
+            }
+        }
+
+        .login-prompt h2 {
+            font-size: 24px;
+            font-weight: 500;
+            color: #4A6274;
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        .login-prompt p {
+            font-size: 14px;
+            font-weight: 300;
+            color: #8C9DAA;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .btn-go-login {
+            display: inline-block;
+            padding: 12px 32px;
+            font-size: 14px;
+            font-family: 'Noto Sans TC', sans-serif;
+            font-weight: 400;
+            color: #FFFFFF;
+            background: #7B8FA1;
+            text-decoration: none;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            letter-spacing: 0.5px;
+            position: relative;
+        }
+
+        .btn-go-login:hover {
+            background: #6A7F91;
+            box-shadow: 0 6px 20px rgba(123, 143, 161, 0.25);
+            transform: translateY(-2px);
+        }
+
+        /* ===== 區塊 B：行程列表 ===== */
+        .page-header {
+            padding: 40px 40px 20px;
+        }
+
+        .page-header h2 {
+            font-size: 22px;
+            font-weight: 500;
+            color: #4A6274;
+        }
+
+        .page-header h2 span {
+            color: #7B8FA1;
+        }
+
+        .action-bar {
+            display: flex;
+            gap: 10px;
+            padding: 0 40px 10px;
+        }
+
+        /* ===== 行程卡片 ===== */
+        .trip-grid {
+            display: grid;
+            gap: 16px;
+            padding: 20px 40px 60px;
+        }
+
+        .trip-card {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(123, 143, 161, 0.1);
+            border-radius: 14px;
+            padding: 24px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .trip-card:hover {
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 8px 28px rgba(90, 122, 138, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .trip-info h3 {
+            font-size: 16px;
+            font-weight: 500;
+            color: #4A6274;
+            margin-bottom: 6px;
+        }
+
+        .trip-meta {
+            font-size: 13px;
+            font-weight: 300;
+            color: #8C9DAA;
+        }
+
+        .trip-meta .status {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 400;
+            margin-left: 10px;
+        }
+
+        .status-public {
+            background: rgba(123, 171, 193, 0.12);
+            color: #5A8A9E;
+        }
+
+        .status-private {
+            background: rgba(160, 139, 139, 0.12);
+            color: #8B7A7A;
+        }
+
+        .empty-msg {
+            text-align: center;
+            padding: 60px 20px;
+            font-size: 15px;
+            font-weight: 300;
+            color: #B4BCC3;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ====== 導覽列 ====== -->
+    <nav class="navbar">
+        <a th:href="@{/}" class="logo">✦ 旅行規劃</a>
+        <div class="navbar-right">
+            <span class="user-info" th:if="${userName}" th:text="${userName} + ' 你好'">使用者 你好</span>
+        </div>
+    </nav>
+
+    <!-- ====================================================== -->
+    <!-- ★ 區塊 A：未登入 — 「請先登入」提示 ★ -->
+    <!-- ====================================================== -->
+    <section th:unless="${userName}" class="login-prompt">
+        <h2>請先登入</h2>
+        <p>登入後即可查看並管理你的專屬行程</p>
+        <a th:href="@{/login(redirectURL=${redirectURL})}" class="btn-go-login">前往登入</a>
+    </section>
+
+    <!-- ====================================================== -->
+    <!-- ★ 區塊 B：已登入 — 行程列表 ★ -->
+    <!-- ====================================================== -->
+    <div th:if="${userName}">
+
+        <div class="page-header">
+            <h2>哈囉，<span th:text="${userName}">使用者</span>！這是你的專屬行程</h2>
+        </div>
+
+        <div class="action-bar">
+            <a th:href="@{/}" class="btn btn-home">← 回到首頁</a>
+            <a th:href="@{/trip/create}" class="btn btn-create">＋ 新增行程</a>
+        </div>
+
+        <!-- 沒有行程時 -->
+        <div th:if="${#lists.isEmpty(tripList)}" class="empty-msg">
+            <p>✦ 你目前還沒有建立任何行程，開始規劃你的第一趟旅程吧！</p>
+        </div>
+
+        <!-- 行程卡片列表 -->
+        <!-- 行程卡片列表 -->
+        <div class="trip-grid">
+            <div class="trip-card" th:each="trip : ${tripList}">
+                <div class="trip-info">
+                    <h3 th:text="${trip.tripName}">行程名稱</h3>
+                    <p class="trip-meta">
+                        <span th:text="${trip.tripDate}">2026-01-01</span>
+                        <span th:if="${trip.tripStatus}" class="status status-public">公開</span>
+                        <span th:unless="${trip.tripStatus}" class="status status-private">私有</span>
+                    </p>
+                </div>
+
+                <!-- 新增：將編輯和刪除按鈕包在一起 -->
+                <div style="display: flex; gap: 8px;">
+                    <!-- 編輯按鈕 -->
+                    <a th:href="@{'/trip/edit/' + ${trip.tripId}}" class="btn btn-edit">編輯明細</a>
+
+                    <!-- 刪除按鈕 (必須用表單送 POST 請求) -->
+                    <form th:action="@{/trip/delete}" method="post" style="margin: 0;"
+                        onsubmit="return confirm('確定要刪除這個行程嗎？此動作無法復原！');">
+                        <input type="hidden" name="tripId" th:value="${trip.tripId}" />
+                        <button type="submit" class="btn btn-edit"
+                            style="color: #c95c5c; border-color: #c95c5c;">刪除</button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+
+
+    </div>
+
+</body>
+
+</html>
