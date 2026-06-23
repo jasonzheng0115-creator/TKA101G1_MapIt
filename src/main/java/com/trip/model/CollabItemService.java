@@ -1,4 +1,4 @@
-package com.trip.model; // 嚴格遵守：Service 放在 model 套件中
+package com.trip.model;
 
 import com.cust.model.CustVO;
 import com.cust.model.CustRepository;
