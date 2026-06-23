@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>建立新行程</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background: linear-gradient(160deg, #E8ECF1 0%, #F5F3F0 50%, #EAE8E4 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3D4F5F;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 背景裝飾圓圈 */
+        body::before {
+            content: '';
+            position: absolute;
+            width: 350px;
+            height: 350px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(123, 143, 161, 0.08) 0%, transparent 70%);
+            top: -80px;
+            left: -60px;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(155, 181, 201, 0.10) 0%, transparent 70%);
+            bottom: -40px;
+            right: -30px;
+            animation: float 6s ease-in-out infinite reverse;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        /* ===== 表單卡片 ===== */
+        .form-card {
+            background: rgba(255, 255, 255, 0.72);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(123, 143, 161, 0.12);
+            border-radius: 20px;
+            padding: 48px 40px;
+            width: 420px;
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 8px 32px rgba(90, 122, 138, 0.08);
+        }
+
+        .form-card h2 {
+            text-align: center;
+            font-size: 22px;
+            font-weight: 500;
+            color: #4A6274;
+            margin-bottom: 6px;
+        }
+
+        .form-subtitle {
+            text-align: center;
+            font-size: 13px;
+            font-weight: 300;
+            color: #8C9DAA;
+            margin-bottom: 32px;
+        }
+
+        /* ===== 表單欄位 ===== */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 400;
+            color: #7B8FA1;
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            font-size: 14px;
+            font-family: 'Noto Sans TC', sans-serif;
+            color: #3D4F5F;
+            background: rgba(255, 255, 255, 0.6);
+            border: 1.5px solid rgba(123, 143, 161, 0.2);
+            border-radius: 10px;
+            outline: none;
+            transition: all 0.3s ease;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #7B8FA1;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 0 0 3px rgba(123, 143, 161, 0.1);
+        }
+
+        .form-group input::placeholder {
+            color: #B4BCC3;
+            font-weight: 300;
+        }
+
+        /* 下拉選單的箭頭 */
+        .select-wrapper {
+            position: relative;
+        }
+
+        .select-wrapper::after {
+            content: '▾';
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #8C9DAA;
+            pointer-events: none;
+            font-size: 14px;
+        }
+
+        /* ===== 按鈕 ===== */
+        .btn-submit {
+            width: 100%;
+            padding: 13px;
+            font-size: 14px;
+            font-family: 'Noto Sans TC', sans-serif;
+            font-weight: 500;
+            color: #FFFFFF;
+            background: #7B8FA1;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+            margin-top: 8px;
+        }
+
+        .btn-submit:hover {
+            background: #6A7F91;
+            box-shadow: 0 4px 16px rgba(123, 143, 161, 0.25);
+            transform: translateY(-1px);
+        }
+
+        .btn-cancel {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            font-size: 13px;
+            font-weight: 300;
+            color: #8C9DAA;
+            text-decoration: none;
+            transition: color 0.3s ease;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-cancel:hover {
+            color: #5A7A8A;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="form-card">
+        <h2>規劃新旅程</h2>
+        <p class="form-subtitle">填寫基本資訊，開始你的冒險</p>
+
+        <form th:action="@{/trip/create}" th:object="${trip}" method="post">
+
+            <div class="form-group">
+                <label for="tripName">行程名稱</label>
+                <input type="text" id="tripName" th:field="*{tripName}" placeholder="例如：東京五天四夜櫻花祭" required>
+            </div>
+
+            <div class="form-group">
+                <label for="tripDate">出發日期</label>
+                <input type="date" id="tripDate" th:field="*{tripDate}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="tripStatus">隱私設定</label>
+                <div class="select-wrapper">
+                    <select id="tripStatus" th:field="*{tripStatus}">
+                        <option value="false">🔒 只有我與協作者可見（私有）</option>
+                        <option value="true">🌍 公開讓所有人參考</option>
+                    </select>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit">開始安排景點</button>
+        </form>
+
+        <a th:href="@{/trip/my-trips}" class="btn-cancel">← 取消，回我的行程</a>
+    </div>
+
+</body>
+
+</html>
