@@ -10,6 +10,85 @@
 		padding: 20px;
 	}
 	
+	.banner {
+		position: relative;       /* 讓banner裡的文字與搜尋框可以絕對定位疊在上面 */
+		width: 100%;
+		height: 380px;
+		background-size: cover;   /* 圖片比例自動縮放裁切，不變形、不拉伸 */
+		background-position: center center; /* 讓圖片上下左右精準置中 */
+		border-radius: 12px;      /* 讓大圖邊角帶有一點現代感的圓弧 */
+		overflow: hidden;         /* 確保遮罩薄紗不會超出圓角邊界 */
+		margin-bottom: 35px;      /* 拉開與下方商品卡片的距離 */
+	}
+	
+	/* 鋪在圖片上面的半透明遮罩（降低背景亮度，確保白色大字100%清晰） */
+	.banner-overlay {
+		position: absolute;
+		top: 0; left: 0; width: 100%; height: 100%;
+		background-color: rgba(0, 0, 0, 0.3); /* 30% 透明度的黑，兼顧畫面質感與文字辨識度 */
+	}
+	
+	/* 讓文字與搜尋框在 Banner 正中央絕對置中 */
+	.banner-content {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%); /* 上下左右置中 */
+		text-align: center;
+		width: 100%;
+		max-width: 550px;           /* 限制搜尋框的最大寬度 */
+		padding: 0 20px;
+		box-sizing: border-box;     /* 防止內距把容器撐大 */
+		z-index: 2;                 /* 確保站在遮罩薄紗的最前面 */
+	}
+	
+	/* 大標題字體樣式 */
+	.banner-content h2 {
+		color: white;
+		font-size: 32px;
+		font-weight: bold;
+		margin: 0 0 20px 0;
+		text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6); /* 幫白色文字貼上黑陰影 */
+		letter-spacing: 2px;      /* 讓中文單字之間有微小空隙 */
+	}
+	
+	/* 膠囊造型搜尋框的整體外殼 */
+	.search-input-wrapper {
+		display: flex;
+		background-color: white;
+		border-radius: 30px;       /* 半圓角膠囊外觀 */
+		padding: 6px 8px 6px 20px; /* 內部留白，讓左邊文字有空間 */
+		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2); /* 加上立體陰影，讓搜尋框「浮」在圖片之上 */
+		align-items: center;       /* 讓輸入框跟按鈕上下置中對齊 */
+	}
+	
+	/* 搜尋輸入框本體 */
+	.search-input-wrapper input {
+		flex: 1;                  /* 吃滿左邊剩下的所有寬度 */
+		border: none;
+		outline: none;            /* 拔掉滑鼠點擊時瀏覽器內建的黑邊框 */
+		font-size: 15px;
+		color: #333;
+		background: transparent;  /* 透明底，融合外殼的白色 */
+	}
+	
+	/* 搜尋按鈕的 */
+	.search-btn {
+		background-color: dodgerblue;
+		color: white;
+		border: none;
+		padding: 10px 26px;
+		border-radius: 25px;
+		font-size: 14px;
+		font-weight: bold;
+		cursor: pointer;
+		transition: background-color 0.2s;
+	}
+	
+	.search-btn:hover {
+		background-color: navy;   /* 滑鼠移上去時藍色變深 */
+	}
+	
 	.product-container {
 		display: flex;   /* 讓原本的div由上到下排列,變成左到右排列 */
 		flex-wrap: wrap; /* 允許自動換行 */
@@ -67,12 +146,77 @@
 	.but-btn:hover {
 		background-color: navy; /* 藍色瞬間變深一點點,讓使用者知道自己點到了 */
 	}
+	
+	/* --- 分頁外層容器 --- */
+	.pagination-container {
+		display: flex;
+		justify-content: center; /* 讓所有頁碼按鈕在網頁最下方水平置中 */
+		align-items: center;
+		gap: 8px;                /* 按鈕與按鈕之間的呼吸空隙 */
+		margin: 40px 0 20px 0;   /* 拉開與上方商品卡片、下方頁尾的距離 */
+	}
+	
+	/* 頁碼按鈕的平常狀態 */
+	.page-item {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 36px;
+		height: 36px;
+		padding: 0 10px;
+		border: 1px solid lightgray;
+		border-radius: 4px;
+		background-color: white;
+		color: #333;
+		text-decoration: none;
+		font-size: 14px;
+		font-weight: bold;
+		cursor: pointer;
+		transition: all 0.2s;
+	}
+	
+	/* 當滑鼠懸停 (:hover) 時變色 */
+	.page-item:hover:not(.active):not(.disabled) {
+		background-color: #f0f0f0;
+		border-color: darkgray;
+		color: black;
+	}
+	
+	/* 當前所在頁數（Active）變色 */
+	.page-item.active {
+		background-color: dodgerblue;
+		border-color: dodgerblue;
+		color: white;
+		cursor: default;
+	}
+	
+	/* 停用狀態（Disabled，例如第一頁的上一頁） */
+	.page-item.disabled {
+		background-color: #f5f5f5;
+		color: silver;
+		border-color: #e0e0e0;
+		pointer-events: none;    /* 取消所有點擊與滑鼠事件 */
+	}
+	
 </style>
 
 </head>
 <body>
 
-	<h1>精選旅遊商品</h1>
+	<div class="banner" th:style=" 'background-image: url(' + @{/images/banner.png} + ');'">
+		<div class="banner-overlay"></div>
+		
+		<div class="banner-content">
+			<h2>探索下一站，開啟你的專屬旅程</h2>
+			
+			<form th:action="@{/frontend/product/listAll}" method="GET">
+				<div class="search-input-wrapper">
+					<input type="text" name="keyword" th:value="${keyword}" placeholder="搜尋旅遊商品...">
+					<button type="submit" class="search-btn">搜尋</button>
+				</div>
+			</form>
+		</div>
+	</div>
 	
 	<div class="product-container">
 		<div class="product-card" th:each="prodVO : ${frontProdList}">
@@ -92,8 +236,58 @@
 			</div>
 		</div>
 	</div>
-
-
-
+	
+	<div class="pagination-container" th:if="${prodData != null and totalPages > 1 }">
+		
+		<a class="page-item" 
+			th:classappend="${currentPage == 1} ? 'disabled'" 
+			th:href="@{/frontend/product/listAll(page=1)}">
+			<< 首頁
+		</a>
+				<!-- 
+				1. classappend 在保留原本css樣式下，增加新的標籤 
+				2. (page=1)->(參數名=參數值) thymeleaf可以直接轉換為 ?page=1
+				-->
+	
+		<a class="page-item"
+			th:classappend="${currentPage == 1} ? 'disabled'"
+			th:href="@{/frontend/product/listAll(page=${currentPage - 1})}">
+			< 上一頁
+		</a>
+		
+		<th:block th:with="startPage=${currentPage - 2 < 1 ? 1 : currentPage - 2}, 
+							endPage=${currentPage + 2 > totalPages ? totalPages : currentPage + 2}">
+			
+			<a class="page-item"
+				th:each="i : ${#numbers.sequence(startPage, (endPage == 0 ? 1 : endPage))}"
+				th:classappend="${i == currentPage} ? 'active'"
+				th:href="@{/frontend/product/listAll(page=${i})}"
+				th:text="${i}">
+				1
+			</a>
+		
+		</th:block>
+				<!-- 
+					1. <th:block> thymeleaf 的隱形標籤,不是HTML的,所以要加th:
+						純粹可以寫 th:with、th:if 或 th:each 邏輯而存在的「虛擬容器」
+				 	2. th:with 的意思是：「在 HTML 現場，臨時宣告一個（或多個）只在這個區域內有效的局部變數。」
+				 		這裡宣告了兩個臨時變數(小幫手): startPage & endPage
+				 	3. 在 Thymeleaf 裡面，所有以 # 開頭的都是內建的「外掛工具箱」。#numbers 就是專門拿來處理數字、算術的工具箱。
+				 	4. .sequence(起點, 終點) 在英文裡是「數列、連續序列」的意思，搭配#numbers「給起點數字和終點數字，就會自動印出連號數字。」
+				 -->
+		
+		<a class="page-item"
+			th:classappend="${currentPage == totalPages} ? 'disabled'"
+			th:href="@{/frontend/product/listAll(page=${currentPage + 1})}">
+			下一頁 >
+		</a>
+		
+		<a class="page-item"
+			th:classappend="${currentPage == totalPages} ? 'disabled'"
+			th:href="@{/frontend/product/listAll(page=${totalPages})}">
+			末頁 >>
+		</a>
+	</div>
+	
 </body>
 </html>

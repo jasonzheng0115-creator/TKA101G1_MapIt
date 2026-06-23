@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>新增應付帳款</title>
+    <style>.error { color: red; font-size: 14px; }</style>
+</head>
+<body>
+
+    <h2>➕ 新增應付帳款</h2>
+    <a th:href="@{/ap/select_page}">⬅️ 回首頁</a>
+    <br/><br/>
+
+    <form th:action="@{/ap/insert}" th:object="${apVO}" method="post">
+        
+        <div>
+            <label>選擇廠商：</label>
+            <select name="splrVO.supplierId">
+                <option value="">-- 請選擇廠商 --</option>
+                <option th:each="supplier : ${supplierList}" 
+                		th:value="${supplier.supplierId}" 
+                		th:text="${supplier.supplierId + ' - ' + supplier.supplierName}"
+                		th:selected="${apVO.splrVO != null && supplier.supplierId == apVO.splrVO.supplierId}"></option>
+            </select>
+        </div>
+        <br/>
+
+        <div>
+            <label>應付金額：</label>
+            <input type="number" th:field="*{amountPayable}" />
+            <span class="error" th:if="${#fields.hasErrors('amountPayable')}" th:errors="*{amountPayable}"></span>
+        </div>
+        <br/>
+
+        <div>
+            <label>付款狀態：</label>
+            <input type="radio" th:field="*{apStatus}" value="true" />已付款
+            <input type="radio" th:field="*{apStatus}" value="false" />未付款
+            <span class="error" th:if="${#fields.hasErrors('apStatus')}" th:errors="*{apStatus}"></span>
+        </div>
+        <br/>
+
+        <div>
+            <label>帳單月份 (YYYY-MM)：</label>
+            <input type="text" th:field="*{billMonth}" placeholder="例如: 2026-06"/>
+            <span class="error" th:if="${#fields.hasErrors('billMonth')}" th:errors="*{billMonth}"></span>
+        </div>
+        <br/>
+
+        <div>
+            <label>付款日期：</label>
+            <input type="date" th:field="*{paymentDate}" />
+        </div>
+        <br/>
+
+        <button type="submit">送出新增</button>
+    </form>
+
+</body>
+</html>

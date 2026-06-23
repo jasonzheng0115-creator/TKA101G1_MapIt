@@ -149,13 +149,39 @@
 		color: silver;
 		cursor: not-allowed; /* 滑鼠移上去顯示禁止符號 */
 	}
-
+	
+	.clear-btn {
+		background-color: #FFF0F0;
+		color: crimson;
+		border: 1px solid crimson;
+		padding: 6px 14px;
+		border-radius: 4px;
+		cursor: pointer;
+		font-size: 14px;
+		font-weight: bold;
+		transition: all 0.2s
+	}
+	
+	.clear-btn:hover {
+		background-color: crimson;
+		color: white;
+	}
 
 </style>
 </head>
 <body>
-
-	<h1>購物車商品明細</h1>
+	
+	<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+		<h1 style="margin: 0;">購物車商品明細</h1>
+		
+		<form th:if="${not #lists.isEmpty(cartList)}" th:action="@{/cart/clear}" method="POST" style="margin: 0;">
+			<button type="submit" class="clear-btn">
+				🗑️ 清空購物車
+			</button>
+		</form>
+	
+	</div>
+		
 	
 	<div class="cart-container" th:if="${not #lists.isEmpty(cartList)}">
 	
@@ -231,6 +257,5 @@
     </div>
 
 	
- 
 </body>
 </html>

@@ -51,4 +51,8 @@ public class ProdService {
 		return repository.findByCompositeQuery(trimname, supplierId);
 	}
 	
+	public Page<ProdVO> gerProductByKeyword(String keyword, Pageable pageable) {
+		return repository.findByProductNameContaining(keyword, pageable);
+	}
+	
 }
