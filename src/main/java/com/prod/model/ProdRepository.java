@@ -22,4 +22,6 @@ public interface ProdRepository extends JpaRepository<ProdVO, Integer> {
 	List<ProdVO> findByCompositeQuery(
 			@Param("name") String productName, 
 			@Param("supplierId") Integer supplierId);
+	
+	Page<ProdVO> findByProductNameContaining(String productName, Pageable pageable);
 }

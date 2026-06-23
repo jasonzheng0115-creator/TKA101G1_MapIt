@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>應付帳款管理首頁</title>
+    <style>
+        .box-container { display: flex; gap: 20px; margin-top: 20px; }
+        .status-box { width: 150px; height: 80px; border: 2px solid #007bff; border-radius: 8px; display: flex; align-items: center; justify-content: center; text-decoration: none; color: #007bff; font-weight: bold; font-size: 18px; }
+        .status-box:hover { background-color: #007bff; color: white; }
+        form { margin-top: 15px; padding: 15px; border: 1px solid #ccc; width: 400px; }
+        .form-group { margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+    <h2>應付帳款管理系統</h2>
+    
+    <div>
+        <a th:href="@{/ap/addAp}">➕ 新增應付帳款</a> | 
+        <a th:href="@{/ap/listAllAp}">📋 顯示所有應付帳款</a>
+    </div>
+
+    <hr/>
+
+    <h3>🔍 複合查詢</h3>
+    <form th:action="@{/ap/listApByCompositeQuery}" method="post">
+        <div class="form-group">
+            <label>廠商編號：</label>
+            <select name="supplierId">
+                <option value="">-- 請選擇廠商 --</option>
+                <option th:each="supplier : ${supplierList}" 
+                        th:value="${supplier.supplierId}" 
+                        th:text="${supplier.supplierId + ' - ' + supplier.supplierName}"></option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label>廠商名稱：</label>
+            <input type="text" name="supplierName" placeholder="請輸入廠商名稱關鍵字...">
+        </div>
+        
+        <button type="submit">開始查詢</button>
+    </form>
+
+    <hr/>
+
+    <h3>Status 狀態快速查詢</h3>
+    <div class="box-container">
+        <a th:href="@{/ap/getByApStatus(apStatus=true)}" class="status-box">🟢 已付款</a>
+        <a th:href="@{/ap/getByApStatus(apStatus=false)}" class="status-box" style="border-color: #dc3545; color: #dc3545;">🔴 未付款</a>
+    </div>
+
+</body>
+</html>

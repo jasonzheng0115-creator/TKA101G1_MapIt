@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>修改應付帳款</title>
+    <style>
+        .error { color: red; font-size: 14px; }
+        form { margin-top: 15px; padding: 15px; width: 400px; }
+        .form-group { margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+
+    <h2>✏️ 修改應付帳款</h2>
+    <a th:href="@{/ap/select_page}">⬅️ 回首頁</a>
+    <br/><br/>
+
+    <form th:action="@{/ap/update}" th:object="${apVO}" method="post">
+        
+        <input type="hidden" th:field="*{apId}" />
+
+        <div class="form-group">
+            <label>選擇廠商：</label>
+            <select name="splrVO.supplierId">
+                <option value="">-- 請選擇廠商 --</option>
+                <option th:each="supplier : ${supplierList}" 
+                        th:value="${supplier.supplierId}" 
+                        th:text="${supplier.supplierId + ' - ' + supplier.supplierName}"></option>
+            </select>
+            <span class="error" th:if="${#fields.hasErrors('splrVO.supplierId')}" th:errors="*{splrVO.supplierId}"></span>
+        </div>
+
+        <div class="form-group">
+            <label>應付金額：</label>
+            <input type="number" th:field="*{amountPayable}" />
+            <span class="error" th:if="${#fields.hasErrors('amountPayable')}" th:errors="*{amountPayable}"></span>
+        </div>
+
+        <div class="form-group">
+            <label>付款狀態：</label>
+            <input type="radio" th:field="*{apStatus}" value="true" />已付款
+            <input type="radio" th:field="*{apStatus}" value="false" />未付款
+            <span class="error" th:if="${#fields.hasErrors('apStatus')}" th:errors="*{apStatus}"></span>
+        </div>
+
+        <div class="form-group">
+            <label>帳單月份 (YYYY-MM)：</label>
+            <input type="text" th:field="*{billMonth}" />
+            <span class="error" th:if="${#fields.hasErrors('billMonth')}" th:errors="*{billMonth}"></span>
+        </div>
+
+        <div class="form-group">
+            <label>付款日期：</label>
+            <input type="date" th:field="*{paymentDate}" />
+            <span class="error" th:if="${#fields.hasErrors('paymentDate')}" th:errors="*{paymentDate}"></span>
+        </div>
+
+        <button type="submit">送出修改</button>
+    </form>
+
+</body>
+</html>

@@ -66,6 +66,9 @@ public class ProdVO implements Serializable{
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "SUPPLIER_ID", referencedColumnName = "SUPPLIER_ID")
 	private SplrVO splrVO;
+	
+	public ProdVO() {
+	}
 
 	public Integer getProductId() {
 		return productId;

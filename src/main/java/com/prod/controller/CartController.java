@@ -33,7 +33,7 @@ public class CartController {
 		return "cart:member:1"; // 驗收 Demo 先寫死 1 號會員
 	}
 	
-	// 1. 加入購物車 (數量自動累加)
+	// 加入購物車 (數量自動累加)
 	@PostMapping("/add")
 	public String addToCart(
 			@RequestParam("productId") Integer productId, 
@@ -49,7 +49,7 @@ public class CartController {
 		return "redirect:/cart/show";
 	}
 	
-	// 2. 顯示購物車 ( Redis + Function 資料轉換 Stream)
+	// 顯示購物車 ( Redis + Function 資料轉換 Stream)
 	@GetMapping("/show")
 	public String showCart(ModelMap model) {
 		String key = getCartKey();
@@ -83,7 +83,7 @@ public class CartController {
 		return "front-end/cart/cart_list";
 	}
 	
-	// 3. 修改數量
+	// 修改數量
 	@PostMapping("/update")
 	public String updateCart(
 			@RequestParam("productId") Integer productId, 
@@ -101,12 +101,20 @@ public class CartController {
 		return "redirect:/cart/show";
 	}
 	
-	// 4. 手動刪除
+	// 手動刪除
 	@PostMapping("/delete")
 	public String deleteFormCart(@RequestParam("productId") Integer productId) {
 		String key = getCartKey();
 		redisTemplate.opsForHash().delete(key, String.valueOf(productId));
 		return "redirect:/cart/show";
+	}
+	
+	// 一鍵清空購物車
+	@PostMapping("/clear")
+	public String clearCart() {
+		String key = getCartKey();      // 取得cart:member:1
+		redisTemplate.delete(key);      // 核心:直接把這個會員的 Redis 號碼箱整箱刪除
+		return "redirect:/cart/show";   // 刪完後重整購物車畫面
 	}
 	
 }
