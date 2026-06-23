@@ -21,12 +21,12 @@ public class CustCompositeQuery {
 		
 		Predicate predicate = null;
 		
-		if("cust_account".equals(columnName) || "cust_name".equals(columnName))
+		if("custAccount".equals(columnName) || "custName".equals(columnName))
 		    // 呼叫builder,把root裝的資料(root.get(columnName))拿出來,模糊比對(like),回傳(predicate)
 			predicate = builder.like(root.get(columnName), "%"+value+"%");
-		else if("cust_right".equals(columnName))
+		else if("custRight".equals(columnName))
 			predicate = builder.equal(root.get(columnName), String.valueOf(value));
-		else if("cust_use".equals(columnName))
+		else if("custUse".equals(columnName))
 			predicate = builder.equal(root.get(columnName),String.valueOf(value));
 		
 		
@@ -65,7 +65,7 @@ public class CustCompositeQuery {
 		
 		//不接受List，只接受Array，所以使用.toArray(...)，變成標準長度的陣列，放進where條件
 		criteriaQuery.where(predicateList.toArray(new Predicate[predicateList.size()]));
-		criteriaQuery.orderBy(builder.asc(root.get("cust_id")));
+		criteriaQuery.orderBy(builder.asc(root.get("custId")));
 		
 		Query query =em.createQuery(criteriaQuery);
 		list = query.getResultList();

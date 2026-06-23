@@ -105,8 +105,8 @@
         <!-- th:action 去找 Controller，以及 th:object 綁定資料箱子 -->
         <form th:action="@{/customer/updateProfile}" method="post" th:object="${loginCust}" enctype="multipart/form-data">
 	        <!-- 放一次即可，因為使用者不能修改帳號密碼，所以讓舊資料原封不動送進SQL檢查 -->
-			<input type="hidden" th:field="*{cust_account}">
-			<input type="hidden" th:field="*{cust_password}">     
+			<input type="hidden" th:field="*{custAccount}">
+			<input type="hidden" th:field="*{custPassword}">     
             <div class="error-message" th:if="${errorMsg != null}" th:text="${errorMsg}"></div>
          	
          	<div class="form-group">
@@ -114,7 +114,7 @@
          	<div class="avatar-container">
          		<!-- 靠th:src判斷，如果資料庫裡有路徑就顯示，否則顯示預設頭像 -->
          		<img id="avatarPreview" class="avatar-preview"
-         			 th:src="${loginCust.cust_img != null ? loginCust.cust_img:'/images/default_custAvatar.jpg'}">
+         			 th:src="${loginCust.custImg != null ? loginCust.custImg:'/images/default_custAvatar.jpg'}">
          	</div>
          	<!-- 檔案上傳按鈕 
 	   		accept="image/*":限制只能選取圖片檔案
@@ -127,55 +127,55 @@
 				
             <div class="form-group">
                 <label>姓名：</label>
-                <input type="text" th:field="*{cust_name}" placeholder="請輸入姓名">
-                <span class="field-error" th:if="${#fields.hasErrors('cust_name')}" th:errors="*{cust_name}"></span>
+                <input type="text" th:field="*{custName}" placeholder="請輸入姓名">
+                <span class="field-error" th:if="${#fields.hasErrors('custName')}" th:errors="*{custName}"></span>
 				       
             </div>
 
             <div class="form-group">
                 <label>性別：</label>
                 <div class="radio-group">
-                    <label><input type="radio" th:field="*{cust_sex}" value="M"> 男性</label>
-                    <label><input type="radio" th:field="*{cust_sex}" value="F"> 女性</label>
-                    <label><input type="radio" th:field="*{cust_sex}" value="不透露"> 不透露</label>
+                    <label><input type="radio" th:field="*{custSex}" value="M"> 男性</label>
+                    <label><input type="radio" th:field="*{custSex}" value="F"> 女性</label>
+                    <label><input type="radio" th:field="*{custSex}" value="不透露"> 不透露</label>
                 </div>
-                <span class="field-error" th:if="${#fields.hasErrors('cust_sex')}" th:errors="*{cust_sex}"></span>          
+                <span class="field-error" th:if="${#fields.hasErrors('custSex')}" th:errors="*{custSex}"></span>          
             </div>
 			
 			<div class="form-group">
                 <label>電話：</label>
-                <input type="text" th:field="*{cust_tel}" placeholder="請輸入手機號碼">  
-                <span class="field-error" th:if="${#fields.hasErrors('cust_tel')}" th:errors="*{cust_tel}"></span>
+                <input type="text" th:field="*{custTel}" placeholder="請輸入手機號碼">  
+                <span class="field-error" th:if="${#fields.hasErrors('custTel')}" th:errors="*{custTel}"></span>
             </div>
             
             <div class="form-group">
                 <label>電子信箱：</label>
-                <input type="text" th:field="*{cust_email}" placeholder="請輸入電子信箱">   
-                <span class="field-error" th:if="${#fields.hasErrors('cust_email')}" th:errors="*{cust_email}"></span>    
+                <input type="text" th:field="*{custEmail}" placeholder="請輸入電子信箱">   
+                <span class="field-error" th:if="${#fields.hasErrors('custEmail')}" th:errors="*{custEmail}"></span>    
             </div>
             
             <div class="form-group">
                 <label>身分證字號：</label>
-                <input type="text" th:field="*{cust_id_card}" placeholder="請輸入身分證字號">     
-                <span class="field-error" th:if="${#fields.hasErrors('cust_id_card')}" th:errors="*{cust_id_card}"></span>     
+                <input type="text" th:field="*{custIdCard}" placeholder="請輸入身分證字號">     
+                <span class="field-error" th:if="${#fields.hasErrors('custIdCard')}" th:errors="*{custIdCard}"></span>     
             </div>
             
             <div class="form-group">
                 <label>生日：</label>
-                <input type="text" th:field="*{cust_birthday}" placeholder="請輸入生日">
-                <span class="field-error" th:if="${#fields.hasErrors('cust_birthday')}" th:errors="*{cust_birthday}"></span>               
+                <input type="text" th:field="*{custBirthday}" placeholder="請輸入生日">
+                <span class="field-error" th:if="${#fields.hasErrors('custBirthday')}" th:errors="*{custBirthday}"></span>               
             </div>
             
             <div class="form-group">
                 <label>信用卡號：</label>
-                <input type="text" th:field="*{cust_card}" placeholder="請輸入信用卡號">
-                <span class="field-error" th:if="${#fields.hasErrors('cust_card')}" th:errors="*{cust_card}"></span>   
+                <input type="text" th:field="*{custCard}" placeholder="請輸入信用卡號">
+                <span class="field-error" th:if="${#fields.hasErrors('custCard')}" th:errors="*{custCard}"></span>   
             </div>
             
             <div class="form-group">
                 <label>聯絡地址：</label>
-                <input type="text" th:field="*{cust_address}" placeholder="請輸入聯絡地址">
-                <span class="field-error" th:if="${#fields.hasErrors('cust_address')}" th:errors="*{cust_address}"></span>             
+                <input type="text" th:field="*{custAddress}" placeholder="請輸入聯絡地址">
+                <span class="field-error" th:if="${#fields.hasErrors('custAddress')}" th:errors="*{custAddress}"></span>             
             </div>
 			
 			

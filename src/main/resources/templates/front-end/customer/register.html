@@ -144,26 +144,26 @@
             
             <!-- 帳號 -->
             <div class="form-group">
-                <label for="cust_account">會員帳號</label>
-                <!-- 🎯 th:field="*{cust_account}" 等同於 id="cust_account" name="cust_account" 並且會自動帶入舊值 -->
-                <input type="text" th:field="*{cust_account}" placeholder="請輸入 3~32 碼大小寫英文或數字">
+                <label for="custAccount">會員帳號</label>
+                <!-- 🎯 th:field="*{custAccount}" 等同於 id="custAccount" name="custAccount" 並且會自動帶入舊值 -->
+                <input type="text" th:field="*{custAccount}" placeholder="請輸入 3~32 碼大小寫英文或數字">
                 <!-- 🎯 如果此欄位有驗證錯誤，則印出 VO 內的 message -->
-                <span class="error-text" th:if="${#fields.hasErrors('cust_account')}" th:errors="*{cust_account}"></span>
+                <span class="error-text" th:if="${#fields.hasErrors('custAccount')}" th:errors="*{custAccount}"></span>
             </div>
 
             <!-- 密碼 -->
             <div class="form-group">
-                <label for="cust_password">會員密碼</label>
+                <label for="custPassword">會員密碼</label>
                 <div class="password-wrapper"> <!-- 新增wrapper外框，方便做定位 -->
-                <input type="password" th:field="*{cust_password}" placeholder="8~20碼，必須包含大小寫英文字母">
-                <span class="error-text" th:if="${#fields.hasErrors('cust_password')}" th:errors="*{cust_password}"></span>
+                <input type="password" th:field="*{custPassword}" placeholder="8~20碼，必須包含大小寫英文字母">
+                <span class="error-text" th:if="${#fields.hasErrors('custPassword')}" th:errors="*{custPassword}"></span>
             </div>
 
             <!-- 姓名 -->
             <div class="form-group">
-                <label for="cust_name">真實姓名</label>
-                <input type="text" th:field="*{cust_name}" placeholder="請輸入您的姓名">
-                <span class="error-text" th:if="${#fields.hasErrors('cust_name')}" th:errors="*{cust_name}"></span>
+                <label for="custName">真實姓名</label>
+                <input type="text" th:field="*{custName}" placeholder="請輸入您的姓名">
+                <span class="error-text" th:if="${#fields.hasErrors('custName')}" th:errors="*{custName}"></span>
             </div>
 
             <!-- 性別 -->
@@ -171,51 +171,51 @@
                 <label>性別</label>
                 <div class="radio-group">
                     <label class="radio-option">
-                        <input type="radio" th:field="*{cust_sex}" value="M"> 男
+                        <input type="radio" th:field="*{custSex}" value="M"> 男
                     </label>
                     <label class="radio-option">
-                        <input type="radio" th:field="*{cust_sex}" value="F"> 女
+                        <input type="radio" th:field="*{custSex}" value="F"> 女
                     </label>
                     <label class="radio-option">
-                        <input type="radio" th:field="*{cust_sex}" value="不透露"> 不透露
+                        <input type="radio" th:field="*{custSex}" value="不透露"> 不透露
                     </label>
                 </div>
-                <span class="error-text" th:if="${#fields.hasErrors('cust_sex')}" th:errors="*{cust_sex}"></span>
+                <span class="error-text" th:if="${#fields.hasErrors('custSex')}" th:errors="*{custSex}"></span>
             </div>
 
             <!-- 電話 -->
             <div class="form-group">
-                <label for="cust_tel">手機號碼</label>
-                <input type="tel" th:field="*{cust_tel}" placeholder="例如: 0912345678">
-                <span class="error-text" th:if="${#fields.hasErrors('cust_tel')}" th:errors="*{cust_tel}"></span>
+                <label for="custTel">手機號碼</label>
+                <input type="tel" th:field="*{custTel}" placeholder="例如: 0912345678">
+                <span class="error-text" th:if="${#fields.hasErrors('custTel')}" th:errors="*{custTel}"></span>
             </div>
 
             <!-- 電子郵件 -->
             <div class="form-group">
-                <label for="cust_email">電子郵件 (Email)</label>
-                <input type="text" th:field="*{cust_email}" placeholder="例如: user@example.com">
-                <span class="error-text" th:if="${#fields.hasErrors('cust_email')}" th:errors="*{cust_email}"></span>
+                <label for="custEmail">電子郵件 (Email)</label>
+                <input type="text" th:field="*{custEmail}" placeholder="例如: user@example.com">
+                <span class="error-text" th:if="${#fields.hasErrors('custEmail')}" th:errors="*{custEmail}"></span>
             </div>
 
             <!-- 身分證字號 -->
             <div class="form-group">
-                <label for="cust_id_card">身分證字號</label>
-                <input type="text" th:field="*{cust_id_card}" placeholder="例如: A123456789">
-                <span class="error-text" th:if="${#fields.hasErrors('cust_id_card')}" th:errors="*{cust_id_card}"></span>
+                <label for="custIdCard">身分證字號</label>
+                <input type="text" th:field="*{custIdCard}" placeholder="例如: A123456789">
+                <span class="error-text" th:if="${#fields.hasErrors('custIdCard')}" th:errors="*{custIdCard}"></span>
             </div>
 
             <!-- 生日 -->
             <div class="form-group">
-                <label for="cust_birthday">出生日期</label>
-                <input type="date" th:field="*{cust_birthday}">
-                <span class="error-text" th:if="${#fields.hasErrors('cust_birthday')}" th:errors="*{cust_birthday}"></span>
+                <label for="custBirthday">出生日期</label>
+                <input type="date" th:field="*{custBirthday}">
+                <span class="error-text" th:if="${#fields.hasErrors('custBirthday')}" th:errors="*{custBirthday}"></span>
             </div>
 
             <!-- 地址 -->
             <div class="form-group">
-                <label for="cust_address">聯絡地址</label>
-                <input type="text" th:field="*{cust_address}" placeholder="請輸入您的地址(選填)">
-                <span class="error-text" th:if="${#fields.hasErrors('cust_address')}" th:errors="*{cust_address}"></span>
+                <label for="custAddress">聯絡地址</label>
+                <input type="text" th:field="*{custAddress}" placeholder="請輸入您的地址(選填)">
+                <span class="error-text" th:if="${#fields.hasErrors('custAddress')}" th:errors="*{custAddress}"></span>
             </div>
 
             <button type="submit" class="submit-btn">立即註冊</button>
