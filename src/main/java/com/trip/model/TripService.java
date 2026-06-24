@@ -20,6 +20,9 @@ public class TripService {
     @Autowired
     private CollabItemRepository collabItemRepository;
 
+    @Autowired
+    private CollabItemService collabItemService;
+
     // 1. 取得特定會員擁有的所有行程
     public List<TripVO> getTripsByCustomer(CustVO custVO) {
         return tripRepository.findByCustVO(custVO);
@@ -75,5 +78,27 @@ public class TripService {
         // 第三步：最後才刪行程本身（TRIP）
         tripRepository.deleteById(tripId);
     }
+
+    // 5. 更新行程基本資訊
+    @Transactional
+    public void updateTripInfo(Integer tripId, String tripName, java.sql.Date tripDate, Boolean tripStatus, Integer loggedInCustId) {
+        // 找出要更新的行程
+        TripVO trip = tripRepository.findById(tripId)
+                .orElseThrow(() -> new RuntimeException("找不到行程"));
+
+        // 權限防護：要有編輯權限才可以修改 (包含擁有者與協作者)
+        if (!collabItemService.hasEditPermission(tripId, loggedInCustId)) {
+            throw new RuntimeException("你沒有權限修改此行程！");
+        }
+
+        // 更新資料
+        trip.setTripName(tripName);
+        trip.setTripDate(tripDate);
+        trip.setTripStatus(tripStatus);
+
+        // 儲存進資料庫
+        tripRepository.save(trip);
+    }
+
 
 }

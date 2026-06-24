@@ -1,4 +1,4 @@
-package com.trip.model;
+package com.trip.model; // 嚴格遵守：Service 放在 model 套件中
 
 import com.cust.model.CustVO;
 import com.cust.model.CustRepository;
@@ -76,4 +76,27 @@ public class CollabItemService {
     public void removeAllCollaboratorsByTripId(Integer tripId) {
         collabItemRepository.deleteByTripVO_TripId(tripId);
     }
+
+    // 6. 透過「帳號」新增一位共同編輯者
+    @Transactional
+    public CollabItemVO addCollaboratorByAccount(Integer tripId, String custAccount, Integer loggedInCustId) {
+
+        // 權限檢查：只有行程「擁有者」才能新增朋友！
+        TripVO trip = tripRepository.findById(tripId)
+                .orElseThrow(() -> new RuntimeException("找不到行程"));
+
+        if (!trip.getCustVO().getCustId().equals(loggedInCustId)) {
+            throw new RuntimeException("只有行程建立者可以管理共同編輯人！");
+        }
+
+        // 透過我們剛剛加的魔法方法，用字串去資料庫抓出朋友的會員實體
+        CustVO friend = custRepository.findByAccount(custAccount);
+        if (friend == null) {
+            throw new RuntimeException("找不到此帳號，請確認朋友的帳號是否正確！");
+        }
+
+        // 直接呼叫我們在階段 A 寫好的方法 (原本就具備防呆機制，例如不能重複加)
+        return addCollaborator(tripId, friend.getCustId());
+    }
+
 }
