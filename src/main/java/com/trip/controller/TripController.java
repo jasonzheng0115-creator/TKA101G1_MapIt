@@ -25,18 +25,18 @@ public class TripController {
     // 1. 顯示「我的行程」
     @GetMapping("/my-trips")
     public String showMyTrips(HttpSession session, Model model) {
-        CustVO loggedInUser = (CustVO) session.getAttribute("loggedInUser");
+        CustVO loginCust = (CustVO) session.getAttribute("loginCust");
         // ★ 如果沒有登入，導向「請先登入」提示頁面
-        if (loggedInUser == null) {
+        if (loginCust == null) {
             // 把「紙條」放進包裹，告訴提示頁面：登入後要跳回 /trip/my-trips
             model.addAttribute("redirectURL", "/trip/my-trips");
             return "front-end/trip/my-trips";
         }
 
         // 把髒活交給 Service
-        List<TripVO> myTrips = tripService.getTripsByCustomer(loggedInUser);
+        List<TripVO> myTrips = tripService.getTripsByCustomer(loginCust);
 
-        model.addAttribute("userName", loggedInUser.getCustName());
+        model.addAttribute("userName", loginCust.getCustName());
         model.addAttribute("tripList", myTrips);
         return "front-end/trip/my-trips";
     }
@@ -44,7 +44,7 @@ public class TripController {
     // 2. 顯示「新增行程」的表單
     @GetMapping("/create")
     public String showCreateTripForm(HttpSession session, Model model) {
-        if (session.getAttribute("loggedInUser") == null)
+        if (session.getAttribute("loginCust") == null)
             return "redirect:/login";
 
         model.addAttribute("trip", new TripVO());
@@ -54,12 +54,12 @@ public class TripController {
     // 3. 處理「新增行程」的存檔動作
     @PostMapping("/create")
     public String processCreateTrip(TripVO trip, HttpSession session) {
-        CustVO loggedInUser = (CustVO) session.getAttribute("loggedInUser");
-        if (loggedInUser == null)
+        CustVO loginCust = (CustVO) session.getAttribute("loginCust");
+        if (loginCust == null)
             return "redirect:/login";
 
         // 將存檔與綁定使用者的髒活交給 Service，並取得包含 ID 的新行程
-        TripVO savedTrip = tripService.createTrip(trip, loggedInUser);
+        TripVO savedTrip = tripService.createTrip(trip, loginCust);
 
         return "redirect:/trip/edit/" + savedTrip.getTripId();
     }
@@ -67,12 +67,12 @@ public class TripController {
     // 4. 進入特定行程的編輯頁面
     @GetMapping("/edit/{id}")
     public String showEditTripPage(@PathVariable("id") Integer tripId, HttpSession session, Model model) {
-        CustVO loggedInUser = (CustVO) session.getAttribute("loggedInUser");
-        if (loggedInUser == null)
+        CustVO loginCust = (CustVO) session.getAttribute("loginCust");
+        if (loginCust == null)
             return "redirect:/login";
 
         // 把尋找行程、檢查權限的複雜邏輯全部發包給 Service
-        TripVO trip = tripService.getTripByIdAndOwner(tripId, loggedInUser.getCustId());
+        TripVO trip = tripService.getTripByIdAndOwner(tripId, loginCust.getCustId());
 
         // 如果 Service 說找不到或沒權限 (回傳 null)，就踢回列表頁
         if (trip == null) {
@@ -87,14 +87,14 @@ public class TripController {
     @PostMapping("/delete")
     public String deleteTrip(@RequestParam("tripId") Integer tripId, HttpSession session) {
         // 權限檢查：確認有登入
-        CustVO loggedInUser = (CustVO) session.getAttribute("loggedInUser");
-        if (loggedInUser == null) {
+        CustVO loginCust = (CustVO) session.getAttribute("loginCust");
+        if (loginCust == null) {
             return "redirect:/login";
         }
 
         try {
             // 呼叫 Service 執行刪除邏輯 (裡面包含了防呆與刪除子表)
-            tripService.deleteTrip(tripId, loggedInUser.getCustId());
+            tripService.deleteTrip(tripId, loginCust.getCustId());
         } catch (RuntimeException e) {
             // 如果 Service 丟出錯誤（例如：找不到行程，或是這個人不是擁有者）
             // 可以選擇印出錯誤，然後導回列表頁
