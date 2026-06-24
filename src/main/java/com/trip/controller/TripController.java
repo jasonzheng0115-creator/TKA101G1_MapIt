@@ -22,6 +22,9 @@ public class TripController {
     @Autowired
     private TripService tripService;
 
+    @Autowired
+    private com.trip.model.CollabItemService collabItemService;
+
     // 1. 顯示「我的行程」
     @GetMapping("/my-trips")
     public String showMyTrips(HttpSession session, Model model) {
@@ -37,6 +40,8 @@ public class TripController {
         List<TripVO> myTrips = tripService.getTripsByCustomer(loginCust);
 
         model.addAttribute("userName", loginCust.getCustName());
+        // 將目前登入的會員 ID 傳給前端，用來判斷行程卡片要顯示「刪除」還是「退出編輯」
+        model.addAttribute("loginCustId", loginCust.getCustId());
         model.addAttribute("tripList", myTrips);
         return "front-end/trip/my-trips";
     }
@@ -71,15 +76,17 @@ public class TripController {
         if (loginCust == null)
             return "redirect:/login";
 
-        // 把尋找行程、檢查權限的複雜邏輯全部發包給 Service
-        TripVO trip = tripService.getTripByIdAndOwner(tripId, loginCust.getCustId());
+        // 改呼叫我們放寬權限的方法，傳入「行程ID」與「登入者會員ID」
+        TripVO trip = tripService.getTripByIdAndPermission(tripId, loginCust.getCustId());
 
-        // 如果 Service 說找不到或沒權限 (回傳 null)，就踢回列表頁
+        // 如果找不到行程或沒有權限，踢回列表頁
         if (trip == null) {
             return "redirect:/trip/my-trips";
         }
 
         model.addAttribute("trip", trip);
+        // 新增這行：將目前登入的會員 ID 傳給編輯頁，用來判定是否顯示管理協作者的權限
+        model.addAttribute("loginCustId", loginCust.getCustId());
         return "front-end/trip/edit-trip";
     }
 
@@ -102,6 +109,26 @@ public class TripController {
         }
 
         // 刪除成功（或失敗）後，都重新導回「我的行程」列表頁
+        return "redirect:/trip/my-trips";
+    }
+
+    // 6. 退出行程協作 (接收來自「我的行程」列表中，協作者卡片的 POST 請求)
+    @PostMapping("/exit-collab")
+    public String exitCollab(@RequestParam("tripId") Integer tripId, HttpSession session) {
+        // 權限檢查：是否登入
+        CustVO loginCust = (CustVO) session.getAttribute("loginCust");
+        if (loginCust == null) {
+            return "redirect:/login";
+        }
+
+        try {
+            // 呼叫服務層方法，傳入「行程ID」與「目前登入者會員ID」進行刪除
+            collabItemService.exitCollaboration(tripId, loginCust.getCustId());
+        } catch (RuntimeException e) {
+            System.out.println("退出協作失敗：" + e.getMessage());
+        }
+
+        // 完成退出後，將瀏覽器重新導向回「我的行程」列表頁
         return "redirect:/trip/my-trips";
     }
 
