@@ -53,13 +53,13 @@ public class TripItemApiController {
     // 3. 刪除單一景點明細
     @DeleteMapping("/{itemId}")
     public ResponseEntity<?> deleteTripItem(@PathVariable Integer itemId, HttpSession session) {
-        CustVO loggedInUser = (CustVO) session.getAttribute("loggedInUser");
-        if (loggedInUser == null) {
+        CustVO loginCust = (CustVO) session.getAttribute("loginCust");
+        if (loginCust == null) {
             return ResponseEntity.status(401).body("請先登入"); // 401 未授權
         }
 
         try {
-            tripItemService.deleteTripItem(itemId, loggedInUser.getCustId());
+            tripItemService.deleteTripItem(itemId, loginCust.getCustId());
             return ResponseEntity.ok("刪除成功");
         } catch (RuntimeException e) {
             return ResponseEntity.status(403).body(e.getMessage()); // 403 沒有權限
@@ -71,8 +71,8 @@ public class TripItemApiController {
     public ResponseEntity<?> updateTripItem(@PathVariable Integer itemId,
             @RequestBody Map<String, String> requestData,
             HttpSession session) {
-        CustVO loggedInUser = (CustVO) session.getAttribute("loggedInUser");
-        if (loggedInUser == null) {
+        CustVO loginCust = (CustVO) session.getAttribute("loginCust");
+        if (loginCust == null) {
             return ResponseEntity.status(401).body("請先登入");
         }
 
@@ -91,7 +91,7 @@ public class TripItemApiController {
                     : null;
 
             // 呼叫 Service
-            tripItemService.updateTripItemDetails(itemId, arrTime, depTime, itemNote, loggedInUser.getCustId());
+            tripItemService.updateTripItemDetails(itemId, arrTime, depTime, itemNote, loginCust.getCustId());
 
             return ResponseEntity.ok("更新成功");
         } catch (Exception e) {

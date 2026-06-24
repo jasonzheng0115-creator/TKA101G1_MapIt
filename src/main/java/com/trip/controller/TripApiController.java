@@ -24,8 +24,8 @@ public class TripApiController {
             HttpSession session) {
 
         // 權限檢查：是否登入
-        CustVO loggedInUser = (CustVO) session.getAttribute("loggedInUser");
-        if (loggedInUser == null) {
+        CustVO loginCust = (CustVO) session.getAttribute("loginCust");
+        if (loginCust == null) {
             return ResponseEntity.status(401).body("請先登入"); // 401 Unauthorized
         }
 
@@ -42,7 +42,7 @@ public class TripApiController {
             }
 
             // 呼叫我們tripService
-            tripService.updateTripInfo(tripId, tripName, tripDate, tripStatus, loggedInUser.getCustId());
+            tripService.updateTripInfo(tripId, tripName, tripDate, tripStatus, loginCust.getCustId());
 
             return ResponseEntity.ok("更新成功");
         } catch (Exception e) {

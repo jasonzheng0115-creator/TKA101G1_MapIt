@@ -282,7 +282,7 @@
     <section th:unless="${userName}" class="login-prompt">
         <h2>請先登入</h2>
         <p>登入後即可查看並管理你的專屬行程</p>
-        <a th:href="@{/login(redirectURL=${redirectURL})}" class="btn-go-login">前往登入</a>
+        <a th:href="@{/customer/login(redirectURL=${redirectURL})}" class="btn-go-login">前往登入</a>
     </section>
 
     <!-- ====================================================== -->
