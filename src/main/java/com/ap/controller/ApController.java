@@ -86,7 +86,7 @@ public class ApController {
 		
 		model.addAttribute("apData", pageData);
 		model.addAttribute("currentPage", page);
-		model.addAttribute("totalPage", pageData.getTotalPages());
+		model.addAttribute("totalPages", pageData.getTotalPages());
 		
 		return "back-end/ap/listAllAp";
 	}

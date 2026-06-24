@@ -3,56 +3,225 @@
 <head>
 <meta charset="UTF-8">
 <title>所有廠商清單</title>
+<link th:href="@{/css/backend-common.css}" rel="stylesheet">
 <style>
-	table { border-collapse: collapse; width: 80%; margin-top: 15px;}
-	th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-	th { background-color: #f2f2f2; }
+
+	table { 
+		width: 100%;
+		border-collapse: collapse; 
+		text-align: left; 
+		font-size: 14px; 
+		table-layout: fixed;   /* 鎖定欄位寬度 */
+		margin-top: 20px;
+	}
+	
+	/* 表格最上面的標題列 */
+	th { 
+		background-color: whitesmoke;
+		color: black; 
+		font-weight: 600; 
+		padding: 12px 10px; 
+		border-bottom: 2px solid lightgray; /* 標題下方灰色水平線 */
+	}
+	
+	/* 表格內每一格資料 */
+	td { 
+		padding: 12px 10px; 
+		border-bottom: 1px solid lightgray; /* 只留上下水平的灰線，取消左右框線 */
+		color: dimgray; 
+	}
+	
+	tr:hover { 
+		background-color: whitesmoke; 
+	}
+	
+	/* 返回首頁按鈕 */
+	.btn-back {
+		display: inline-block;
+		padding: 6px 12px;
+		border: 1px solid gray;
+		color: gray;
+		text-decoration: none;
+		border-radius: 4px;
+		font-size: 13px;
+		margin-top: 10px;
+	}
+	
+	.btn-back:hover {
+		background-color: whitesmoke;
+		color: black;
+	}
+	
+	/* 修改刪除按鈕 */
+	/* 修改和刪除按鈕共通的設定 */
+	.btn-action {
+		padding: 5px 10px;
+		border: 1px solid lightgray;
+		border-radius: 4px;
+		font-size: 12px;
+		cursor: pointer;
+		background-color: white;
+		transition: all 0.2s;
+	}
+	
+	/* 修改按鈕 */
+	.btn-update:hover {
+		border-color: dodgerblue;
+		color: dodgerblue;
+		background-color: whitesmoke;
+	}
+	
+	/* 刪除按鈕 */
+	.btn-delete:hover {
+		border-color: crimson;
+		color: crimson;
+		background-color: snow;
+	}
+	
+	/* 分頁 */
+	.pagination-container {
+		display: flex;
+		justify-content: center; /* 垂直居中 */
+		align-items: center;
+		margin-top: 30px;
+	}
+	
+	.page-info {
+		font-size: 13px;
+		color: gray;
+		margin-right: 20px;
+	}
+	
+	.page-buttons {
+		display: flex;
+		gap: 5px;
+	}
+	
+	.page-item {
+		display: inline-block;
+		text-decoration: none;
+		color: dimgray;
+		padding: 6px 12px;
+		border: 1px solid lightgray;
+		border-radius: 4px;
+		font-size: 13px;
+		transition: all 0.2s;
+	}
+	
+	.page-item:hover {
+		border-color: dodgerblue;
+		color: dodgerblue;
+		background-color: whitesmoke;
+	}
+	
+	/* 當前所在頁面的藍色狀態 */
+	.page-item.active {
+		background-color: dodgerblue;
+		border-color: dodgerblue;
+		color: white;
+		font-weight: bold;
+	}
+	
+	/* 當按鈕不能點選時變淡 */
+	.page-item.disabled {
+		color: lightgray;
+		border-color: lightgray;
+		pointer-events: none; /* 讓超連結失效，點了沒反應 */
+	}
+	
 </style>
 </head>
 <body>
 	
-	<h2>📋 所有廠商清單資料</h2>
-	<hr>
-	
-	<div>
-		<a th:href="@{/supplier/select_page}">🔙 返回首頁</a>
+	<!-- 上方導覽列 -->
+	<div class="navbar">
+		<a class="navbar-brand" href="#">🏢 後台管理系統</a>
+		<!-- href="#" 連結點選後會留在原地 -->
+		<div class="navbar-nav">
+			<a class="active" th:href="@{/supplier/select_page}">供應商管理</a>
+			<a th:href="@{/product/select_page}">商品管理</a>
+			<a th:href="@{/ap/select_page}">應付帳款</a>
+		</div>
 	</div>
 	
-	<table>
-		<thead>
-			<tr>
-				<th>廠商編號</th>
-				<th>廠商名稱</th>
-				<th>聯絡人</th>
-				<th>電話</th>
-				<th>Email</th>
-				<th>地址</th>
-				<th>操作功能</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr th:each="s : ${supplierListData}">
-				<td th:text="${s.supplierId}"></td>
-				<td th:text="${s.supplierName}"></td>
-				<td th:text="${s.supplierContact}"></td>
-				<td th:text="${s.supplierTel}"></td>
-				<td th:text="${s.supplierEmail}"></td>
-				<td th:text="${s.supplierAddress}"></td>
-				<td>
-					<form th:action="@{/supplier/getOne_For_Update}" method="post" style="display: inline;">
-						<input type="hidden" name="supplierId" th:value="${s.supplierId}">
-						<button type="submit">✍️ 修改</button>
-					</form>
-					
-					<form th:action="@{/supplier/delete}" method="post" style="display: inline;">
-						<input type="hidden" name="supplierId" th:value="${s.supplierId}">
-						<button type="submit" onclick="return confirm('確定要刪除嗎？');">🗑️ 刪除</button>
-					</form>
-				</td>
-			</tr>
+	<div class="container-fluid">
 		
-		</tbody>
-	</table>
-
+		<div class="main-card">
+	
+			<h3>📋 所有廠商清單資料</h3>
+			
+			<div>
+				<a th:href="@{/supplier/select_page}" class="btn-back">🔙 返回首頁</a>
+			</div>
+			
+			<table>
+				<thead>
+					<tr>
+						<th>廠商編號</th>
+						<th>廠商名稱</th>
+						<th>聯絡人</th>
+						<th>電話</th>
+						<th>Email</th>
+						<th>地址</th>
+						<th>操作功能</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="s : ${supplierListData}">
+						<td th:text="${s.supplierId}"></td>
+						<td th:text="${s.supplierName}"></td>
+						<td th:text="${s.supplierContact}"></td>
+						<td th:text="${s.supplierTel}"></td>
+						<td th:text="${s.supplierEmail}"></td>
+						<td th:text="${s.supplierAddress}"></td>
+						<td>
+							<form th:action="@{/supplier/getOne_For_Update}" method="post" style="display: inline;">
+								<input type="hidden" name="supplierId" th:value="${s.supplierId}">
+								<button type="submit" class="btn-action btn-update">✍️ 修改</button>
+							</form>
+							<form th:action="@{/supplier/delete}" method="post" style="display: inline;">
+								<input type="hidden" name="supplierId" th:value="${s.supplierId}">
+								<button type="submit" class="btn-action btn-delete" 
+										onclick="return confirm('確定要刪除嗎？');">🗑️ 刪除</button>
+							</form>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			
+			<div class="pagination-container">
+    
+			    <span class="page-info" th:text="'頁面 ' + ${currentPage} + ' / ' + ${totalPages}">頁面 1 / 1</span>
+			
+			    <div class="page-buttons">
+			        <a th:href="@{/supplier/listAllSupplier(page=1)}" 
+			           th:classappend="${currentPage == 1} ? 'disabled' : ''" 
+			     	   class="page-item">« 首頁</a>
+			        
+			        <a th:href="@{/supplier/listAllSupplier(page=${currentPage - 1})}" 
+			           th:classappend="${currentPage == 1} ? 'disabled' : ''" 
+			           class="page-item">‹ 上一頁</a>
+			        
+			        <a th:each="i : ${#numbers.sequence(1, totalPages)}" 
+			           th:href="@{/supplier/listAllSupplier(page=${i})}"
+			           th:text="${i}"
+			           th:classappend="${i == currentPage} ? 'active' : ''"
+			           class="page-item">
+			        </a>
+			        
+			        <a th:href="@{/supplier/listAllSupplier(page=${currentPage + 1})}" 
+			           th:classappend="${currentPage == totalPages} ? 'disabled' : ''" 
+			           class="page-item">下一頁 ›</a>
+			        
+			        <a th:href="@{/supplier/listAllSupplier(page=${totalPages})}" 
+			           th:classappend="${currentPage == totalPages} ? 'disabled' : ''"
+			           class="page-item">末頁 »</a>
+			    </div>
+			</div>
+			
+		</div>
+	</div>
+	
+	
 </body>
 </html>

@@ -1,10 +1,13 @@
 package com.orders.model;
 
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.cust.model.CustVO;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -13,6 +16,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -27,9 +31,8 @@ public class OrdersVO implements Serializable {
 	@Column(name = "ORDER_ID", updatable = false)
 	private Integer orderId;
 	
-	@NotNull(message = "訂單成立時間: 請勿空白")
-	@Column(name = "ORDER_TIMESTAMP")
-	private LocalDate orderTimestamp;
+	@Column(name = "ORDER_TIMESTAMP", insertable = false, updatable = false)
+	private LocalDateTime orderTimestamp;
 	
 	@NotNull(message = "訂單金額: 請勿空白")
 	@Column(name = "ORDER_PRICE")
@@ -43,7 +46,7 @@ public class OrdersVO implements Serializable {
 	private String orderCancel;
 	
 	@Column(name = "CANCEL_DATE")
-	private LocalDate cancelDate;
+	private LocalDateTime cancelDate;
 	
 	@NotEmpty(message = "付款方式: 請勿空白")
 	@Column(name = "PAYMENT_METHOD")
@@ -56,7 +59,15 @@ public class OrdersVO implements Serializable {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "CUST_ID", referencedColumnName = "CUST_ID")
 	private CustVO custVO;
+	
 
+	// 一對多訂單明細（雙向關聯與生命週期連動）
+	// mappedBy = "ordersVO" ➔ 指向明細端（OrderItemVO）中建立關聯的屬性欄位名稱
+	// cascade = CascadeType.ALL ➔ 設定級聯操作：當主檔進行新增、修改、刪除時，其所屬的明細將同步觸發對應的操作
+	// orphanRemoval = true ➔ 孤兒移除機制：未來若從 Java 的 orderItems 清單中移除某筆明細物件，JPA 將自動於資料庫中刪除該筆對應的明細資料
+	@OneToMany(mappedBy = "ordersVO", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	private List<OrderItemVO> orderItems = new ArrayList<>();
+	
 	public Integer getOrderId() {
 		return orderId;
 	}
@@ -65,11 +76,11 @@ public class OrdersVO implements Serializable {
 		this.orderId = orderId;
 	}
 
-	public LocalDate getOrderTimestamp() {
+	public LocalDateTime getOrderTimestamp() {
 		return orderTimestamp;
 	}
 
-	public void setOrderTimestamp(LocalDate orderTimestamp) {
+	public void setOrderTimestamp(LocalDateTime orderTimestamp) {
 		this.orderTimestamp = orderTimestamp;
 	}
 
@@ -97,11 +108,11 @@ public class OrdersVO implements Serializable {
 		this.orderCancel = orderCancel;
 	}
 
-	public LocalDate getCancelDate() {
+	public LocalDateTime getCancelDate() {
 		return cancelDate;
 	}
 
-	public void setCancelDate(LocalDate cancelDate) {
+	public void setCancelDate(LocalDateTime cancelDate) {
 		this.cancelDate = cancelDate;
 	}
 
@@ -132,6 +143,14 @@ public class OrdersVO implements Serializable {
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
+	
+	public List<OrderItemVO> getOrderItems() {
+		return orderItems;
+	}
+
+	public void setOrderItems(List<OrderItemVO> orderItems) {
+		this.orderItems = orderItems;
+	}
 
 	@Override
 	public String toString() {
@@ -139,6 +158,5 @@ public class OrdersVO implements Serializable {
 				+ ", orderStatus=" + orderStatus + ", orderCancel=" + orderCancel + ", cancelDate=" + cancelDate
 				+ ", paymentMethod=" + paymentMethod + ", paymentStatus=" + paymentStatus + "]";
 	}
-	
-	
+
 }
