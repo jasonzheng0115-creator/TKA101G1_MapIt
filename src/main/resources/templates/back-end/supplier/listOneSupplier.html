@@ -3,12 +3,27 @@
 <head>
 <meta charset="UTF-8">
 <title>廠商詳細資料</title>
+<link th:href="@{/css/backend-common.css}" rel="stylesheet">
 <style>
+	
+
+
 	.detail-box { border: 1px solid #666; padding: 20px; width: 500px; background-color: #fafafa; }
 	.field-title { font-weight: bold; color: #333; display: inline-block; width: 100px; }
 </style>
 </head>
 <body>
+
+	<!-- 上方導覽列 -->
+	<div class="navbar">
+		<a class="navbar-brand" href="#">🏢 後台管理系統</a>
+		<!-- href="#" 連結點選後會留在原地 -->
+		<div class="navbar-nav">
+			<a class="active" th:href="@{/supplier/select_page}">供應商管理</a>
+			<a th:href="@{/product/select_page}">商品管理</a>
+			<a th:href="@{/ap/select_page}">應付帳款</a>
+		</div>
+	</div>
 
 	<h2>🔍 廠商詳細資料</h2>
 	<hr>

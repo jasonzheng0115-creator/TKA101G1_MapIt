@@ -224,7 +224,8 @@
 			<img th:src="@{/images/{imgName}(imgName=${prodVO.productImg})}" class="prod-img" alt="商品圖片">
 			
 			<h3 th:text="${prodVO.productName}">商品名稱 placeholder</h3>
-			<p th:text="${prodVO.productDesc}">商品描述 placeholder</p>
+			<div class="prod-desc-text" th:text="${prodVO.productDesc}">商品描述 placeholder</div>
+			<div class="prod-desc-formatted"></div>
 			
 			<div class="price-box">
 				<span class="prict-text" th:text="'NT$' + ${prodVO.productPrice}">$999999999</span>
@@ -288,6 +289,45 @@
 			末頁 >>
 		</a>
 	</div>
+	
+	<script>
+		// 1. 抓出網頁上所有帶有 class="prod-desc-text" 的欄位（因為有很多張商品卡片）
+		const descElements = document.querySelectorAll('.prod-desc-text');
+		const formattedElements = document.querySelectorAll('.prod-desc-formatted');
+		
+		// 2. 用迴圈一筆一筆來處理
+		descElements.forEach((el, index) => {
+		    const rawText = el.innerText.trim(); // 拿到原始文字
+		    const targetDiv = formattedElements[index]; // 找到對應要放漂亮中文的空容器
+		    
+		    // 3. 隱藏原本難看的大括號文字
+		    el.style.display = 'none';
+		    
+		    // 4. 判斷：如果是大括號開頭，代表是 JSON 格式
+		    if (rawText.startsWith('{')) {
+		        try {
+		            // 核心：JS 內建最厲害的 JSON 拆解工具，直接把字串變物件
+		            const data = JSON.parse(rawText);
+		            
+		            // 把裡面的中文拆出來，用 HTML 標籤排版好
+		            targetDiv.innerHTML = `
+		                <div style="font-size: 13px; color: #555; text-align: left; margin-bottom: 10px; line-height: 1.5;">
+		                    <p style="margin: 4px 0;">🌍 <b>區域：</b>${data.area || '未填'}</p>
+		                    <p style="margin: 4px 0;">📍 <b>地點：</b>${data.address || '未填'}</p>
+		                    <p style="margin: 4px 0;">⏳ <b>期限：</b>${data.expiry || '未填'}</p>
+		                    <p style="margin: 4px 0;">📝 <b>描述：</b>${data.detail || '未填'}</p>
+		                </div>
+		            `;
+		        } catch (e) {
+		            // 萬一解析失敗，就當作一般純文字顯示
+		            targetDiv.innerHTML = `<p style="font-size: 15px; color: gray; margin-bottom: 15px;">${rawText}</p>`;
+		        }
+		    } else {
+		        // 5. 如果不是大括號開頭，代表是舊的純文字資料，直接印出來
+		        targetDiv.innerHTML = `<p style="font-size: 15px; color: gray; margin-bottom: 15px;">${rawText}</p>`;
+		    }
+		});
+	</script>
 	
 </body>
 </html>

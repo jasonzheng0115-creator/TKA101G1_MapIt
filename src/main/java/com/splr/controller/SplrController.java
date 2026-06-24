@@ -1,14 +1,16 @@
 package com.splr.controller;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.splr.model.SplrService;
 import com.splr.model.SplrVO;
@@ -28,9 +30,18 @@ public class SplrController {
 	}
 	
 	@GetMapping("/listAllSupplier")
-	public String listAllSupplier(ModelMap model) {
-		List<SplrVO> list = splrSvc.getAll();
-		model.addAttribute("supplierListData", list);
+	public String listAllSupplier(
+			@RequestParam(value = "page", defaultValue = "1") int page,
+			ModelMap model) {
+		
+		int pageSize = 10;
+		Pageable pageable = PageRequest.of(page -1, pageSize); // 設定要看第 page 頁，且「一頁只顯示 pageSize 筆」資料
+		Page<SplrVO> pageData = splrSvc.getAll(pageable);      // 呼叫 Service getAll()
+		
+		model.addAttribute("supplierListData", pageData.getContent()); // 傳給前端原本的表格資料（轉成 List）
+		model.addAttribute("currentPage", page);                   // 當前頁碼
+		model.addAttribute("totalPages", pageData.getTotalPages());   // 總頁數
+		
 		return "back-end/supplier/listAllSupplier";
 	}
 	

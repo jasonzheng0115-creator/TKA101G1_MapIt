@@ -1,142 +1,283 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>商品資料列表</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 30px; background-color: #f4f7f6; }
-        h2 { color: #333; border-bottom: 2px solid #4CAF50; padding-bottom: 10px; display: inline-block; }
-        .btn-back { float: right; background-color: #666; color: white; padding: 10px 15px; text-decoration: none; border-radius: 4px; font-size: 14px; margin-top: 10px; }
-        .btn-back:hover { background-color: #555; }
-        table { width: 100%; border-collapse: collapse; background: white; margin-top: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border-radius: 8px; overflow: hidden; }
-        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #eee; }
-        th { background-color: #4CAF50; color: white; font-weight: bold; }
-        tr:hover { background-color: #f5f5f5; }
-        .status-on { color: green; font-weight: bold; }
-        .status-off { color: red; font-weight: bold; }
-        .btn-update { background-color: #ff9800; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
-        .btn-update:hover { background-color: #e68a00; }
-        .btn-delete { background-color: #f44336; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
-        .btn-delete:hover { background-color: #da190b; }
-        /* 分頁樣式 */
-        .pagination { margin-top: 20px; text-align: center; }
-        .pagination a { color: black; float: none; padding: 8px 16px; text-decoration: none; border: 1px solid #ddd; background-color: white; margin: 0 4px; border-radius: 4px; display: inline-block; }
-        .pagination a.active { background-color: #4CAF50; color: white; border: 1px solid #4CAF50; }
-        .pagination a:hover:not(.active) { background-color: #ddd; }
-        .pagination span { padding: 8px 16px; display: inline-block; color: #666; }
-    </style>
+<meta charset="UTF-8">
+<title>商品資料列表</title>
+<link th:href="@{/css/backend-common.css}" rel="stylesheet">
+<style>
+	/* 修改與刪除的 form 表單水平並排 */
+	.form-inline {
+		display: inline;
+	}
+	
+	/* 細線表格 */
+	table { 
+		width: 100%;
+		border-collapse: collapse; /*把表格的『雙線邊框』合併成『單線邊框』*/
+		text-align: left; 
+		font-size: 14px; 
+		table-layout: fixed;     /* 鎖定欄位寬度，防止內容太長時表格變形 */
+		margin-top: 20px;
+	}
+	
+	/* 表格最上方的標題列 */
+	th { 
+		background-color: whitesmoke;
+		color: black; 
+		font-weight: 600; 
+		padding: 12px 10px; 
+		border-bottom: 2px solid lightgray; /* 標題下方精緻水平線 */
+	}
+	
+	/* 表格內每一格資料 */
+	td { 
+		padding: 12px 10px; 
+		border-bottom: 1px solid lightgray; /* 拔除左右框線，只留上下水平線 */
+		color: dimgray; 
+		vertical-align: middle;             /* 關鍵：讓文字、標籤與右邊按鈕絕對垂直置中對齊 */
+	}
+	
+	/* 滑鼠移過去那一列時，亮起灰底色 */
+	tr:hover { 
+		background-color: whitesmoke; 
+	}
+	
+	/* 商品狀態標籤顏色 */
+	.status-on { color: forestgreen; font-weight: bold; }
+	.status-off { color: crimson; font-weight: bold; }
+	
+	/* 返回按鈕 */
+	.btn-back {
+		display: inline-block;
+		padding: 6px 12px;
+		border: 1px solid gray;
+		color: gray;
+		text-decoration: none;
+		border-radius: 4px;
+		font-size: 13px;
+		transition: all 0.2s;
+	}
+	
+	.btn-back:hover {
+		background-color: whitesmoke;
+		color: black;
+	}
+	
+	/* 修改刪除按鈕 */
+	.btn-action {
+		padding: 5px 10px;
+		border: 1px solid lightgray;
+		border-radius: 4px;
+		font-size: 12px;
+		cursor: pointer;
+		background-color: white;
+		transition: all 0.2s;
+		margin-right: 2px;
+	}
+	
+	/* 修改按鈕滑過 */
+	.btn-update:hover {
+		border-color: dodgerblue;
+		color: dodgerblue;
+		background-color: whitesmoke;
+	}
+	
+	/* 刪除按鈕滑過 */
+	.btn-delete:hover {
+		border-color: crimson;
+		color: crimson;
+		background-color: snow;
+	}
+	
+	/* 分頁 */
+	.pagination-container {
+		display: flex;
+		justify-content: center; /* 讓所有東西在正中間水平排成一列 */
+		align-items: center;
+		margin-top: 30px;
+	}
+	
+	.page-info {
+		font-size: 13px;
+		color: gray;
+		margin-right: 20px;      /* 左邊頁數與右邊按鈕的呼吸間距 */
+	}
+	
+	.page-buttons {
+		display: flex;
+		gap: 5px;
+	}
+	
+	.page-item {
+		display: inline-block;
+		text-decoration: none;
+		color: dimgray;
+		padding: 6px 12px;
+		border: 1px solid lightgray;
+		border-radius: 4px;
+		font-size: 13px;
+		transition: all 0.2s;
+	}
+	
+	.page-item:hover {
+		border-color: dodgerblue;
+		color: dodgerblue;
+		background-color: whitesmoke;
+	}
+	
+	/* 當前所在頁面狀態 */
+	.page-item.active {
+		background-color: dodgerblue;
+		border-color: dodgerblue;
+		color: white;
+		font-weight: bold;
+	}
+	
+	/* 第一頁與最後一頁鎖死 */
+	.page-item.disabled {
+		color: lightgray;
+		border-color: lightgray;
+		pointer-events: none; /* 讓超連結點了沒反應 */
+	}
+		
+</style>
 </head>
 <body>
 
-    <div>
-        <h2>📋 商品資料清單</h2>
-        <a th:href="@{/product/select_page}" class="btn-back">🔙 回控制中心</a>
-    </div>
+	<!-- 上方導覽列 -->
+	<div class="navbar">
+		<a class="navbar-brand" href="#">🏢 後台管理系統</a>
+		<!-- href="#" 連結點選後會留在原地 -->
+		<div class="navbar-nav">
+			<a th:href="@{/supplier/select_page}">供應商管理</a>
+			<a class="active" th:href="@{/product/select_page}">商品管理</a>
+			<a th:href="@{/ap/select_page}">應付帳款</a>
+		</div>
+	</div>
+	
+	<div class="container-fluid">
+		<div class="main-card">
 
-    <table>
-        <thead>
-            <tr>
-                <th>商品編號</th>
-                <th>商品名稱</th>
-                <th>商品價格</th>
-                <th>商品數量</th>
-                <th>所屬廠商</th>
-                <th>狀態</th>
-                <th>操作動作</th>
-            </tr>
-        </thead>
-        <tbody>
-            <th:block th:if="${prodData}">
-                <tr th:each="prod : ${prodData.content}">
-                    <td th:text="${prod.productId}"></td>
-                    <td th:text="${prod.productName}"></td>
-                    <td th:text="'$' + ${prod.productPrice}"></td>
-                    <td th:text="${prod.productQty}"></td>
-                    <td th:text="${prod.splrVO.supplierId} + ' - ' + ${prod.splrVO.supplierName}"></td>
-                    <td>
-                        <span th:if="${prod.productStatus}" class="status-on">🟢 已上架</span>
-                        <span th:if="${!prod.productStatus}" class="status-off">🔴 已下架</span>
-                    </td>
-                    <td>
-                        <form th:action="@{/product/getOne_For_Update}" method="post" style="display:inline;">
-                            <input type="hidden" name="productId" th:value="${prod.productId}">
-                            <button type="submit" class="btn-update">修改</button>
-                        </form>
-                        <form th:action="@{/product/delete}" method="post" style="display:inline;" onsubmit="return confirm('確定要刪除這件商品嗎？');">
-                            <input type="hidden" name="productId" th:value="${prod.productId}">
-                            <button type="submit" class="btn-delete">刪除</button>
-                        </form>
-                    </td>
-                </tr>
-            </th:block>
-
-            <th:block th:if="${productStatusList}">
-                <tr th:each="prod : ${productStatusList}">
-                    <td th:text="${prod.productId}"></td>
-                    <td th:text="${prod.productName}"></td>
-                    <td th:text="'$' + ${prod.productPrice}"></td>
-                    <td th:text="${prod.productQty}"></td>
-                    <td th:text="${prod.splrVO.supplierId} + ' - ' + ${prod.splrVO.supplierName}"></td>
-                    <td>
-                        <span th:if="${prod.productStatus}" class="status-on">🟢 已上架</span>
-                        <span th:if="${!prod.productStatus}" class="status-off">🔴 已下架</span>
-                    </td>
-                    <td>
-                        <form th:action="@{/product/getOne_For_Update}" method="post" style="display:inline;">
-                            <input type="hidden" name="productId" th:value="${prod.productId}">
-                            <button type="submit" class="btn-update">修改</button>
-                        </form>
-                        <form th:action="@{/product/delete}" method="post" style="display:inline;" onsubmit="return confirm('確定要刪除這件商品嗎？');">
-                            <input type="hidden" name="productId" th:value="${prod.productId}">
-                            <button type="submit" class="btn-delete">刪除</button>
-                        </form>
-                    </td>
-                </tr>
-            </th:block>
-            
- 			<th:block th:if="${prodVOList}">
-                <tr th:each="prod : ${prodVOList}">
-                    <td th:text="${prod.productId}"></td>
-                    <td th:text="${prod.productName}"></td>
-                    <td th:text="'$' + ${prod.productPrice}"></td>
-                    <td th:text="${prod.productQty}"></td>
-                    <td th:text="${prod.splrVO.supplierId} + ' - ' + ${prod.splrVO.supplierName}"></td>
-                    <td>
-                        <span th:if="${prod.productStatus}" class="status-on">🟢 已上架</span>
-                        <span th:if="${!prod.productStatus}" class="status-off">🔴 已下架</span>
-                    </td>
-                    <td>
-                        <form th:action="@{/product/getOne_For_Update}" method="post" style="display:inline;">
-                            <input type="hidden" name="productId" th:value="${prod.productId}">
-                            <button type="submit" class="btn-update">修改</button>
-                        </form>
-                        <form th:action="@{/product/delete}" method="post" style="display:inline;" onsubmit="return confirm('確定要刪除這件商品嗎？');">
-                            <input type="hidden" name="productId" th:value="${prod.productId}">
-                            <button type="submit" class="btn-delete">刪除</button>
-                        </form>
-                    </td>
-                </tr>
-            </th:block>
-        </tbody>
-    </table>
-
-    <div class="pagination" th:if="${prodData}">
-        <span>頁面：[[${currentPage}]] / [[${totalPages}]]</span>
-        
-        <a th:href="@{/product/listAllProduct(page=1)}">« 首頁</a>
-        
-        <a th:if="${currentPage > 1}" th:href="@{/product/listAllProduct(page=${currentPage - 1})}">‹ 上一頁</a>
-        
-        <th:block th:each="i : ${#numbers.sequence(1, totalPages == 0 ? 1 : totalPages)}">
-            <a th:href="@{/product/listAllProduct(page=${i})}" 
-               th:text="${i}" 
-               th:classappend="${i == currentPage} ? 'active' : ''"></a>
-        </th:block>
-        
-        <a th:if="${currentPage < totalPages}" th:href="@{/product/listAllProduct(page=${currentPage + 1})}">下一頁 ›</a>
-        
-        <a th:href="@{/product/listAllProduct(page=${totalPages})}">末頁 »</a>
-    </div>
-
+		    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+		        <h3 style="margin: 0;">📋 商品資料清單</h3>
+		        <a th:href="@{/product/select_page}" class="btn-back" style="margin-top: 0;">🔙 回控制中心</a>
+		    </div>
+		
+		    <table>
+		        <thead>
+		            <tr>
+		                <th>商品編號</th>
+		                <th>商品名稱</th>
+		                <th>商品價格</th>
+		                <th>商品數量</th>
+		                <th>所屬廠商</th>
+		                <th>狀態</th>
+		                <th>操作動作</th>
+		            </tr>
+		        </thead>
+		        <tbody>
+		            <th:block th:if="${prodData}">
+		                <tr th:each="prod : ${prodData}">
+		                    <td th:text="${prod.productId}"></td>
+		                    <td th:text="${prod.productName}"></td>
+		                    <td th:text="'$' + ${prod.productPrice}"></td>
+		                    <td th:text="${prod.productQty}"></td>
+		                    <td th:text="${prod.splrVO.supplierId} + ' - ' + ${prod.splrVO.supplierName}"></td>
+		                    <td>
+		                        <span th:if="${prod.productStatus}" class="status-on">🟢 已上架</span>
+		                        <span th:if="${!prod.productStatus}" class="status-off">🔴 已下架</span>
+		                    </td>
+		                    <td>
+		                        <form th:action="@{/product/getOne_For_Update}" method="post" style="display:inline;">
+		                            <input type="hidden" name="productId" th:value="${prod.productId}">
+		                            <button type="submit" class="btn-action btn-update">修改</button>
+		                        </form>
+		                        <form th:action="@{/product/delete}" method="post" style="display:inline;" onsubmit="return confirm('確定要刪除這件商品嗎？');">
+		                            <input type="hidden" name="productId" th:value="${prod.productId}">
+		                            <button type="submit" class="btn-action btn-delete">刪除</button>
+		                        </form>
+		                    </td>
+		                </tr>
+		            </th:block>
+		
+		            <th:block th:if="${productStatusList}">
+		                <tr th:each="prod : ${productStatusList}">
+		                    <td th:text="${prod.productId}"></td>
+		                    <td th:text="${prod.productName}"></td>
+		                    <td th:text="'$' + ${prod.productPrice}"></td>
+		                    <td th:text="${prod.productQty}"></td>
+		                    <td th:text="${prod.splrVO.supplierId} + ' - ' + ${prod.splrVO.supplierName}"></td>
+		                    <td>
+		                        <span th:if="${prod.productStatus}" class="status-on">🟢 已上架</span>
+		                        <span th:if="${!prod.productStatus}" class="status-off">🔴 已下架</span>
+		                    </td>
+		                    <td>
+		                        <form th:action="@{/product/getOne_For_Update}" method="post" style="display:inline;">
+		                            <input type="hidden" name="productId" th:value="${prod.productId}">
+		                            <button type="submit" class="btn-action btn-update">修改</button>
+		                        </form>
+		                        <form th:action="@{/product/delete}" method="post" style="display:inline;" onsubmit="return confirm('確定要刪除這件商品嗎？');">
+		                            <input type="hidden" name="productId" th:value="${prod.productId}">
+		                            <button type="submit" class="btn-action btn-delete">刪除</button>
+		                        </form>
+		                    </td>
+		                </tr>
+		            </th:block>
+		            
+		 			<th:block th:if="${prodVOList}">
+		                <tr th:each="prod : ${prodVOList}">
+		                    <td th:text="${prod.productId}"></td>
+		                    <td th:text="${prod.productName}"></td>
+		                    <td th:text="'$' + ${prod.productPrice}"></td>
+		                    <td th:text="${prod.productQty}"></td>
+		                    <td th:text="${prod.splrVO.supplierId} + ' - ' + ${prod.splrVO.supplierName}"></td>
+		                    <td>
+		                        <span th:if="${prod.productStatus}" class="status-on">🟢 已上架</span>
+		                        <span th:if="${!prod.productStatus}" class="status-off">🔴 已下架</span>
+		                    </td>
+		                    <td>
+		                        <form th:action="@{/product/getOne_For_Update}" method="post" style="display:inline;">
+		                            <input type="hidden" name="productId" th:value="${prod.productId}">
+		                            <button type="submit" class="btn-action btn-update">修改</button>
+		                        </form>
+		                        <form th:action="@{/product/delete}" method="post" style="display:inline;" onsubmit="return confirm('確定要刪除這件商品嗎？');">
+		                            <input type="hidden" name="productId" th:value="${prod.productId}">
+		                            <button type="submit" class="btn-action btn-delete">刪除</button>
+		                        </form>
+		                    </td>
+		                </tr>
+		            </th:block>
+		        </tbody>
+		    </table>
+		
+		    <div class="pagination-container" th:if="${prodData}">
+		    
+		        <span class="page-info" th:text="'頁面 ' + ${currentPage} + ' / ' + ${totalPages}">頁面 1 / 1</span>
+		        
+		        <div class="page-buttons">
+					<a th:href="@{/product/listAllProduct(page=1)}" 
+					   th:classappend="${currentPage == 1} ? 'disabled' : ''" 
+					   class="page-item">« 首頁</a>
+					
+					<a th:href="@{/product/listAllProduct(page=${currentPage - 1})}" 
+					   th:classappend="${currentPage == 1} ? 'disabled' : ''" 
+					   class="page-item">‹ 上一頁</a>
+					
+					<a th:each="i : ${#numbers.sequence(1, totalPages == 0 ? 1 : totalPages)}" 
+					   th:href="@{/product/listAllProduct(page=${i})}"
+					   th:text="${i}"
+					   th:classappend="${i == currentPage} ? 'active' : ''"
+					   class="page-item"></a>
+					
+					<a th:href="@{/product/listAllProduct(page=${currentPage + 1})}" 
+					   th:classappend="${currentPage == totalPages} ? 'disabled' : ''" 
+					   class="page-item">下一頁 ›</a>
+					
+					<a th:href="@{/product/listAllProduct(page=${totalPages})}" 
+					   th:classappend="${currentPage == totalPages} ? 'disabled' : ''"
+					   class="page-item">末頁 »</a>
+				</div>
+		</div>
+	</div>
 </body>
 </html>

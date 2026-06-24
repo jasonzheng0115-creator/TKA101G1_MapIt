@@ -1,60 +1,198 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>新增應付帳款</title>
-    <style>.error { color: red; font-size: 14px; }</style>
+<meta charset="UTF-8">
+<title>新增應付帳款</title>
+<link th:href="@{/css/backend-common.css}" rel="stylesheet">
+<style>
+
+	/* 表單大卡片 */
+	.form-card {
+		max-width: 550px;
+		margin: 12px auto 30px auto;
+	}
+	
+	/* 表單頂部大標題 */
+	.form-header h3 {
+		margin: 0;
+		font-size: 20px;
+		color: black;
+		border-bottom: 2px solid lightgray;
+		padding-bottom: 15px;
+		margin-bottom: 25px;
+	}
+	
+	/* 標題與輸入框垂直排版 */
+	.form-group {
+		display: flex;
+		flex-direction: column;  /* 垂直排版 */
+		gap: 6px;
+		margin-bottom: 18px;
+	}
+	
+	/* 欄位小標題 */
+	.form-label {
+		font-size: 14px;
+		font-weight: 600;
+		color: black;
+	}
+	
+	/* 輸入框、下拉選單與日期挑選器 */
+	.form-control {
+		width: 100%;
+		padding: 10px 12px; 
+		border: 1px solid lightgray;
+		border-radius: 4px;
+		font-size: 14px;
+		color: dimgray;
+		box-sizing: border-box;  /* 防止輸入框被 padding 撐開爆框 */
+		background-color: white;
+		transition: border-color 0.2s;
+	}
+	
+	/* 滑鼠點擊準備輸入資料時（Focus） */
+	.form-control:focus {
+		border-color: dodgerblue; /* 外框亮藍色 */
+		outline: none;            /* 移除預設黑框 */
+	}
+	
+	/*  (Radio) 橫向排版 */
+	.form-radio-group {
+		display: flex;
+		gap: 20px; 
+		padding: 8px 0;
+	}
+	
+	.radio-inline {
+		font-size: 14px;
+		color: dimgray;
+		cursor: pointer;  /* 滑鼠移過去顯示手指符號 */
+		display: flex;
+		align-items: center;
+		gap: 6px;
+	}
+	
+	.error {
+		color: crimson;
+		font-size: 13px;
+		margin-top: 4px;
+		font-weight: bold;
+	}
+	
+	/* 底部按鈕排版 */
+	.form-actions {
+		display: flex;
+		justify-content: flex-end; /* 取消與送出按鈕靠右對齊 */
+		align-items: center;
+		gap: 12px;
+		margin-top: 30px;
+		border-top: 1px solid lightgray;
+		padding-top: 20px;
+	}
+	
+	/* 確認送出按鈕 */
+	.btn-submit {
+		padding: 7px 16px;
+		background-color: dodgerblue; 
+		color: white;                 
+		border: 1px solid dodgerblue;
+		border-radius: 4px;
+		font-size: 13px;
+		font-weight: bold;
+		cursor: pointer;
+		transition: all 0.2s;
+	}
+	
+	.btn-submit:hover {
+		background-color: royalblue;
+		border-color: royalblue;
+	}
+	
+	/* 取消返回按鈕 */
+	.btn-back {
+		text-decoration: none;
+		color: gray;
+		border: 1px solid lightgray;
+		padding: 6px 14px;
+		border-radius: 4px;
+		font-size: 13px;
+		transition: all 0.2s;
+	}
+	
+	.btn-back:hover {
+		background-color: whitesmoke;
+		color: black;
+		border-color: gray;
+	}
+
+</style>
 </head>
 <body>
 
-    <h2>➕ 新增應付帳款</h2>
-    <a th:href="@{/ap/select_page}">⬅️ 回首頁</a>
-    <br/><br/>
+	<!-- 上方導覽列 -->
+	<div class="navbar">
+		<a class="navbar-brand" href="#">🏢 後台管理系統</a>
+		<!-- href="#" 連結點選後會留在原地 -->
+		<div class="navbar-nav">
+			<a th:href="@{/supplier/select_page}">供應商管理</a>
+			<a th:href="@{/product/select_page}">商品管理</a>
+			<a class="active" th:href="@{/ap/select_page}">應付帳款</a>
+		</div>
+	</div>
+	
+	<div class="container-fluid">
+		<div class="main-card form-card">
 
-    <form th:action="@{/ap/insert}" th:object="${apVO}" method="post">
-        
-        <div>
-            <label>選擇廠商：</label>
-            <select name="splrVO.supplierId">
-                <option value="">-- 請選擇廠商 --</option>
-                <option th:each="supplier : ${supplierList}" 
-                		th:value="${supplier.supplierId}" 
-                		th:text="${supplier.supplierId + ' - ' + supplier.supplierName}"
-                		th:selected="${apVO.splrVO != null && supplier.supplierId == apVO.splrVO.supplierId}"></option>
-            </select>
-        </div>
-        <br/>
+			<div class="form-header">
+				<h3>➕ 新增應付帳款</h3>
+			</div>
+		
+		    <form th:action="@{/ap/insert}" th:object="${apVO}" method="post">
+		        
+		        <div class="form-group">
+		            <label class="form-label">選擇廠商：</label>
+		            <select class="form-control" name="splrVO.supplierId">
+		                <option value="">-- 請選擇廠商 --</option>
+		                <option th:each="supplier : ${supplierList}" 
+		                		th:value="${supplier.supplierId}" 
+		                		th:text="${supplier.supplierId + ' - ' + supplier.supplierName}"
+		                		th:selected="${apVO.splrVO != null && supplier.supplierId == apVO.splrVO.supplierId}"></option>
+		            </select>
+		        </div>
+		
+		        <div class="form-group">
+		            <label class="form-label">應付金額 ($)：</label>
+		            <input type="number" class="form-control" th:field="*{amountPayable}" />
+		            <span class="error" th:if="${#fields.hasErrors('amountPayable')}" th:errors="*{amountPayable}"></span>
+		        </div>
+		
+		        <div class="form-group">
+		            <label class="form-label">付款狀態：</label>
+		            <div class="form-radio-group">
+			            <label class="radio-inline"><input type="radio" th:field="*{apStatus}" value="true" />🟢 已付款</label>
+			            <label class="radio-inline"><input type="radio" th:field="*{apStatus}" value="false" />🔴 未付款</label>
+					</div>    
+			            <span class="error" th:if="${#fields.hasErrors('apStatus')}" th:errors="*{apStatus}"></span>
+		        </div>
+		
+		        <div class="form-group">
+		            <label class="form-label">帳單月份 (YYYY-MM)：</label>
+		            <input type="text" class="form-control" th:field="*{billMonth}" placeholder="例如: 2026-06"/>
+		            <span class="error" th:if="${#fields.hasErrors('billMonth')}" th:errors="*{billMonth}"></span>
+		        </div>
 
-        <div>
-            <label>應付金額：</label>
-            <input type="number" th:field="*{amountPayable}" />
-            <span class="error" th:if="${#fields.hasErrors('amountPayable')}" th:errors="*{amountPayable}"></span>
-        </div>
-        <br/>
+		        <div class="form-group">
+		            <label class="form-label">付款日期：</label>
+		            <input type="date" class="form-control" th:field="*{paymentDate}" />
+		        </div>
 
-        <div>
-            <label>付款狀態：</label>
-            <input type="radio" th:field="*{apStatus}" value="true" />已付款
-            <input type="radio" th:field="*{apStatus}" value="false" />未付款
-            <span class="error" th:if="${#fields.hasErrors('apStatus')}" th:errors="*{apStatus}"></span>
-        </div>
-        <br/>
-
-        <div>
-            <label>帳單月份 (YYYY-MM)：</label>
-            <input type="text" th:field="*{billMonth}" placeholder="例如: 2026-06"/>
-            <span class="error" th:if="${#fields.hasErrors('billMonth')}" th:errors="*{billMonth}"></span>
-        </div>
-        <br/>
-
-        <div>
-            <label>付款日期：</label>
-            <input type="date" th:field="*{paymentDate}" />
-        </div>
-        <br/>
-
-        <button type="submit">送出新增</button>
-    </form>
-
+				<div class="form-actions">
+					<a th:href="@{/ap/select_page}" class="btn-back">🔙 取消返回</a>
+					<button type="submit" class="btn-submit">✅ 確認送出</button>
+				</div>
+		    </form>
+		    
+		</div>
+	</div>
 </body>
 </html>

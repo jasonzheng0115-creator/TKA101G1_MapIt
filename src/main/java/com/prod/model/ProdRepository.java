@@ -24,4 +24,16 @@ public interface ProdRepository extends JpaRepository<ProdVO, Integer> {
 			@Param("supplierId") Integer supplierId);
 	
 	Page<ProdVO> findByProductNameContaining(String productName, Pageable pageable);
+
+	// 購物車推薦熱銷商品 -> 利用productStatus（上架狀態）跟 purchasedQty（累積銷量）
+	List<ProdVO> findTop4ByProductStatusTrueOrderByPurchasedQtyDesc();
+	// findTop4 ➔ 翻譯成 SQL：LIMIT 4（我只要前 4 筆資料）
+	// By ➔ 翻譯成 SQL：WHERE（後面開始接篩選條件）
+	// ProductStatusTrue ➔ 翻譯成 SQL：product_status = true（限定要有上架的）
+	// OrderByPurchasedQtyDesc ➔ 翻譯成 SQL：ORDER BY purchased_qty DESC（按照累積銷量由高到低排序）
+
+	// 之前學的寫法如下:
+	//	@Query("from ProdVO where productStatus = true order by purchasedQty desc")
+	//	List<ProdVO> getTopSellingProducts(Pageable pageable);
+	
 }

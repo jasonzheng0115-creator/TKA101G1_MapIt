@@ -3,69 +3,172 @@
 <head>
 <meta charset="UTF-8">
 <title>修改廠商資料</title>
+<link th:href="@{/css/backend-common.css}" rel="stylesheet">
+<style>
+	/* 表單卡片 */
+	.form-card {
+		max-width: 550px;
+		margin: 20px auto;
+	}
+	
+	/* 表單小標題 */
+	.form-header h3 {
+		margin: 0;
+		font-size: 20px;
+		color: black;
+		border-bottom: 2px solid lightgray; /* 標題下方水平線 */
+		padding-bottom: 15px;
+		margin-bottom: 25px;
+	}
+	
+	/* 欄位群組 「標題」與「輸入框」變成垂直 */
+	.form-group {
+		display: flex;
+		flex-direction: column;  /* 垂直排隊 */
+		gap: 6px;
+		margin-bottom: 18px;
+	}
+	
+	/* 欄位小標題 */
+	.form-label {
+		font-size: 14px;
+		font-weight: 600;
+		color: black;
+	}
+	
+	/* 廠商編號：唯讀靜態文字樣式 */
+	.form-text-static {
+		padding: 10px 12px;
+		background-color: whitesmoke;
+		color: gray;
+		border: 1px solid lightgray;
+		border-radius: 4px;
+		font-size: 14px;
+		font-family: monospace; /* 使用等寬字型 */
+	}
+	
+	/* 輸入框（Input） */
+	.form-control {
+		width: 100%;
+		padding: 10px 12px;
+		border: 1px solid lightgray;
+		border-radius: 4px;
+		font-size: 14px;
+		color: dimgray;
+		box-sizing: border-box;  /* 防止輸入框被 padding 撐開爆掉 */
+		transition: border-color 0.2s;
+	}
+	
+	/* 當點擊（Focus）準備打字時 */
+	.form-control:focus {
+		border-color: dodgerblue;
+		outline: none;
+	}
+	
+	/* 底部按鈕區塊排版 */
+	.form-actions {
+		display: flex;
+		justify-content: flex-end; /* 讓取消與送出按鈕靠右對齊 */
+		align-items: center;
+		gap: 12px;
+		margin-top: 30px;
+		border-top: 1px solid lightgray; /* 按鈕上方水平分界線 */
+		padding-top: 20px;
+	}
+	
+	/* 確認修改按鈕 */
+	.btn-submit {
+		padding: 7px 16px;
+		background-color: dodgerblue; 
+		color: white;                 
+		border: 1px solid dodgerblue;
+		border-radius: 4px;
+		font-size: 13px;
+		font-weight: bold;
+		cursor: pointer;
+		transition: all 0.2s;
+	}
+	
+	.btn-submit:hover {
+		background-color: royalblue;
+		border-color: royalblue;
+	}
+	
+	/* 取消返回按鈕 */
+	.btn-back {
+		margin-top: 0 !important;     /* 強制歸零，跟確認送出按鈕完美平齊 */
+		text-decoration: none;
+	}
+	
+</style>
 </head>
 <body>
 
-	<h2>修改廠商資料</h2>
-	<hr>
+	<!-- 上方導覽列 -->
+	<div class="navbar">
+		<a class="navbar-brand" href="#">🏢 後台管理系統</a>
+		<!-- href="#" 連結點選後會留在原地 -->
+		<div class="navbar-nav">
+			<a class="active" th:href="@{/supplier/select_page}">供應商管理</a>
+			<a th:href="@{/product/select_page}">商品管理</a>
+			<a th:href="@{/ap/select_page}">應付帳款</a>
+		</div>
+	</div>
 	
-	<form th:action="@{/supplier/update}" th:object="${splrVO}" method="post">
+	<div class="container-fluid">
 	
-		<input type="hidden" th:field="*{supplierId}" />
+		<div class="main-card form-card">
+			<div class="form-header">
+				<h3>修改廠商資料</h3>
+			</div>
+			
+			<form th:action="@{/supplier/update}" th:object="${splrVO}" method="post">
+			
+				<input type="hidden" th:field="*{supplierId}" />
+				
+				<div class="form-group">
+					<label class="form-label">廠商編號:</label>
+					<div class="form-text-static" th:text="*{supplierId}"></div>
+				</div>
 		
-		<div>
-			<label>廠商編號:</label>
-			<span th:text="*{supplierId}"></span>
+				<div class="form-group">
+					<label class="form-label">廠商名稱:</label>
+					<input type="text" class="form-control" th:field="*{supplierName}" placeholder="請輸入廠商名稱" />
+					<span style="color: red;" th:if="${#fields.hasErrors('supplierName')}" th:errors="*{supplierName}">名稱錯誤</span>
+				</div>
+				
+				<div class="form-group">
+					<label class="form-label">聯絡人:</label>
+					<input type="text" class="form-control" th:field="*{supplierContact}" placeholder="請輸入聯絡人資料" />
+					<span style="color: red;" th:if="${#fields.hasErrors('supplierContact')}" th:errors="*{supplierContact}">聯絡人資料錯誤</span>
+				</div>
+				
+				<div class="form-group">
+					<label class="form-label">廠商電話:</label>
+					<input type="text" class="form-control" th:field="*{supplierTel}" placeholder="請輸入廠商電話" />
+					<span style="color: red;" th:if="${#fields.hasErrors('supplierTel')}" th:errors="*{supplierTel}">廠商電話錯誤</span>
+				</div>
+				
+				<div class="form-group">
+					<label class="form-label">廠商 Email:</label>
+					<input type="text" class="form-control" th:field="*{supplierEmail}" placeholder="請輸入廠商Email" />
+					<span style="color: red;" th:if="${#fields.hasErrors('supplierEmail')}" th:errors="*{supplierEmail}">廠商Email錯誤</span>
+				</div>
+				
+				<div class="form-group">
+					<label class="form-label">廠商地址:</label>
+					<input type="text" class="form-control" th:field="*{supplierAddress}" placeholder="請輸入廠商地址" />
+					<span style="color: red;" th:if="${#fields.hasErrors('supplierAddress')}" th:errors="*{supplierAddress}">廠商地址錯誤</span>
+				</div>
+				
+				<div class="form-actions">
+					<a th:href="@{/supplier/select_page}" class="btn-back">❌ 取消返回</a>
+					<button type="submit" class="btn-submit">💾 確認修改</button>
+				</div>
+				
+			</form>
+			
 		</div>
-		
-		<br>
-
-		<div>
-			<label>廠商名稱:</label>
-			<input type="text" th:field="*{supplierName}" placeholder="請輸入廠商名稱" />
-			<span style="color: red;" th:if="${#fields.hasErrors('supplierName')}" th:errors="*{supplierName}">名稱錯誤</span>
-		</div>
-		
-		<br>
-		
-		<div>
-			<label>聯絡人:</label>
-			<input type="text" th:field="*{supplierContact}" placeholder="請輸入聯絡人資料" />
-			<span style="color: red;" th:if="${#fields.hasErrors('supplierContact')}" th:errors="*{supplierContact}">聯絡人資料錯誤</span>
-		</div>
-		
-		<br>
-		
-		<div>
-			<label>廠商電話:</label>
-			<input type="text" th:field="*{supplierTel}" placeholder="請輸入廠商電話" />
-			<span style="color: red;" th:if="${#fields.hasErrors('supplierTel')}" th:errors="*{supplierTel}">廠商電話錯誤</span>
-		</div>
-		
-		<br>
-		
-		<div>
-			<label>廠商 Email:</label>
-			<input type="text" th:field="*{supplierEmail}" placeholder="請輸入廠商Email" />
-			<span style="color: red;" th:if="${#fields.hasErrors('supplierEmail')}" th:errors="*{supplierEmail}">廠商Email錯誤</span>
-		</div>
-		
-		<br>
-		
-		<div>
-			<label>廠商地址:</label>
-			<input type="text" th:field="*{supplierAddress}" placeholder="請輸入廠商地址" />
-			<span style="color: red;" th:if="${#fields.hasErrors('supplierAddress')}" th:errors="*{supplierAddress}">廠商地址錯誤</span>
-		</div>
-		
-		<br>
-		
-		<div>
-			<button type="submit">💾 確認修改</button>
-			<a th:href="@{/supplier/select_page}">❌ 取消返回</a>
-		</div>
-		
-	</form>
-	
+	</div>
 </body>
 </html>

@@ -1,85 +1,213 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>修改商品資料</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 30px; background-color: #f4f7f6; }
-        .container { max-width: 600px; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin: 0 auto; }
-        h2 { color: #333; border-bottom: 2px solid #ff9800; padding-bottom: 10px; color: #ff9800; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
-        input[type="text"], input[type="number"], select { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
-        .error { color: red; font-size: 14px; margin-top: 5px; display: block; }
-        .btn-submit { background-color: #ff9800; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-size: 16px; }
-        .btn-submit:hover { background-color: #e68a00; }
-        .btn-cancel { background-color: #999; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; font-size: 16px; margin-left: 10px; }
-    </style>
+<meta charset="UTF-8">
+<title>修改商品資料</title>
+<link th:href="@{/css/backend-common.css}" rel="stylesheet">
+<style>
+	/* 表單大卡片 */
+	.form-card {
+		max-width: 550px; 
+		margin: 12px auto 30px auto;
+	}
+	
+	/* 表單頂部大標題 */
+	.form-header h3 {
+		margin: 0;
+		font-size: 20px;
+		color: black;
+		border-bottom: 2px solid lightgray;
+		padding-bottom: 15px;
+		margin-bottom: 25px;
+	}
+	
+	/* 標題與輸入框垂直排版 */
+	.form-group {
+		display: flex;
+		flex-direction: column;  /* 垂直排版 */
+		gap: 6px; 
+		margin-bottom: 18px;
+	}
+	
+	/* 欄位小標題 */
+	.form-label {
+		font-size: 14px;
+		font-weight: 600;
+		color: black;
+	}
+	
+	/* 商品編號專用 */
+	.form-text-static {
+		padding: 10px 12px;
+		background-color: whitesmoke;
+		color: gray;
+		border: 1px solid lightgray;
+		border-radius: 4px;
+		font-size: 14px;
+		font-family: monospace;       /* 使用等寬字型 */
+	}
+	
+	/* 輸入框與下拉選單（Input / Select） */
+	.form-control {
+		width: 100%;
+		padding: 10px 12px;
+		border: 1px solid lightgray;
+		border-radius: 4px;
+		font-size: 14px;
+		color: dimgray;
+		box-sizing: border-box;
+		background-color: white;
+		transition: border-color 0.2s;
+	}
+	
+	/* 當員工滑鼠點擊（Focus）準備打字時 */
+	.form-control:focus {
+		border-color: dodgerblue; /* 外框亮起藍色 */
+		outline: none;            /* 移除預設黑框 */
+	}
+	
+	.error {
+		color: crimson;
+		font-size: 13px;
+		margin-top: 4px;
+		font-weight: bold;
+	}
+	
+	/* 底部按鈕區塊排版 */
+	.form-actions {
+		display: flex;
+		justify-content: flex-end; /* 取消與送出按鈕靠右對齊 */
+		align-items: center;
+		gap: 12px; 
+		margin-top: 30px;
+		border-top: 1px solid lightgray;
+		padding-top: 20px;
+	}
+	
+	/* 儲存修改按鈕 */
+	.btn-submit {
+		padding: 7px 16px;
+		background-color: dodgerblue; 
+		color: white;                 
+		border: 1px solid dodgerblue;
+		border-radius: 4px;
+		font-size: 13px;
+		font-weight: bold;
+		cursor: pointer;
+		transition: all 0.2s;
+	}
+	
+	.btn-submit:hover {
+		background-color: royalblue;
+		border-color: royalblue;
+	}
+	
+	/* 取消返回按鈕 */
+	.btn-back {
+		margin-top: 0 !important;     /* 強制歸零，跟確認送出按鈕平齊 */
+		text-decoration: none;
+		color: gray;
+		border: 1px solid lightgray;
+		padding: 6px 14px;
+		border-radius: 4px;
+		font-size: 13px;
+		transition: all 0.2s;
+	}
+	
+	.btn-back:hover {
+		background-color: whitesmoke;
+		color: black;
+		border-color: gray;
+	}
+
+</style>
 </head>
 <body>
 
-    <div class="container">
-        <h2>✏️ 修改商品資料</h2>
-        
-        <form th:action="@{/product/update}" method="post" th:object="${prodVO}">
-            
-            <input type="hidden" th:field="*{productId}" />
-            <input type="hidden" th:field="*{purchasedQty}" />
-
-            <div class="form-group">
-                <label>所屬廠商：</label>
-					<select th:field="*{splrVO.supplierId}"> 
+	<!-- 上方導覽列 -->
+	<div class="navbar">
+		<a class="navbar-brand" href="#">🏢 後台管理系統</a>
+		<!-- href="#" 連結點選後會留在原地 -->
+		<div class="navbar-nav">
+			<a th:href="@{/supplier/select_page}">供應商管理</a>
+			<a class="active" th:href="@{/product/select_page}">商品管理</a>
+			<a th:href="@{/ap/select_page}">應付帳款</a>
+		</div>
+	</div>
+	
+	<div class="container-fluid">
+		<div class="main-card form-card">
+		
+		    <div class="form-header">
+		        <h2>✏️ 修改商品資料</h2>
+		    </div>
+		        
+	        <form th:action="@{/product/update}" method="post" th:object="${prodVO}" enctype="multipart/form-data">
+	            
+	            <input type="hidden" th:field="*{productId}" />
+	            <input type="hidden" th:field="*{purchasedQty}" />
+	            
+	            <div class="form-group">
+					<label class="form-label">商品編號:</label>
+					<div class="form-text-static" th:text="*{productId}"></div>
+				</div>
+	
+	            <div class="form-group">
+	                <label class="form-label">所屬廠商：</label>
+					<select class="form-control" th:field="*{splrVO.supplierId}"> 
 					    <option th:each="splr : ${supplierList}" 
 					            th:value="${splr.supplierId}" 
 					            th:text="${splr.supplierId} + ' - ' + ${splr.supplierName}">
 					    </option>
 					</select>
-            </div>
+	            </div>
+	
+	            <div class="form-group">
+	                <label class="form-label">商品名稱：</label>
+	                <input type="text" class="form-control" th:field="*{productName}" />
+	                <span th:if="${#fields.hasErrors('productName')}" th:errors="*{productName}" class="error"></span>
+	            </div>
+	
+	            <div class="form-group">
+	                <label class="form-label">商品描述：</label>
+	                <input type="text" class="form-control" th:field="*{productDesc}" />
+	                <span th:if="${#fields.hasErrors('productDesc')}" th:errors="*{productDesc}" class="error"></span>
+	            </div>
+	
+	            <div class="form-group">
+	                <label class="form-label">商品價格 ($)：</label>
+	                <input type="number" class="form-control" th:field="*{productPrice}" min="0" />
+	                <span th:if="${#fields.hasErrors('productPrice')}" th:errors="*{productPrice}" class="error"></span>
+	            </div>
+	
+	            <div class="form-group">
+	                <label class="form-label">庫存數量：</label>
+	                <input type="number" class="form-control" th:field="*{productQty}" min="0" />
+	                <span th:if="${#fields.hasErrors('productQty')}" th:errors="*{productQty}" class="error"></span>
+	            </div>
+	
+	            <div class="form-group">
+	                <label class="form-label">使用期限 (單位: 月數)：</label>
+	                <input type="number" class="form-control" th:field="*{usePeriod}" min="0" />
+	                <span th:if="${#fields.hasErrors('usePeriod')}" th:errors="*{usePeriod}" class="error"></span>
+	            </div>
+	
+	            <div class="form-group">
+	                <label class="form-label">商品狀態：</label>
+	                <select class="form-control" th:field="*{productStatus}">
+	                    <option th:value="true">🟢 上架</option>
+	                    <option th:value="false">🔴 下架</option>
+	                </select>
+	            </div>
+	
+	            <div class="form-actions">
+	                <a th:href="@{/product/listAllProduct}" class="btn-back">❌ 取消返回</a>
+	            	<button type="submit" class="btn-submit">💾 儲存修改</button>
+	            </div>
+	        </form>
 
-            <div class="form-group">
-                <label>商品名稱：</label>
-                <input type="text" th:field="*{productName}" />
-                <span th:if="${#fields.hasErrors('productName')}" th:errors="*{productName}" class="error"></span>
-            </div>
-
-            <div class="form-group">
-                <label>商品描述：</label>
-                <input type="text" th:field="*{productDesc}" />
-                <span th:if="${#fields.hasErrors('productDesc')}" th:errors="*{productDesc}" class="error"></span>
-            </div>
-
-            <div class="form-group">
-                <label>商品價格 ($)：</label>
-                <input type="number" th:field="*{productPrice}" min="0" />
-                <span th:if="${#fields.hasErrors('productPrice')}" th:errors="*{productPrice}" class="error"></span>
-            </div>
-
-            <div class="form-group">
-                <label>庫存數量：</label>
-                <input type="number" th:field="*{productQty}" min="0" />
-                <span th:if="${#fields.hasErrors('productQty')}" th:errors="*{productQty}" class="error"></span>
-            </div>
-
-            <div class="form-group">
-                <label>使用期限 (單位: 月數)：</label>
-                <input type="number" th:field="*{usePeriod}" min="0" />
-                <span th:if="${#fields.hasErrors('usePeriod')}" th:errors="*{usePeriod}" class="error"></span>
-            </div>
-
-            <div class="form-group">
-                <label>商品狀態：</label>
-                <select th:field="*{productStatus}">
-                    <option th:value="true">🟢 上架</option>
-                    <option th:value="false">🔴 下架</option>
-                </select>
-            </div>
-
-            <div style="margin-top: 20px;">
-                <button type="submit" class="btn-submit">儲存修改</button>
-                <a th:href="@{/product/listAllProduct}" class="btn-cancel">取消</a>
-            </div>
-        </form>
-    </div>
+		</div>
+	</div>
 
 </body>
 </html>

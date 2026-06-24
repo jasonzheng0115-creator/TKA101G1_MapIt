@@ -3,37 +3,112 @@
 <head>
 <meta charset="UTF-8">
 <title>廠商管理首頁</title>
+<link th:href="@{/css/backend-common.css}" rel="stylesheet">
 <style>
-	.menu-box { border: 1px solid #ccc; padding: 15px; margin-bottom: 15px; width: 400px; }
+
+	/* 常用功能 */
+	.main-card ul {
+		list-style: none; /* 移除原點 */
+	}
+	
+	.main-card ul li a {
+		display: inline-block; /* 讓行內元素<a>有block特性,padding才有效 */
+		width: 100%;
+		padding: 10px 15px;
+		border: 1px solid lightgray;
+		color: dimgray;
+		text-decoration: none;
+		border-radius: 4px;
+		font-size: 14px;
+    	transition: all 0.2s;
+	}
+	
+	.main-card ul li a:hover {
+		border-color: dodgerblue;
+		color: dodgerblue;
+		background-color: aliceblue;
+	}
+	
+	/* 查詢輸入框（Input） */
+	.main-card label {
+		font-size: 13px;
+	    color: gray;
+	    display: block;
+	    margin-bottom: 8px;
+	}
+	
+	/* [type="text"] 是 屬性選擇器 */
+	.main-card input[type="text"] {
+		width: 100%;
+		padding: 10px 12px;
+	    border: 1px solid lightgray;
+	    border-radius: 4px;
+	    font-size: 14px;
+	    margin-bottom: 15px;
+	}
+	
+	/* 當滑鼠點進輸入框準備打字時 */
+	.main-card input[type="text"]:focus {
+		border-color: dodgerblue;
+		outline: 0; /* 取消預設的粗黑框 */
+	}
+	
+	/* 送出查詢按鈕 */
+	.main-card button[type="submit"] {
+		width: 100%;
+	    padding: 10px;
+	    background-color: dodgerblue;
+	    border: 1px solid dodgerblue;
+	    color: white;
+	    border-radius: 4px;
+	    cursor: pointer;    /* 滑鼠移過去變成手指 */
+	    font-size: 15px;
+	}
+	
+	/* hover 滑鼠懸停狀態 */
+	.main-card button[type="submit"]:hover {
+		background-color: royalblue;
+		border-color: royalblue;
+	}
+
 	.error-msg { color: red; font-size: 14px; }
 
 </style>
 </head>
 <body>
 	
-	<h2>🏢 廠商管理首頁</h2>
-	<hr>
-	
-	<div class="menu-box">
-		<h3>常用功能</h3>
-		<ul>
-			<li><a th:href="@{/supplier/addSupplier}">➕ 新增廠商資料</a></li>
-			<br>
-			<li><a th:href="@{/supplier/listAllSupplier}">📋 列出所有廠商</a></li>
-		</ul>
+	<!-- 上方導覽列 -->
+	<div class="navbar">
+		<a class="navbar-brand" href="#">🏢 後台管理系統</a>
+		<!-- href="#" 連結點選後會留在原地 -->
+		<div class="navbar-nav">
+			<a class="active" th:href="@{/supplier/select_page}">供應商管理</a>
+			<a th:href="@{/product/select_page}">商品管理</a>
+			<a th:href="@{/ap/select_page}">應付帳款</a>
+		</div>
 	</div>
 	
-	<div class="menu-box">
-		<h3>🔍 依廠商編號查詢</h3>
-		
-		<form th:action="@{/supplier/getOne_For_Display}" method="post">
-			<label>請輸入廠商編號</label>
-			<input type="text" name="supplierId" placeholder="請輸入編號..." th:value="${param.supplierId}" />
-			<button type="submit">送出查詢</button>
-			
-			<div class="error-msg" th:if="${errorMsg}" th:text="${errorMsg}"></div>
-		</form>
+	<div class="container">
 	
+		<div class="main-card">
+			<h3>常用功能</h3>
+			<ul>
+				<li><a th:href="@{/supplier/addSupplier}">➕ 新增廠商資料</a></li>
+				<br>
+				<li><a th:href="@{/supplier/listAllSupplier}">📋 列出所有廠商</a></li>
+			</ul>
+		</div>
+		
+		<div class="main-card">
+			<h3>🔍 依廠商編號查詢</h3>
+			<form th:action="@{/supplier/getOne_For_Display}" method="post">
+				<label>請輸入廠商編號</label>
+				<input type="text" name="supplierId" placeholder="請輸入編號..." th:value="${param.supplierId}" />
+				<button type="submit">送出查詢</button>
+				<div class="error-msg" th:if="${errorMsg}" th:text="${errorMsg}"></div>
+			</form>
+		</div>
+		
 	</div>
 	
 </body>

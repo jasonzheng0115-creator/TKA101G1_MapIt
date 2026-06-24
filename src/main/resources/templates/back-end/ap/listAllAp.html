@@ -1,136 +1,293 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>應付帳款列表</title>
-    <style>
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; }
-        
-        
-		.pagination-container {
-	        margin-top: 25px;
-	        display: flex;
-	        align-items: center;
-	        gap: 8px;
-	        font-family: Arial, sans-serif;
-	    }
-	    .pagination-container a, .pagination-container span {
-	        padding: 6px 12px;
-	        border: 1px solid #ddd;
-	        text-decoration: none;
-	        color: #007bff;
-	        border-radius: 4px;
-	        font-size: 14px;
-	    }
-	    .pagination-container a:hover {
-	        background-color: #f2f2f2;
-	    }
-	    .pagination-container .active {
-	        background-color: #007bff;
-	        color: white;
-	        border-color: #007bff;
-	        font-weight: bold;
-	    }
-	    .pagination-container .disabled {
-	        color: #6c757d;
-	        background-color: #e9ecef;
-	        border-color: #dee2e6;
-	        cursor: not-allowed;
-	    }
-	    .pagination-container .ellipsis {
-	        border: none;
-	        color: #6c757d;
-	        padding: 6px 4px;
-	    }
-	    .page-info {
-	        border: none !important;
-	        color: #555;
-	        font-size: 13px;
-	    }
-    </style>
+<meta charset="UTF-8">
+<title>應付帳款列表</title>
+<link th:href="@{/css/backend-common.css}" rel="stylesheet">
+<style>
+
+	/* 修改刪除 */
+	.form-inline {
+		display: inline;
+	}
+	
+	.action-cell-container {
+		display: flex; 
+		gap: 5px;
+	}
+	
+	.table-header {
+		display: flex; 
+		justify-content: space-between; 
+		align-items: center; 
+		margin-bottom: 20px;
+	}
+	
+	/* 單線表格排版 */
+	table { 
+		width: 100%;
+		border-collapse: collapse; /* 雙線併單線 */
+		text-align: left; 
+		font-size: 14px; 
+		table-layout: fixed;
+		margin-top: 20px;
+	}
+	
+	th { 
+		background-color: whitesmoke;
+		color: black; 
+		font-weight: 600; 
+		padding: 12px 10px; 
+		border-bottom: 2px solid lightgray;
+	}
+	
+	td { 
+		padding: 12px 10px; 
+		border-bottom: 1px solid lightgray; /* 水平細線 */
+		color: dimgray; 
+		vertical-align: middle;
+	}
+	
+	tr:hover { 
+		background-color: whitesmoke; 
+	}
+	
+	/* 付款狀態 */
+	.status-on { color: forestgreen; font-weight: bold; }
+	.status-off { color: crimson; font-weight: bold; }
+	
+	/* 返回控制中心按鈕 */
+	.btn-back {
+		display: inline-block;
+		padding: 6px 12px;
+		border: 1px solid gray;
+		color: gray;
+		text-decoration: none;
+		border-radius: 4px;
+		font-size: 13px;
+		transition: all 0.2s;
+	}
+	
+	.btn-back:hover {
+		background-color: whitesmoke;
+		color: black;
+	}
+	
+	/* 修改/刪除 */
+	.btn-action {
+		padding: 5px 10px;
+		border: 1px solid lightgray;
+		border-radius: 4px;
+		font-size: 12px;
+		cursor: pointer;
+		background-color: white;
+		transition: all 0.2s;
+	}
+	
+	/* 修改按鈕滑過 */
+	.btn-update:hover {
+		border-color: dodgerblue;
+		color: dodgerblue;
+		background-color: whitesmoke;
+	}
+	
+	/* 刪除按鈕滑過 */
+	.btn-delete:hover {
+		border-color: crimson;
+		color: crimson;
+		background-color: snow;
+	}
+	
+	/* 分頁 */
+	.pagination-container {
+		display: flex;
+		justify-content: center; /* 置中 */
+		align-items: center;
+		margin-top: 30px;
+	}
+	
+	.page-info {
+		font-size: 13px;
+		color: gray;
+		margin-right: 20px;
+	}
+	
+	.page-buttons {
+		display: flex;
+		gap: 5px;
+	}
+	
+	.page-item {
+		display: inline-block;
+		text-decoration: none;
+		color: dimgray;
+		padding: 6px 12px;
+		border: 1px solid lightgray;
+		border-radius: 4px;
+		font-size: 13px;
+		transition: all 0.2s;
+		background-color: white;
+	}
+	
+	.page-item:hover {
+		border-color: dodgerblue;
+		color: dodgerblue;
+		background-color: whitesmoke;
+	}
+	
+	/* 當前頁面 active */
+	.page-item.active {
+		background-color: dodgerblue;
+		border-color: dodgerblue;
+		color: white;
+		font-weight: bold;
+	}
+	
+	/* 鎖死狀態 disabled */
+	.page-item.disabled {
+		color: lightgray;
+		border-color: lightgray;
+		pointer-events: none; 
+		background-color: white; 
+	}
+
+</style>
 </head>
 <body>
 
-    <h2>應付帳款查詢結果</h2>
-    <a th:href="@{/ap/select_page}">⬅️ 回首頁</a>
-    
-    <table>
-        <thead>
-            <tr>
-                <th>帳款編號</th>
-                <th>金額</th>
-                <th>帳單月份</th>
-                <th>付款日期</th>
-                <th>付款狀態</th>
-                <th>廠商名稱</th>
-                <th>操作</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="ap : ${apData != null ? apData.content : apList}">
-                <td th:text="${ap.apId}"></td>
-                <td th:text="${ap.amountPayable}"></td>
-                <td th:text="${ap.billMonth}"></td>
-                <td th:text="${ap.paymentDate != null ? ap.paymentDate : '----'}"></td>
-                <td>
-                    <span th:if="${ap.apStatus}" style="color: green; font-weight: bold;">已付款</span>
-                    <span th:unless="${ap.apStatus}" style="color: red; font-weight: bold;">未付款</span>
-                </td>
-                <td th:text="${ap.splrVO != null ? ap.splrVO.supplierName : '無廠商資料'}"></td>
-                <td>
-                    <div style="display: flex; gap: 5px;">
-                        <form th:action="@{/ap/getOne_For_Update}" method="post" style="display:inline;">
-                            <input type="hidden" name="apId" th:value="${ap.apId}"/>
-                            <button type="submit">修改</button>
-                        </form>
-                        <form th:action="@{/ap/delete}" method="post" style="display:inline;" onsubmit="return confirm('確定要刪除嗎？');">
-                            <input type="hidden" name="apId" th:value="${ap.apId}"/>
-                            <button type="submit">刪除</button>
-                        </form>
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-
-	<div th:if="${apData != null and totalPage != null and totalPage > 0}" class="pagination-container">
-	    
-	    <span th:if="${currentPage == 1}" class="disabled">⏮️ 首頁</span>
-	    <a th:unless="${currentPage == 1}" th:href="@{/ap/listAllAp(page=1)}">⏮️ 首頁</a>
-	    
-	    <span th:if="${currentPage == 1}" class="disabled">◀️ 上一頁</span>
-	    <a th:unless="${currentPage == 1}" th:href="@{/ap/listAllAp(page=${currentPage - 1})}">◀️ 上一頁</a>
-	
-	    <th:block th:with="
-	        maxButtons=5,
-	        half=2,
-	        calcStart=${currentPage - half},
-	        startPage=${calcStart < 1 ? 1 : (calcStart + maxButtons > totalPage + 1 ? (totalPage - maxButtons + 1 < 1 ? 1 : totalPage - maxButtons + 1) : calcStart)},
-	        calcEnd=${startPage + maxButtons - 1},
-	        endPage=${calcEnd > totalPage ? totalPage : calcEnd}
-	    ">
-	        
-	        <span th:if="${startPage > 1}" class="ellipsis">...</span>
-	
-	        <th:block th:each="i : ${#numbers.sequence(startPage, endPage)}">
-	            <span th:if="${currentPage == i}" class="page-num active" th:text="${i}"></span>
-	            <a th:unless="${currentPage == i}" th:href="@{/ap/listAllAp(page=${i})}" class="page-num" th:text="${i}"></a>
-	        </th:block>
-	
-	        <span th:if="${endPage < totalPage}" class="ellipsis">...</span>
-	        
-	    </th:block>
-	
-	    <span th:if="${currentPage == totalPage}" class="disabled">下一頁 ▶️</span>
-	    <a th:unless="${currentPage == totalPage}" th:href="@{/ap/listAllAp(page=${currentPage + 1})}">下一頁 ▶️</a>
-	    
-	    <span th:if="${currentPage == totalPage}" class="disabled">末頁 ⏭️</span>
-	    <a th:unless="${currentPage == totalPage}" th:href="@{/ap/listAllAp(page=${totalPage})}">末頁 ⏭️</a>
-	    
-	    <span class="page-info" th:text="'(共 ' + ${totalPage} + ' 頁 / 當前第 ' + ${currentPage} + ' 頁)'"></span>
+	<!-- 上方導覽列 -->
+	<div class="navbar">
+		<a class="navbar-brand" href="#">🏢 後台管理系統</a>
+		<!-- href="#" 連結點選後會留在原地 -->
+		<div class="navbar-nav">
+			<a th:href="@{/supplier/select_page}">供應商管理</a>
+			<a th:href="@{/product/select_page}">商品管理</a>
+			<a class="active" th:href="@{/ap/select_page}">應付帳款</a>
+		</div>
 	</div>
+	
+	<div class="container-fluid">
+		<div class="main-card">
+		
+			<div class="table-header">
+		    	<h3>📋 應付帳款查詢結果</h3>
+		    	<a th:href="@{/ap/select_page}" class="btn-back">🔙 回控制中心</a>
+		    </div>
+		    
+		    <table>
+		        <thead>
+		            <tr>
+		                <th>帳款編號</th>
+		                <th>金額</th>
+		                <th>帳單月份</th>
+		                <th>付款日期</th>
+		                <th>付款狀態</th>
+		                <th>廠商名稱</th>
+		                <th>操作</th>
+		            </tr>
+		        </thead>
+		        <tbody>
+		            <tr th:each="ap : ${apData != null ? apData.content : apList}">
+		                <td th:text="${ap.apId}"></td>
+		                <td th:text="${ap.amountPayable}"></td>
+		                <td th:text="${ap.billMonth}"></td>
+		                <td th:text="${ap.paymentDate != null ? ap.paymentDate : '----'}"></td>
+		                <td>
+		                    <span th:if="${ap.apStatus}" style="color: green; font-weight: bold;">已付款</span>
+		                    <span th:unless="${ap.apStatus}" style="color: red; font-weight: bold;">未付款</span>
+		                </td>
+		                <td th:text="${ap.splrVO != null ? ap.splrVO.supplierName : '無廠商資料'}"></td>
+		                <td>
+		                    <div style="display: flex; gap: 5px;">
+		                        <form th:action="@{/ap/getOne_For_Update}" method="post" style="display:inline;">
+		                            <input type="hidden" name="apId" th:value="${ap.apId}"/>
+		                            <button type="submit" class="btn-action btn-update">修改</button>
+		                        </form>
+		                        <form th:action="@{/ap/delete}" method="post" style="display:inline;" onsubmit="return confirm('確定要刪除嗎？');">
+		                            <input type="hidden" name="apId" th:value="${ap.apId}"/>
+		                            <button type="submit" class="btn-action btn-delete">刪除</button>
+		                        </form>
+		                    </div>
+		                </td>
+		            </tr>
+		        </tbody>
+		    </table>
+		    
+		    <div class="pagination-container" th:if="${apData}">
+				
+				<span class="page-info" th:text="'頁面 ' + ${currentPage} + ' / ' + ${totalPages}">頁面 1 / 1</span>
+			
+				<div class="page-buttons">
+					<a th:href="@{/ap/listAllAp(page=1)}" 
+					   th:classappend="${currentPage == 1} ? 'disabled' : ''" 
+					   class="page-item">« 首頁</a>
+					
+					<a th:href="@{/ap/listAllAp(page=${currentPage - 1})}" 
+					   th:classappend="${currentPage == 1} ? 'disabled' : ''" 
+					   class="page-item">‹ 上一頁</a>
+					
+					<th:block th:each="i : ${#numbers.sequence(1, totalPages == 0 ? 1 : totalPages)}">
+						<a th:href="@{/ap/listAllAp(page=${i})}" 
+						   th:text="${i}" 
+						   th:classappend="${i == currentPage} ? 'active' : ''"
+						   class="page-item"></a>
+					</th:block>
+					
+					<a th:href="@{/ap/listAllAp(page=${currentPage + 1})}" 
+					   th:classappend="${currentPage == totalPages} ? 'disabled' : ''" 
+					   class="page-item">下一頁 ›</a>
+					
+					<a th:href="@{/ap/listAllAp(page=${totalPages})}" 
+					   th:classappend="${currentPage == totalPages} ? 'disabled' : ''"
+					   class="page-item">末頁 »</a>
+				</div>
+			</div>
+		    
+		    
+		<!--  頁碼過多時 用...的寫法
+			
+			<div th:if="${apData != null and totalPage != null and totalPage > 0}" class="pagination-container">
+			    
+			    <span th:if="${currentPage == 1}" class="disabled">⏮️ 首頁</span>
+			    <a th:unless="${currentPage == 1}" th:href="@{/ap/listAllAp(page=1)}">⏮️ 首頁</a>
+			    
+			    <span th:if="${currentPage == 1}" class="disabled">◀️ 上一頁</span>
+			    <a th:unless="${currentPage == 1}" th:href="@{/ap/listAllAp(page=${currentPage - 1})}">◀️ 上一頁</a>
+			
+	
+			    <th:block th:with="
+ 			        maxButtons=5,
+			        half=2,
+ 			        calcStart=${currentPage - half},
+ 			        startPage=${calcStart < 1 ? 1 : (calcStart + maxButtons > totalPage + 1 ? (totalPage - maxButtons + 1 < 1 ? 1 : totalPage - maxButtons + 1) : calcStart)},
+ 			        calcEnd=${startPage + maxButtons - 1},
+			        endPage=${calcEnd > totalPage ? totalPage : calcEnd}
+			    	">
+			        
+			        <span th:if="${startPage > 1}" class="ellipsis">...</span>
+			
+			        <th:block th:each="i : ${#numbers.sequence(startPage, endPage)}">
+			            <span th:if="${currentPage == i}" class="page-num active" th:text="${i}"></span>
+			            <a th:unless="${currentPage == i}" th:href="@{/ap/listAllAp(page=${i})}" class="page-num" th:text="${i}"></a>
+			        </th:block>
+			
+			        <span th:if="${endPage < totalPage}" class="ellipsis">...</span>
+			        
+			    </th:block>
+			
+			    <span th:if="${currentPage == totalPage}" class="disabled">下一頁 ▶️</span>
+			    <a th:unless="${currentPage == totalPage}" th:href="@{/ap/listAllAp(page=${currentPage + 1})}">下一頁 ▶️</a>
+			    
+			    <span th:if="${currentPage == totalPage}" class="disabled">末頁 ⏭️</span>
+			    <a th:unless="${currentPage == totalPage}" th:href="@{/ap/listAllAp(page=${totalPage})}">末頁 ⏭️</a>
+			    
+			    <span class="page-info" th:text="'(共 ' + ${totalPage} + ' 頁 / 當前第 ' + ${currentPage} + ' 頁)'"></span>
+			</div>
+			
+		-->
 
+		</div>
+	</div>
+	
 </body>
 </html>
