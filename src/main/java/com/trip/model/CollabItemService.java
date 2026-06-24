@@ -99,4 +99,24 @@ public class CollabItemService {
         return addCollaborator(tripId, friend.getCustId());
     }
 
+    // 7. 藉由 ID 找出共同編輯紀錄 (供 API 權限檢查使用)
+    public CollabItemVO getCollabById(Integer collabId) {
+        return collabItemRepository.findById(collabId).orElse(null);
+    }
+
+    // 8. 退出協作 (協作者在列表點擊「退出編輯」時執行)
+    @Transactional
+    public void exitCollaboration(Integer tripId, Integer custId) {
+        // 先根據行程 ID 和會員 ID 找出該筆協作紀錄
+        CollabItemVO collab = collabItemRepository.findByTripVO_TripIdAndCustVO_CustId(tripId, custId);
+
+        // 防呆：如果根本找不到這筆紀錄，代表他本來就不是協作者
+        if (collab != null) {
+            // 從資料庫中刪除這筆協作關係
+            collabItemRepository.delete(collab);
+        } else {
+            throw new RuntimeException("你本來就不是此行程的協作者！");
+        }
+    }
+
 }

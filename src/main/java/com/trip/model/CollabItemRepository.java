@@ -3,6 +3,7 @@ package com.trip.model; // 嚴格遵守：Repository 放在 model 套件中
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.List;
+import com.cust.model.CustVO;
 
 @Repository
 public interface CollabItemRepository extends JpaRepository<CollabItemVO, Integer> {
@@ -15,5 +16,8 @@ public interface CollabItemRepository extends JpaRepository<CollabItemVO, Intege
 
     // 3. 刪除某個行程下的所有共同編輯者（行程被物理刪除時，要連協作者一起清掉）
     void deleteByTripVO_TripId(Integer tripId);
+
+    // 4. 根據「會員（CustVO）」找出他被加入的所有協作紀錄
+    List<CollabItemVO> findByCustVO(CustVO custVO);
 
 }
