@@ -252,20 +252,41 @@
 <body>
 
     <!-- ====== 頂部資訊列 ====== -->
+    <!-- ====== 頂部資訊列 ====== -->
     <div class="header">
         <div class="trip-info">
-            <h2 th:text="${trip.tripName}">東京五天四夜櫻花祭</h2>
-            <p>
-                出發日期：<span th:text="${trip.tripDate}">2026-04-02</span>
-                &nbsp;|&nbsp;
-                <span th:text="${trip.tripStatus ? '🌍 公開' : '🔒 私有'}">公開</span>
-            </p>
+            <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 8px;">
+                <!-- 行程名稱輸入框 -->
+                <input type="text" id="tripNameInput" th:value="${trip.tripName}"
+                    style="font-size: 20px; font-weight: 500; color: #4A6274; border: 1px solid #D1D8DD; background: rgba(255,255,255,0.5); padding: 4px 10px; border-radius: 6px; width: 300px; outline: none;">
+                <!-- 儲存修改按鈕 -->
+                <button class="btn btn-add" onclick="updateTripBasicInfo()"
+                    style="padding: 6px 14px; font-size: 13px; border-radius: 6px;">💾 儲存行程資訊</button>
+            </div>
+            <div style="display: flex; gap: 16px; align-items: center; font-size: 13px; color: #8C9DAA;">
+                <div>
+                    出發日期：
+                    <!-- 日期輸入框 -->
+                    <input type="date" id="tripDateInput" th:value="${trip.tripDate}"
+                        style="padding: 4px; border: 1px solid #D1D8DD; border-radius: 4px; color: #4A6274; outline: none;">
+                </div>
+                <div>
+                    狀態設定：
+                    <!-- 公開/私有下拉選單 -->
+                    <select id="tripStatusInput"
+                        style="padding: 4px; border: 1px solid #D1D8DD; border-radius: 4px; color: #4A6274; outline: none;">
+                        <option value="true" th:selected="${trip.tripStatus}">🌍 公開 (所有人可見)</option>
+                        <option value="false" th:selected="${!trip.tripStatus}">🔒 私有 (僅自己與協作者可見)</option>
+                    </select>
+                </div>
+            </div>
         </div>
         <div class="header-actions">
             <button class="btn btn-add" onclick="openModal()">＋ 加入新景點</button>
             <a th:href="@{/trip/my-trips}" class="btn btn-back">← 返回列表</a>
         </div>
     </div>
+
 
     <!-- ====== 左右分割主內容 ====== -->
     <div class="main-container">
@@ -514,6 +535,41 @@
                     if (response.ok) {
                         // 偷偷顯示一個成功的小提示（不重新整理畫面，體驗更好）
                         alert('💾 儲存成功！');
+                    } else {
+                        return response.text().then(text => { throw new Error(text) });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("❌ 更新失敗：" + error.message);
+                });
+        }
+
+        function updateTripBasicInfo() {
+            // 抓取畫面上三個輸入框的值
+            const tripName = document.getElementById('tripNameInput').value;
+            const tripDate = document.getElementById('tripDateInput').value;
+            const tripStatus = document.getElementById('tripStatusInput').value;
+
+            // 從網址列抓取目前的 tripId (例如 /trip/edit/5 就會抓到 5)
+            const urlParts = window.location.pathname.split('/');
+            const tripId = urlParts[urlParts.length - 1];
+
+            // 呼叫我們剛剛寫的 TripApiController
+            fetch(`/api/trips/${tripId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    tripName: tripName,
+                    tripDate: tripDate,
+                    tripStatus: tripStatus
+                })
+            })
+                .then(response => {
+                    if (response.ok) {
+                        alert('💾 行程資訊更新成功！');
                     } else {
                         return response.text().then(text => { throw new Error(text) });
                     }

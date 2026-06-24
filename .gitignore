@@ -89,3 +89,5 @@ Thumbs.db
 # 本地端檔案上傳資料夾
 ##############################
 uploads/
+/.apt_generated/
+/.apt_generated_tests/
