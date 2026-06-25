@@ -111,74 +111,77 @@ public class CustController {
 		}
 	
 	
-	@GetMapping("/updateProfile") //修改個人資料功能，指向前端的登入html
-	public String updateProfile(HttpSession session,ModelMap model) {
-	//取得先前會員的就個人資料
-	CustVO oldData = (CustVO)session.getAttribute("loginCust");
-	model.addAttribute("loginCust", oldData);
-	return "/front-end/customer/updateProfile";
+	@GetMapping("/updateProfile") // 修改個人資料功能，指向前端的登入html
+	public String updateProfile(HttpSession session, ModelMap model) {
+		// 取得先前會員的就個人資料
+		CustVO oldData = (CustVO) session.getAttribute("loginCust");
+		model.addAttribute("loginCust", oldData);
+		return "/front-end/customer/updateProfile";
 	}
 	
 	@PostMapping("/updateProfile")
 	public String updateProfile(
-			//驗證前端傳來的新個人資料
-			@Valid @ModelAttribute("loginCust") CustVO custVO,
-			BindingResult result,HttpSession session,
-			//拿取前端的檔案
-			@RequestParam("cust_img_file") MultipartFile file,
-			//防呆required = false 代表沒傳來也沒關係
-			@RequestParam(value="remove_img_flag", required=false) String removeImgFlag,
-			ModelMap model){
-			//如果錯誤退回給前端，提供錯誤提示資訊
-			if(result.hasErrors()) {
-				System.out.println("發生錯誤的欄位與原因如下：" + result.getAllErrors());;
+		// 驗證前端傳來的新個人資料
+		@Valid @ModelAttribute
+		("loginCust") CustVO custVO, BindingResult result, HttpSession session,
+		// 拿取前端的檔案
+		@RequestParam
+		("cust_img_file") MultipartFile file,
+		// 防呆required = false 代表沒傳來也沒關係
+		@RequestParam
+		(value = "remove_img_flag", required = false) String removeImgFlag, ModelMap model) {
+		// 如果錯誤退回給前端，提供錯誤提示資訊
+		if (result.hasErrors()) {
+			System.out.println("發生錯誤的欄位與原因如下：" + result.getAllErrors());
+			;
+			return "/front-end/customer/updateProfile";
+		}
+		// 正確話就拿出舊資料，為了要確認是要改哪一個會員id的個人資料
+		CustVO oldData = (CustVO) session.getAttribute("loginCust");
+		custVO.setCustId(oldData.getCustId());
+		// 如果使用者選擇移除頭像
+		if ("true".equals(removeImgFlag)) {
+			custVO.setCustImg(null);
+		} else if (file.isEmpty()) {
+			// 使用者沒有選新照片，沿用原本舊照片的路徑
+			custVO.setCustImg(oldData.getCustImg());
+		} else {
+			// 使用者選新照片
+			try {
+				// 取得專案的絕對路徑
+				String projectPath = System.getProperty("user.dir");
+				// 合成存檔的目標資料夾
+				String uploadDirectory = projectPath + "/uploads/avatars";
+				// 建立代表資料夾的File物件
+				File folder = new File(uploadDirectory);
+
+				if (!folder.exists()) {
+					folder.mkdirs();
+				}
+				// 取得原本照片的檔名
+				String originalFilename = file.getOriginalFilename();
+				// 取出副檔名
+				String fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
+				// 合成唯一的黨名
+				String newFileName = "avatar_" + custVO.getCustId() + fileExtension;
+				// 建立目的地的file物件，不能用+號，因為照片命名回黏在一起，不會存進指定的資料夾裡，也不能用"/"拼，因為不同作業系統會用\/，符號不同容易錯誤
+				File saveFile = new File(uploadDirectory, newFileName);
+				// 複製檔案存入硬碟
+				file.transferTo(saveFile);
+				// 將虛擬相對路徑存入資料庫
+				custVO.setCustImg("/uploads/avatars/" + newFileName);
+			} catch (Exception e) {
+				e.printStackTrace();
+				model.addAttribute("errorMsg", "照片上傳失敗:" + e.getMessage());
 				return "/front-end/customer/updateProfile";
 			}
-			//正確話就拿出舊資料，為了要確認是要改哪一個會員id的個人資料
-			CustVO oldData = (CustVO)session.getAttribute("loginCust");
-			custVO.setCustId(oldData.getCustId());
-			//如果使用者選擇移除頭像
-			if("true".equals(removeImgFlag)) {
-				custVO.setCustImg(null);
-			}else if(file.isEmpty()) {
-				//使用者沒有選新照片，沿用原本舊照片的路徑
-				custVO.setCustImg(oldData.getCustImg());
-			}else{ 
-				//使用者選新照片
-				try {
-				//取得專案的絕對路徑
-				String projectPath = System.getProperty("user.dir");
-				//合成存檔的目標資料夾
-				String uploadDirectory = projectPath+"/uploads/avatars";
-				//建立代表資料夾的File物件
-				File folder = new File(uploadDirectory);
-				
-				if(!folder.exists()) {folder.mkdirs();}
-				//取得原本照片的檔名
-				String originalFilename = file.getOriginalFilename();
-				//取出副檔名
-				String fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
-				//合成唯一的黨名
-				String newFileName = "avatar_"+custVO.getCustId()+fileExtension;
-				//建立目的地的file物件，不能用+號，因為照片命名回黏在一起，不會存進指定的資料夾裡，也不能用"/"拼，因為不同作業系統會用\/，符號不同容易錯誤
-				File saveFile = new File(uploadDirectory,newFileName);
-				//複製檔案存入硬碟
-				file.transferTo(saveFile);
-				//將虛擬相對路徑存入資料庫
-				custVO.setCustImg("/uploads/avatars/" + newFileName);
-				} catch(Exception e) {
-					e.printStackTrace();
-					model.addAttribute("errorMsg", "照片上傳失敗:" + e.getMessage());
-					return "/front-end/customer/updateProfile";
-					}
-				}
-			//將更新後的資料寫回資料庫
-			custService.updateProfile(custVO);
-			//更新新的資料給
-			session.setAttribute("loginCust",custVO);
-			return "redirect:/customer/loginSuccess";
-				 
-			}
+		}
+		// 將更新後的資料寫回資料庫
+		custService.updateProfile(custVO);
+		// 更新新的資料給
+		session.setAttribute("loginCust", custVO);
+		return "redirect:/customer/loginSuccess";
+	}
 			
 	@GetMapping("/empCustomerList") //後台查詢所有會員資料功能，進入後台頁面，預設顯示所有會員
 	public String empCustomerList(ModelMap model) {
