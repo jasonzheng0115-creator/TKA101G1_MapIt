@@ -225,7 +225,7 @@
 
         <div class="navbar-right">
             <span class="user-info" th:if="${userName}" th:text="${userName} + ' 你好'">使用者 你好</span>
-            <a th:href="@{/logout}" class="btn btn-logout" th:if="${userName}">登出</a>
+            <a th:href="@{/customer/logout}" class="btn btn-logout" th:if="${userName}">登出</a>
             <a th:href="@{/customer/login}" class="btn btn-login" th:unless="${userName}">登入</a>
         </div>
     </nav>

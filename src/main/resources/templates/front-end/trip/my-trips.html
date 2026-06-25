@@ -305,7 +305,6 @@
         </div>
 
         <!-- 行程卡片列表 -->
-        <!-- 行程卡片列表 -->
         <div class="trip-grid">
             <div class="trip-card" th:each="trip : ${tripList}">
                 <div class="trip-info">
@@ -314,25 +313,43 @@
                         <span th:text="${trip.tripDate}">2026-01-01</span>
                         <span th:if="${trip.tripStatus}" class="status status-public">公開</span>
                         <span th:unless="${trip.tripStatus}" class="status status-private">私有</span>
+
+                        <!-- 💡 新增：顯示行程建立者資訊 (loginCustId 是在 TripController 傳入的登入者ID) -->
+                        <span style="margin-left: 12px; font-weight: 300; font-size: 12px;">
+                            👤
+                            <span th:if="${trip.custVO.custId == loginCustId}" style="color: #7B8FA1;">建立者: 我</span>
+                            <span th:unless="${trip.custVO.custId == loginCustId}"
+                                th:text="'建立者: ' + ${trip.custVO.custName}"
+                                style="color: #5A7A8A; font-weight: 400;">建立者: 其他人</span>
+                        </span>
                     </p>
                 </div>
 
-                <!-- 新增：將編輯和刪除按鈕包在一起 -->
+                <!-- 將編輯和刪除/退出按鈕包在一起 -->
                 <div style="display: flex; gap: 8px;">
                     <!-- 編輯按鈕 -->
-                    <a th:href="@{'/trip/edit/' + ${trip.tripId}}" class="btn btn-edit">編輯明細</a>
+                    <a th:href="@{'/trip/edit/' + ${trip.tripId}}" class="btn btn-edit">編輯</a>
 
-                    <!-- 刪除按鈕 (必須用表單送 POST 請求) -->
-                    <form th:action="@{/trip/delete}" method="post" style="margin: 0;"
-                        onsubmit="return confirm('確定要刪除這個行程嗎？此動作無法復原！');">
+                    <!-- 🗑️ 擁有者視角：如果自己是建立者，才顯示「刪除」按鈕表單 -->
+                    <form th:if="${trip.custVO.custId == loginCustId}" th:action="@{/trip/delete}" method="post"
+                        style="margin: 0;" onsubmit="return confirm('確定要刪除這個行程嗎？此動作無法復原！');">
                         <input type="hidden" name="tripId" th:value="${trip.tripId}" />
                         <button type="submit" class="btn btn-edit"
                             style="color: #c95c5c; border-color: #c95c5c;">刪除</button>
+                    </form>
+
+                    <!-- 🚪 成員視角：如果是別人建立的，則顯示「退出行程」按鈕表單 -->
+                    <form th:unless="${trip.custVO.custId == loginCustId}" th:action="@{/trip/exit-collab}"
+                        method="post" style="margin: 0;" onsubmit="return confirm('確定要退出此行程嗎？');">
+                        <input type="hidden" name="tripId" th:value="${trip.tripId}" />
+                        <button type="submit" class="btn btn-edit"
+                            style="color: #d18b47; border-color: #d18b47;">退出行程</button>
                     </form>
                 </div>
 
             </div>
         </div>
+
 
 
     </div>
