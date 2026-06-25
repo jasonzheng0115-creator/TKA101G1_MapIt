@@ -78,6 +78,11 @@ public class CartController {
 				.mapToInt(CartVO::getSubtotal)
 				.sum();
 		
+		// 把所有旅遊商品從資料庫撈出來，裝進 frontProdList 
+		// 讓推薦商品區塊顯示
+		List<ProdVO> frontProdList = prodSvc.getAll();
+		model.addAttribute("frontProdList", frontProdList);
+		
 		model.addAttribute("cartList", cartList);
 		model.addAttribute("totalAmount", totalAmount);
 		return "front-end/cart/cart_list";
@@ -116,5 +121,7 @@ public class CartController {
 		redisTemplate.delete(key);      // 核心:直接把這個會員的 Redis 號碼箱整箱刪除
 		return "redirect:/cart/show";   // 刪完後重整購物車畫面
 	}
+	
+	
 	
 }

@@ -5,11 +5,126 @@
 <title>廠商詳細資料</title>
 <link th:href="@{/css/backend-common.css}" rel="stylesheet">
 <style>
+	/* 表單大卡片 */
+	.form-card {
+		max-width: 550px;        
+		margin: 12px auto 30px auto; 
+	}
 	
+	/* 表單頂部大標題 */
+	.form-header h3 {
+		margin: 0;
+		font-size: 20px;
+		color: black;
+		border-bottom: 2px solid lightgray; 
+		padding-bottom: 15px;
+		margin-bottom: 25px;    
+	}
+	
+	/*  明細欄位 */
+	.detail-group { 
+		display: flex;
+		align-items: center;
+		padding: 14px 0; 
+		border-bottom: 1px solid whitesmoke;
+		font-size: 14px; 
+	}
+	
+	/* 讓最後一個欄位不要有下劃線 */
+	.detail-group:last-child { 
+		border-bottom: none; 
+	}
+	
+	/* 欄位左側固定寬度，確保右側內容對齊一線 */
+	.detail-label { 
+		font-weight: 600; 
+		color: black; 
+		width: 120px; 
+		flex-shrink: 0;
+	}
+	
+	/* 欄位右側數值 */
+	.detail-value { 
+		color: dimgray; 
+	}
 
+	.error-box {
+		color: crimson; 
+		text-align: center; 
+		font-weight: bold;
+		margin: 30px 0;
+		font-size: 15px;
+	}
+	
+	/* 底部按鈕 */
+	.form-actions {
+		display: flex;
+		justify-content: flex-end; 
+		align-items: center;
+		gap: 12px;
+		margin-top: 30px;
+		border-top: 1px solid lightgray; 
+		padding-top: 20px;
+	}
+	
+	.btn-back {
+		text-decoration: none;        
+		color: gray;
+		border: 1px solid lightgray;
+		padding: 6px 14px;
+		border-radius: 4px;
+		font-size: 13px;
+		transition: all 0.2s;
+	}
+	
+	.btn-back:hover {
+		background-color: whitesmoke;
+		color: black;
+		border-color: gray;
+	}
+	
+	.form-inline {
+		display: inline;
+	}
+	
+	/* 前往修改按鈕 */
+	.btn-submit {
+		padding: 7px 16px;
+		background-color: white; 
+		color: gray;                 
+		border: 1px solid lightgray;
+		border-radius: 4px;
+		font-size: 13px;
+		font-weight: bold;
+		cursor: pointer;
+		transition: all 0.2s;
+	}
+	
+	.btn-submit:hover {
+		background-color: snow;  
+		border-color: royalblue;
+		color: royalblue;
+	}
+	
+	/* 刪除按鈕 */
+	.btn-delete {
+		padding: 6px 14px;
+		background-color: white; 
+		color: gray;                 
+		border: 1px solid lightgray;
+		border-radius: 4px;
+		font-size: 13px;
+		font-weight: bold;
+		cursor: pointer;
+		transition: all 0.2s;
+	}
+	
+	.btn-delete:hover {
+		background-color: snow;
+		border-color: crimson;
+		color: crimson;
+	}
 
-	.detail-box { border: 1px solid #666; padding: 20px; width: 500px; background-color: #fafafa; }
-	.field-title { font-weight: bold; color: #333; display: inline-block; width: 100px; }
 </style>
 </head>
 <body>
@@ -24,24 +139,60 @@
 			<a th:href="@{/ap/select_page}">應付帳款</a>
 		</div>
 	</div>
-
-	<h2>🔍 廠商詳細資料</h2>
-	<hr>
 	
-	<div style="margin-bottom: 15px;">
-		<a th:href="@{/supplier/select_page}">🔙 返回主選單</a>
+	<div class="container-fluid">
+		<div class="main-card form-card">
+
+			<div class="form-header">
+				<h3>🔍 廠商詳細資料</h3>
+			</div>
+			
+			<div th:if="${splrVO}" th:object="${splrVO}">
+				<div class="detail-group">
+					<span class="detail-label">🏢 廠商編號:</span> 
+					<span class="detail-value" th:text="*{supplierId}"></span>
+				</div>
+				<div class="detail-group">
+					<span class="detail-label">✨ 廠商名稱：</span>
+					<span class="detail-value" th:text="*{supplierName}"></span>
+				</div>
+				<div class="detail-group">
+					<span class="detail-label">👤 聯 絡 人：</span>
+					<span class="detail-value" th:text="*{supplierContact}"></span>
+				</div>
+				<div class="detail-group">
+					<span class="detail-label">📞 廠商電話：</span>
+					<span class="detail-value" th:text="*{supplierTel}"></span>
+				</div>
+				<div class="detail-group">
+					<span class="detail-label">✉️ 完整 Email：</span>
+					<span class="detail-value" th:text="*{supplierEmail}"></span>
+				</div>
+				<div class="detail-group">
+					<span class="detail-label">📍 廠商地址：</span>
+					<span class="detail-value" th:text="*{supplierAddress}"></span>
+				</div>
+				
+				<div th:unless="${splrVO}" class="error-box">
+					❌ 找不到該廠商的詳細資料！
+				</div>
+				
+				<div class="form-actions">
+					<a th:href="@{/supplier/select_page}" class="btn-back">🔙 返回控制中心</a>
+					
+					<form th:action="@{/supplier/getOne_For_Update}" method="post" class="form-inline">
+						<input type="hidden" name="supplierId" th:value="*{supplierId}">
+						<button type="submit" class="btn-submit">✍️ 前往修改</button>
+					</form>
+					
+					<form th:action="@{/supplier/delete}" method="post" class="form-inline" onsubmit="return confirm('警告：確定要刪除這家廠商嗎？此動作無法復原！');">
+						<input type="hidden" name="supplierId" th:value="*{supplierId}">
+						<button type="submit" class="btn-delete">🗑️ 刪除廠商</button>
+					</form>
+				</div>
+			</div>
+		</div>
 	</div>
 	
-	<div class="detail-box" th:object="${splrVO}">
-		<p><span class="field-title">🏢 廠商編號:</span> <span th:text="*{supplierId}"></span></p>
-		<p><span class="field-title">✨ 廠商名稱:</span> <span th:text="*{supplierName}"></span></p>
-		<p><span class="field-title">👤 聯 絡 人:</span> <span th:text="*{supplierContact}"></span></p>
-		<p><span class="field-title">📞 廠商電話:</span> <span th:text="*{supplierTel}"></span></p>
-		<p><span class="field-title">✉️ Email:</span> <span th:text="*{supplierEmail}"></span></p>
-		<p><span class="field-title">📍 廠商地址:</span> <span th:text="*{supplierAddress}"></span></p>
-	</div>
-	
-
-
 </body>
 </html>

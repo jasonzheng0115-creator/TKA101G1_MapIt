@@ -167,12 +167,39 @@
 	                <input type="text" class="form-control" th:field="*{productName}" />
 	                <span th:if="${#fields.hasErrors('productName')}" th:errors="*{productName}" class="error"></span>
 	            </div>
-	
-	            <div class="form-group">
-	                <label class="form-label">商品描述：</label>
-	                <input type="text" class="form-control" th:field="*{productDesc}" />
-	                <span th:if="${#fields.hasErrors('productDesc')}" th:errors="*{productDesc}" class="error"></span>
-	            </div>
+				
+				<!-- 原本只有一個文字框 -->
+<!-- 	            <div class="form-group"> -->
+<!-- 	                <label class="form-label">商品描述：</label> -->
+<!-- 	                <input type="text" class="form-control" th:field="*{productDesc}" /> -->
+<!-- 	                <span th:if="${#fields.hasErrors('productDesc')}" th:errors="*{productDesc}" class="error"></span> -->
+<!-- 	            </div> -->
+				<!-- 改為分成四個文字框(地址.營業時間.票券使用期限.補充資訊) 搭配JS -->
+				<div class="form-group">
+					<label class="form-label">📍 地址 / 集合地點：</label>
+					<input type="text" class="form-control" id="desc_address" />
+				</div>
+				
+				<div class="form-group">
+					<label class="form-label">🕒 營業時間 / 接駁時間：</label>
+					<input type="text" class="form-control" id="desc_businessHours" />
+				</div>
+				
+				<div class="form-group">
+					<label class="form-label">⏳ 票券使用期限：</label>
+					<input type="text" class="form-control" id="desc_expiry" />
+				</div>
+				
+				<div class="form-group">
+					<label class="form-label">📝 補充說明：</label>
+					<textarea class="form-control" id="desc_remark" rows="3" style="resize: vertical;"></textarea>
+				</div>
+				
+				<div class="form-group" style="display: none;">
+					<input type="text" id="real_productDesc" th:field="*{productDesc}" />
+				</div>
+				<span th:if="${#fields.hasErrors('productDesc')}" th:errors="*{productDesc}" class="error" style="display: block; margin-bottom: 15px;"></span>
+
 	
 	            <div class="form-group">
 	                <label class="form-label">商品價格 ($)：</label>
@@ -208,6 +235,51 @@
 
 		</div>
 	</div>
+	
+	<script>
+		// 在網頁一載入完成時，立刻執行「反向解鎖填回」
+		document.addEventListener("DOMContentLoaded", function() {
+			const realInput = document.getElementById('real_productDesc');
+			if (realInput) {
+				const rawText = realInput.value.trim();
+				
+				// 如果原本是 JSON 格式，就打散填入 4 個框框
+				if (rawText.startsWith('{')) {
+					try {
+						const data = JSON.parse(rawText);
+						document.getElementById('desc_address').value = data.address || '';
+						document.getElementById('desc_businessHours').value = data.businessHours || '';
+						document.getElementById('desc_expiry').value = data.expiry || '';
+						document.getElementById('desc_remark').value = data.remark || '';
+					} catch (e) {
+						// 防呆：萬一解析失敗，當作純文字填入第一欄
+						document.getElementById('desc_address').value = rawText;
+					}
+				} else {
+					// 舊有的純文字，100% 相容直接填入第一欄
+					document.getElementById('desc_address').value = rawText;
+				}
+			}
+		});
+
+		// 監聽表單送出事件，按下儲存時「打包成 JSON」送回後端
+		document.querySelector('form').addEventListener('submit', function(e) {
+			const addressVal = document.getElementById('desc_address').value.trim();
+			const hoursVal = document.getElementById('desc_businessHours').value.trim();
+			const expiryVal = document.getElementById('desc_expiry').value.trim();
+			const remarkVal = document.getElementById('desc_remark').value.trim();
+			
+			const descObj = {
+				address: addressVal,
+				businessHours: hoursVal,
+				expiry: expiryVal,
+				remark: remarkVal
+			};
+			
+			// 把新改好的內容字串化，塞進隱藏欄位
+			document.getElementById('real_productDesc').value = JSON.stringify(descObj);
+		});
+	</script>
 
 </body>
 </html>

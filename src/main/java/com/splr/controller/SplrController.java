@@ -79,7 +79,7 @@ public class SplrController {
 		
 			splrSvc.addSplr(splrVO);
 			
-			return "redirect:/supplier/select_page";
+			return "redirect:/supplier/listAllSupplier";
 	}
 	
 	
@@ -100,7 +100,7 @@ public class SplrController {
 		
 		splrSvc.updateSplr(splrVO);
 		
-		return "redirect:/supplier/select_page";
+		return "redirect:/supplier/listAllSupplier";
 	}
 	
 	@PostMapping("/delete")
@@ -108,6 +108,6 @@ public class SplrController {
 		
 		splrSvc.deleteSplr(supplierId);
 		
-		return "redirect:/supplier/select_page";	
+		return "redirect:/supplier/listAllSupplier";	
 	}
 }
