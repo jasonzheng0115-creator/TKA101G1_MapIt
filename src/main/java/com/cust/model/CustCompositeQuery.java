@@ -51,13 +51,11 @@ public class CustCompositeQuery {
 		List<Predicate> predicateList = new ArrayList<Predicate>();
 		//拿到自訂的所有標籤清單
 		Set<String> keys = map.keySet();
-		int count = 0;
 		//把標籤一個一個拿出來看
 		for(String key :keys) {
 			String value = map.get(key)[0];
 			//!"action".equals(key)：有些表單會傳送action隱藏按鈕值，跟資料庫欄位無關，直接忽略
 			if(value != null && value.trim().length()!= 0 && !"action".equals(key)){
-				count++;
 				//通過篩選的乾淨資料
 				predicateList.add(getPredicate(builder,root,key,value.trim()));
 			}

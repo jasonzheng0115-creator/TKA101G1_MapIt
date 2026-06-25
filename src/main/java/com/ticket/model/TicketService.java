@@ -7,16 +7,12 @@ import org.springframework.stereotype.Service;
 
 import com.prod.model.ProdVO;
 
-import jakarta.persistence.EntityManager;
-
 @Service
 public class TicketService {
 	
 	@Autowired
 	private TicketRepository repository;
 
-	@Autowired
-	private EntityManager entityManger;
 	
 	//     回傳值          名稱                輸入條件參數
 	public List<TicketVO> getTicketsByProdId(Integer prodId){
