@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.cust.config.ImageConfig;
 import com.cust.model.CustService;
 import com.cust.model.CustVO;
 

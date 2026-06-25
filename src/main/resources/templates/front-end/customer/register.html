@@ -154,7 +154,7 @@
             <!-- 密碼 -->
             <div class="form-group">
                 <label for="custPassword">會員密碼</label>
-                <div class="password-wrapper"> <!-- 新增wrapper外框，方便做定位 -->
+                <div class="password-wrapper"></div> <!-- 新增wrapper外框，方便做定位 -->
                 <input type="password" th:field="*{custPassword}" placeholder="8~20碼，必須包含大小寫英文字母">
                 <span class="error-text" th:if="${#fields.hasErrors('custPassword')}" th:errors="*{custPassword}"></span>
             </div>
