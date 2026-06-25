@@ -145,7 +145,7 @@ public class ProdController {
 		}
 		
 		prodSvc.addProd(prodVO);
-		return "redirect:/product/select_page";
+		return "redirect:/product/listAllProduct";
 	}
 	
 	@PostMapping("/getOne_For_Update")
@@ -201,13 +201,13 @@ public class ProdController {
 		}
 		
 		prodSvc.updateProd(prodVO);
-		return "redirect:/product/select_page";
+		return "redirect:/product/listAllProduct";
 	}
 	
 	@PostMapping("/delete")
 	public String delete(@RequestParam("productId") Integer productId, ModelMap model) {
 		prodSvc.deleteProd(productId);
-		return "redirect:/product/select_page";
+		return "redirect:/product/listAllProduct";
 	}
 	
 }

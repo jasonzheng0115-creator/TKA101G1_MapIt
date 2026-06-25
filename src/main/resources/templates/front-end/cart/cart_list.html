@@ -10,6 +10,59 @@
 		padding: 20px;
 	}
 	
+	/* 頂部導覽列 */
+	.front-navbar {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		background-color: white;
+		padding: 15px 40px;
+		box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+		position: sticky; /* 往下滾動網頁時會牢牢鎖在最頂端 */
+		top: 0;
+		z-index: 100;
+		margin: -20px -20px 25px -20px; /* 破開 body 的預設內距，讓白條能吃滿左右兩側 */
+		width: calc(100% + 40px);
+		box-sizing: border-box;
+	}
+	
+	.front-logo {
+		font-size: 22px;
+		font-weight: bold;
+		color: coral;
+		text-decoration: none;
+	}
+	
+	.member-status-box {
+		display: flex;
+		align-items: center;
+		gap: 15px;
+	}
+	
+	.member-link {
+		font-size: 14px;
+		color: #555;
+		text-decoration: none;
+		font-weight: 500;
+		transition: color 0.2s;
+	}
+	
+	.member-link:hover {
+		color: dodgerblue;
+	}
+	
+	.btn-login {
+		background-color: orange;
+		color: white !important;
+		padding: 6px 16px;
+		border-radius: 20px;
+	}
+	
+	.btn-login:hover {
+		background-color: darkorange;
+	}
+	
+	
 	/* 左右並排 */
 	.cart-container {
 		display: flex;
@@ -17,30 +70,39 @@
 		align-items: flex-start; /* 防止右邊卡片被拉長 */
 	}
 	
-	/* 左邊:佔據 70% 寬度的商品清單區 */
+	/* 左邊 商品清單區 */
 	.cart-items {
 		flex: 7;
 	}
 	
-	/* 右邊:佔據 30% 寬度的結帳小卡 */
+	/* 右邊 結帳小卡 */
 	.cart-summary {
 		flex: 3;
 		background-color: white;
 		border: 1px solid lightgray;
-		border-radius: 8px;
-		padding: 20px;
+		border-radius: 12px;
+		padding: 24px;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
 	}
 	
-	/* 單條商品橫卡:橫向 Flex 排版 */
+	/* 商品卡片 */
 	.item-row {
 		background-color: white;
 		border: 1px solid lightgray;
-		border-radius: 8px;
-		padding: 15px;
+		border-radius: 12px;
+		padding: 18px;
 		margin-bottom: 15px;
 		
 		display: flex;
 		align-items: center; /* 上下置中 */
+		transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); /* 回彈波動 */
+	}
+	
+	/* 當滑鼠移到這列商品上時 */
+	.item-row:hover {
+		transform: translateX(6px); /* 往右邊微移 6 像素 */
+		box-shadow: 0 8px 16px rgba(255, 140, 0, 0.1);
+		border-color: dodgerblue; 
 	}
 	
 	/* 購物車商品小圖 */
@@ -48,8 +110,9 @@
 		width: 100px;
 		height: 80px;
 		object-fit: cover; /* 比例不對自動裁切 */
-		border-radius: 4px;
+		border-radius: 8px;
 		margin-right: 20px;
+		border: 1px solid lightgray; /* 圖片貼上邊框 */
 	}
 	
 	/* 商品名字區域(吃滿中間剩下的所有空間) */
@@ -82,39 +145,43 @@
 		color: black;
 	}
 	
-	/* 高級紅刪除按鈕 */
+	/* 刪除按鈕 */
 	.del-btn {
-		background-color: crimson;
-		color: white;
-		border: none;
-		padding: 6px 12px;
-		border-radius: 4px;
+		background-color: snow;
+		color: crimson;
+		border: 1px solid lightcoral;
+		padding: 6px 14px;
+		border-radius: 6px;
 		cursor: pointer;
-		font-size: 14px;
-		transition: background-color 0.2s;
+		font-size: 13px;
+		font-weight: bold;
+		transition: all 0.2s;
 	}
 	
 	.del-btn:hover {
-		background-color: darkred;
+		background-color: crimson;
+		color: white;
+		border-color: crimson;
 	}
 	
 	/* 右側大顆森林綠結帳按鈕 */
 	.checkout-btn {
-		background-color: forestgreen;
+		background-color: orange;
 		color: white;
 		border: none;
-		padding: 12px;
+		padding: 14px;
 		width: 100%;
-		border-radius: 4px;
+		border-radius: 25px;
 		cursor: pointer;
 		font-size: 16px;
 		font-weight: bold;
-		margin-top: 15px;
-		transition: background-color 0.2s;
+		box-shadow: 0 4px 12px rgba(30, 144, 255, 0.25);
+		transition: all 0.2s;
 	}
 	
 	.checkout-btn:hover {
-		background-color: darkgreen;
+		background-color: darkorange;
+		box-shadow: 0 4px 12px rgba(255, 140, 0, 0.4);
 	}
 	
 	.summary-row {
@@ -166,10 +233,97 @@
 		background-color: crimson;
 		color: white;
 	}
+	
+	/* 推薦商品 */
+	.recommend-section {
+		margin-top: 60px; 
+		border-top: 2px dashed lightgray;
+		padding-top: 40px;
+	}
+	
+	/* 推薦區的大標題 */
+	.recommend-title {
+		font-size: 22px;
+		color: black;
+		margin-bottom: 25px;
+		font-weight: bold;
+	}
+	
+	/* 推薦區 商品大區塊 */
+	.recommend-grid {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 20px;
+	}
+	
+	/* 推薦區 商品小卡 */
+	.recommend-card {
+		background-color: white;
+		border: 1px solid lightgray;
+		border-radius: 12px;
+		padding: 12px;
+		width: calc(25% - 15px); /* 切成 4 欄 */
+		box-sizing: border-box;
+		transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+		display: flex;
+		flex-direction: column;
+	}
+	
+	.recommend-card:hover {
+		transform: translateY(-6px);
+		box-shadow: 0 10px 18px rgba(255, 140, 0, 0.12);
+		border-color: orange;
+	}
+	
+	/* 推薦卡片的圖片 */
+	.rec-img {
+		width: 100%;
+		height: 130px;
+		object-fit: cover;
+		border-radius: 8px;
+	}
+	
+	/* 推薦商品名稱 */
+	.rec-name {
+		font-size: 15px;
+		color: dimgray;
+		margin: 8px 0 4px 0;
+		font-weight: bold;
+		
+		display: -webkit-box;
+		-webkit-line-clamp: 2; /* 鎖定兩行 */
+		-webkit-box-orient: vertical;/* 讓多出來的字變... */
+		overflow: hidden; /* 多出的字自動隱藏，不撐破卡片 */
+	}
+	
+	/* 右對齊的主題藍色價格 */
+	.rec-price {
+		font-size: 15px;
+		color: coral;
+		font-weight: bold;
+		text-align: right;
+		margin-top: auto; /* 自動推到卡片最底部 */
+	}
+
 
 </style>
 </head>
 <body>
+
+	<nav class="front-navbar">
+		<a th:href="@{/frontend/product/listAll}" class="front-logo">旅圖 | MapIt</a>
+		
+		<div class="member-status-box">
+			<span style="font-size: 13px; color: gray;">歡迎光臨，旅客!</span>
+			
+			<a href="/member/register" class="member-link">📝 註冊新會員</a>
+			<a href="/member/register" class="member-link btn-login">🔐 會員登入</a>
+		
+			<span style="color: lightgray;">|</span>
+			
+			<a th:href="@{/cart/show}" class="member-link" style="font-size: 16px; color: dodgerblue; font-weight: bold;">🛒 購物車</a>
+		</div>	
+	</nav>
 	
 	<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
 		<h1 style="margin: 0;">購物車商品明細</h1>
@@ -187,7 +341,7 @@
 	
 		<div class="cart-items">
 			<div class="item-row" th:each="cartVO : ${cartList}">
-				<img th:src="@{/images/{imgName}(imgName=${cartVO.product.productImg})}" class="item-img" th:alt="${cartVO.product.productName}">
+				<img th:src="@{/upload/{imgName}(imgName=${cartVO.product.productImg})}" class="item-img" th:alt="${cartVO.product.productName}">
 				
 				<div class="item-info">
 					<h3 th:text="${cartVO.product.productName}">台北101景觀台門票 placeholder</h3>
@@ -223,7 +377,7 @@
 			</div>
 			
 			<a th:href="@{/frontend/product/listAll}" 
-		       style="margin-top: 20px; display: inline-block; text-decoration: none; color: dodgerblue; font-size: 16px; font-weight: bold; padding: 8px 16px; border: 1px solid dodgerblue; border-radius: 4px; transition: all 0.2s;">
+		       style="margin-top: 20px; display: inline-block; text-decoration: none; color: orange; font-size: 16px; font-weight: bold; padding: 8px 16px; border: 1px solid dodgerblue; border-radius: 4px; transition: all 0.2s;">
 		       ← 繼續購物 (回商品列表)
 		    </a>
 		</div>
@@ -250,11 +404,31 @@
     	<p style="color: gray; margin-bottom: 30px; font-size: 14px;">看來您還沒加入任何好玩的旅遊行程呢!</p>
     	
     	<a th:href="@{/frontend/product/listAll}"
-    	   style="display: inline-block; background-color: dodgerblue; color: white; text-decoration: none; padding: 12px 28px; border-radius: 25px; font-size: 16px; font-weight:bold;">
+    	   style="display: inline-block; background-color: orange; color: white; text-decoration: none; padding: 12px 28px; border-radius: 25px; font-size: 16px; font-weight:bold;">
     	   立刻前往精選商品逛逛!
     	</a>
     
     </div>
+    
+    <div class="recommend-section" th:if="${frontProdList != null and not #lists.isEmpty(frontProdList)}">
+		<div class="recommend-title">✨ 熱門推薦行程</div>
+		
+		<div class="recommend-grid">
+			<div class="recommend-card" th:each="recProd, iterStat : ${frontProdList}" th:if="${iterStat.index < 4}">
+				
+				<form th:action="@{/frontend/product/getOne_For_Display}" method="POST" style="margin: 0; padding: 0; cursor: pointer; width: 100%;">
+					<input type="hidden" name="productId" th:value="${recProd.productId}"/>
+					
+					<button type="submit" style="background: none; border: none; padding: 0; margin: 0; width: 100%; text-align: left; cursor: pointer;">
+						<img th:src="@{/upload/{imgName}(imgName=${recProd.productImg})}" class="rec-img" alt="推薦商品圖片">
+						<div class="rec-name" th:text="${recProd.productName}">推薦旅遊商品名稱 placeholder</div>
+					</button>
+				</form>
+				
+				<div class="rec-price" th:text="'NT$ ' + ${recProd.productPrice}">NT$ 999</div>
+			</div>
+		</div>
+	</div>
 
 	
 </body>

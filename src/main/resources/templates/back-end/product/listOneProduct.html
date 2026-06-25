@@ -142,10 +142,20 @@
 	                <span class="detail-label">商品名稱：</span>
 	                <span class="detail-value" th:text="${prodVO.productName}"></span>
 	            </div>
-	            <div class="detail-group">
-	                <span class="detail-label">商品描述：</span>
-	                <span class="detail-value" th:text="${prodVO.productDesc}"></span>
-	            </div>
+				<div class="detail-group" style="align-items: flex-start;">
+				    <span class="detail-label" style="padding-top: 5px;">商品圖片：</span>
+				    <span class="detail-value">
+				        <img th:src="@{/upload/{img}(img=${prodVO.productImg})}" 
+				             style="max-width: 100%; max-height: 250px; border-radius: 6px; border: 1px solid lightgray;" alt="商品圖片">
+				    </span>
+				</div>
+				<div class="detail-group" style="align-items: flex-start;">
+					<span class="detail-label" style="padding-top: 2px;">商品描述：</span>
+					<span class="detail-value">
+						<div id="detail-desc-text" th:text="${prodVO.productDesc}" style="display:none;"></div>
+						<div id="detail-desc-formatted"></div>
+					</span>
+				</div>
 	            <div class="detail-group">
 	                <span class="detail-label">商品價格：</span>
 	                <span class="detail-value" th:text="'$' + ${prodVO.productPrice}"></span>
@@ -189,6 +199,37 @@
 	        </div>
 		</div>
 	</div>
+	
+	<script>
+		// 因為是單筆詳細頁，直接用 ID 精準抓取那唯一的欄位
+		const rawEl = document.getElementById('detail-desc-text');
+		const targetDiv = document.getElementById('detail-desc-formatted');
+		
+		if (rawEl && targetDiv) {
+			const rawText = rawEl.innerText.trim();
+			
+			if (rawText.startsWith('{')) {
+				try {
+					const data = JSON.parse(rawText);
+					
+					// 空間足夠用大間距排版
+					targetDiv.innerHTML = `
+						<div style="font-size: 14px; color: #555; text-align: left; line-height: 1.6;">
+							<p style="margin: 6px 0;">📍 <b>地址/集合地點：</b>${data.address || '未填'}</p>	
+							<p style="margin: 6px 0;">🕒 <b>營業/接駁時間：</b>${data.businessHours || '未填'}</p>
+							<p style="margin: 6px 0;">⏳ <b>票券使用期限：</b>${data.expiry || '未填'}</p>
+							<p style="margin: 6px 0; color: gray; font-style: italic;">📝 <b>補充說明：</b>${data.remark || '無'}</p>
+						</div>
+					`;
+				} catch (e) {
+					targetDiv.innerHTML = `<span style="font-size: 14px; color: dimgray;">${rawText}</span>`;
+				}
+			} else {
+				// 舊有純文字資料直接相容秀出
+				targetDiv.innerHTML = `<span style="font-size: 14px; color: dimgray;">${rawText}</span>`;
+			}
+		}
+	</script>
 
 </body>
 </html>

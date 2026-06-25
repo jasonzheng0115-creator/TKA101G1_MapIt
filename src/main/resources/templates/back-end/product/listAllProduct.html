@@ -168,6 +168,8 @@
 		            <tr>
 		                <th>商品編號</th>
 		                <th>商品名稱</th>
+		                <th>商品圖片</th>
+		                <th>商品描述</th>
 		                <th>商品價格</th>
 		                <th>商品數量</th>
 		                <th>所屬廠商</th>
@@ -180,6 +182,19 @@
 		                <tr th:each="prod : ${prodData}">
 		                    <td th:text="${prod.productId}"></td>
 		                    <td th:text="${prod.productName}"></td>
+							<td>
+							    <form th:action="@{/product/getOne_For_Display}" method="post" style="margin:0; padding:0;">
+							        <input type="hidden" name="productId" th:value="${prod.productId}"/>
+							        <button type="submit" style="background: none; border: none; padding: 0; cursor: pointer;">
+							            <img th:src="@{/upload/{img}(img=${prod.productImg})}" 
+							                 style="height: 50px; width: auto; border-radius: 4px; border: 1px solid lightgray;" />
+							        </button>
+							    </form>
+							</td>
+							<td>
+								<div class="backend-desc-text" th:text="${prod.productDesc}" style="display:none;"></div>
+								<div class="backend-desc-formatted"></div>
+							</td>
 		                    <td th:text="'$' + ${prod.productPrice}"></td>
 		                    <td th:text="${prod.productQty}"></td>
 		                    <td th:text="${prod.splrVO.supplierId} + ' - ' + ${prod.splrVO.supplierName}"></td>
@@ -204,6 +219,19 @@
 		                <tr th:each="prod : ${productStatusList}">
 		                    <td th:text="${prod.productId}"></td>
 		                    <td th:text="${prod.productName}"></td>
+							<td>
+							    <form th:action="@{/product/getOne_For_Display}" method="post" style="margin:0; padding:0;">
+							        <input type="hidden" name="productId" th:value="${prod.productId}"/>
+							        <button type="submit" style="background: none; border: none; padding: 0; cursor: pointer;">
+							            <img th:src="@{/upload/{img}(img=${prod.productImg})}" 
+							                 style="height: 50px; width: auto; border-radius: 4px; border: 1px solid lightgray;" />
+							        </button>
+							    </form>
+							</td>
+							<td>
+								<div class="backend-desc-text" th:text="${prod.productDesc}" style="display:none;"></div>
+								<div class="backend-desc-formatted"></div>
+							</td>
 		                    <td th:text="'$' + ${prod.productPrice}"></td>
 		                    <td th:text="${prod.productQty}"></td>
 		                    <td th:text="${prod.splrVO.supplierId} + ' - ' + ${prod.splrVO.supplierName}"></td>
@@ -228,6 +256,19 @@
 		                <tr th:each="prod : ${prodVOList}">
 		                    <td th:text="${prod.productId}"></td>
 		                    <td th:text="${prod.productName}"></td>
+							<td>
+							    <form th:action="@{/product/getOne_For_Display}" method="post" style="margin:0; padding:0;">
+							        <input type="hidden" name="productId" th:value="${prod.productId}"/>
+							        <button type="submit" style="background: none; border: none; padding: 0; cursor: pointer;">
+							            <img th:src="@{/upload/{img}(img=${prod.productImg})}" 
+							                 style="height: 50px; width: auto; border-radius: 4px; border: 1px solid lightgray;" />
+							        </button>
+							    </form>
+							</td>
+							<td>
+								<div class="backend-desc-text" th:text="${prod.productDesc}" style="display:none;"></div>
+								<div class="backend-desc-formatted"></div>
+							</td>
 		                    <td th:text="'$' + ${prod.productPrice}"></td>
 		                    <td th:text="${prod.productQty}"></td>
 		                    <td th:text="${prod.splrVO.supplierId} + ' - ' + ${prod.splrVO.supplierName}"></td>
@@ -279,5 +320,41 @@
 				</div>
 		</div>
 	</div>
+	
+	<script>
+		// 抓出網頁上所有被隱藏的原始 JSON 欄位，與準備的空白容器
+		const descTxts = document.querySelectorAll('.backend-desc-text');
+		const formattedDivs = document.querySelectorAll('.backend-desc-formatted');
+		
+		// 用迴圈抓出來
+		descTxts.forEach((el, index) => {
+			const rawText = el.innerText.trim(); // 拿到原始文字
+			const targetDiv = formattedDivs[index]; // 找到對應的空容器
+			
+			// 判斷：如果是大括號開頭，表示是我們新規格的 JSON 格式
+			if (rawText.startsWith('{')) {
+				try {
+					const data = JSON.parse(rawText);
+					
+					// 配合後台表格比較窄的空間，用最緊湊的字體排版
+					targetDiv.innerHTML = `
+						<div style="font-size: 12px; color: #555; line-height: 1.4; text-align: left;">
+							<div>📍 <b>地點:</b> ${data.address || '未填'}</div>	
+							<div>🕒 <b>時間:</b> ${data.businessHours || '未填'}</div>
+							<div>⏳ <b>期限:</b> ${data.expiry || '未填'}</div>
+							<div style="color: gray; font-style: italic; margin-top: 2px;">📝 ${data.remark || '無備註'}</div>
+						</div>
+					`;
+				} catch (e) {
+					// 萬一解析失敗的防呆
+					targetDiv.innerHTML = `<span style="font-size: 13px; color: gray;">${rawText}</span>`;
+				}
+			} else {
+				// 如果不是大括號開頭，代表是舊有的純文字資料，相容性 100% 直接印出
+				targetDiv.innerHTML = `<span style="font-size: 13px; color: gray;">${rawText}</span>`;
+			}
+		});
+	</script>
+	
 </body>
 </html>

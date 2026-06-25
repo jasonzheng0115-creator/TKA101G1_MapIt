@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -71,6 +72,18 @@ public class FrontProdController {
 		model.addAttribute("prodData", pageData);
 		
 		return "front-end/product/listAllProduct";
+	}
+	
+	// 前台大圖點擊後進入詳細資料頁面
+	@PostMapping("/getOne_For_Display")
+	public String getOne_For_Display (
+			@RequestParam("productId")Integer productId, 
+			ModelMap model) {
+		
+		ProdVO prodVO = prodSvc.getOneProd(productId);
+		model.addAttribute("prodVO", prodVO);
+		return "front-end/product/listOneProduct";
+		
 	}
 
 }

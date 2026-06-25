@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>旅遊商品詳情</title>
+<style>
+	body {
+		background-color: whitesmoke;
+		font-family: sans-serif;
+		padding: 20px;
+		display: flex;
+		flex-direction: column; /* 鎖定由上到下垂直 */
+		align-items: center;    /* 返回鈕與卡片水平置中 */
+	}
+	
+	/* 頂部導覽列 */
+	.front-navbar {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		background-color: white;
+		padding: 15px 40px;
+		box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+		position: sticky; /* 鎖定在頂端，往下滾動網頁時會跟著走 */
+		top: 0;
+		z-index: 100;
+		margin: -20px -20px 25px -20px; /* 破開 body 的內距，讓導覽列吃滿左右兩側 */
+		width: calc(100% + 40px);
+		box-sizing: border-box;
+	}
+	
+	.front-logo {
+		font-size: 22px;
+		font-weight: bold;
+		color: coral;
+		text-decoration: none;
+	}
+	
+	.member-status-box {
+		display: flex;
+		align-items: center;
+		gap: 15px;
+	}
+	
+	.member-link {
+		font-size: 14px;
+		color: #555;
+		text-decoration: none;
+		font-weight: 500;
+		transition: color 0.2s;
+	}
+	
+	.member-link:hover {
+		color: orange;
+	}
+	
+	.btn-login {
+		background-color: orange;
+		color: white !important;
+		padding: 6px 20px;
+		border-radius: 20px;
+		font-weight: bold;
+	}
+	
+	.btn-login:hover {
+		background-color: darkorange;
+	}
+	
+	/* 卡片上方專用工具列 */
+	.action-bar {
+		max-width: 800px;
+		width: 100%;
+		margin-bottom: 12px;
+		display: flex;
+		justify-content: flex-start;
+	}
+	
+	/* 取消返回按鈕 */
+	.btn-back {
+		text-decoration: none;
+		color: gray;
+		border: 1px solid lightgray;
+		padding: 6px 14px;
+		border-radius: 4px;
+		font-size: 13px;
+		font-weight: bold;
+		background-color: white;
+		transition: all 0.2s;
+	}
+	
+	.btn-back:hover {
+		background-color: snow;
+		color: black;
+		border-color: gray;
+	}
+	
+	
+	/* 詳情頁核心大卡片 */
+	.detail-container {
+		background-color: white;
+		border-radius: 12px;
+		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+		max-width: 800px;
+		width: 100%;
+		display: flex; /* 讓圖片在左、資訊在右，形成完美的現代雙欄型錄 */
+		gap: 30px;
+		padding: 30px;
+		box-sizing: border-box;
+		align-items: flex-start; /* 讓左右兩欄各自獨立高度，不要互相拉扯致變形！ */
+	}
+	
+	/* 左欄：商品大圖片區外殼 */
+	.detail-img-box {
+		flex: 1;
+		max-width: 50%;
+		flex-shrink: 0; /* 防止圖片被擠壓 */
+	}
+	
+	.detail-img {
+		width: 100%;
+		max-width: 350px;
+		height: 350px;
+		object-fit: cover; /* 確保不管什麼照片，絕不變形拉伸 */
+		border-radius: 8px;
+		border: 1px solid lightgray;
+		display: block;
+	}
+	
+	/* 右欄：商品文字與功能資訊區 */
+	.detail-info-box {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+	}
+	
+	.detail-title {
+		font-size: 26px;
+		color: #333;
+		margin: 0 0 15px 0;
+		font-weight: bold;
+	}
+	
+	.detail-price {
+		font-size: 22px;
+		color: crimson;
+		font-weight: bold;
+		margin-bottom: 25px;
+		border-bottom: 1px solid lightgray;
+		padding-bottom: 15px;
+	}
+	
+</style>
+</head>
+<body>
+
+	<nav class="front-navbar">
+		<a th:href="@{/frontend/product/listAll}" class="front-logo">旅圖 | MapIt</a>
+		
+		<div class="member-status-box">
+			<span style="font-size: 13px; color: gray;">歡迎光臨，旅客!</span>
+			<a href="/member/register" class="member-link">📝 註冊新會員</a>
+			<a href="/member/register" class="member-link btn-login">🔐 會員登入</a>
+			<span style="color: lightgray;">|</span>
+			<a th:href="@{/cart/show}" class="member-link" style="font-size: 16px;">🛒 購物車</a>
+		</div>
+	</nav>
+
+	<div class="action-bar">
+		<a th:href="@{/frontend/product/listAll}" class="btn-back">X 取消返回</a>
+	</div>
+
+	<div class="detail-container" th:if="${prodVO}">
+		
+		<div class="detail-img-box">
+			<img th:src="@{/upload/{imgName}(imgName=${prodVO.productImg})}" class="detail-img" alt="商品詳情圖片">
+		</div>
+		
+		<div class="detail-info-box">
+			<h2 class="detail-title" th:text="${prodVO.productName}">旅遊商品名稱 placeholder</h2>
+			<div class="detail-price" th:text="'NT$ ' + ${prodVO.productPrice}">NT$ 9,999</div>
+			
+			<div id="frontend-desc-text" th:text="${prodVO.productDesc}" style="display: none;"></div>
+			<div id="frontend-desc-formatted" style="margin-bottom: 25px;"></div>
+			
+			<form th:action="@{/cart/add}" method="POST" style="margin-top: auto; background-color: #f9f9f9; padding: 20px; border-radius: 8px; border: 1px solid lightgray;">
+				<input type="hidden" name="productId" th:value="${prodVO.productId}">
+				
+				<div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
+					<label style="font-size: 14px; font-weight: bold; color: #555;">選擇數量：</label>
+					<select name="quantity" style="padding: 6px 12px; border-radius: 4px; border: 1px solid lightgray; font-size: 14px; color: #333;">
+						<option value="1">1</option>
+						<option value="2">2</option>
+						<option value="3">3</option>
+						<option value="4">4</option>
+						<option value="5">5</option>
+					</select>
+				</div>
+				
+				<button type="submit" style="width: 100%; background-color: orange; color: white; border: none; padding: 12px; border-radius: 25px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background-color 0.2s;">
+					🛒 立即加入購物車
+				</button>
+			</form>
+		</div> 
+	</div>
+	
+	<script>
+		const rawEl = document.getElementById('frontend-desc-text');
+		const targetDiv = document.getElementById('frontend-desc-formatted');
+		
+		if (rawEl && targetDiv) {
+			const rawText = rawEl.innerText.trim();
+			
+			if (rawText.startsWith('{')) {
+				try {
+					const data = JSON.parse(rawText);
+					
+					targetDiv.innerHTML = `
+						<div style="font-size: 15px; color: #444; text-align: left; line-height: 1.8;">
+							<div style="margin-bottom: 8px;">📍 <b>地址/集合地點：</b> ${data.address || '未填'}</div>	
+							<div style="margin-bottom: 8px;">🕒 <b>營業/接駁時間：</b> ${data.businessHours || '未填'}</div>
+							<div style="margin-bottom: 8px;">⏳ <b>票券使用期限：</b> ${data.expiry || '未填'}</div>
+							<div style="color: #777; font-style: italic; margin-top: 12px; border-left: 3px solid dodgerblue; padding-left: 10px;">📝 ${data.remark || '無額外備註'}</div>
+						</div>
+					`;
+				} catch (e) {
+					targetDiv.innerHTML = `<span style="font-size: 15px; color: gray;">${rawText}</span>`;
+				}
+			} else {
+				// 舊文字直接相容印出
+				targetDiv.innerHTML = `<span style="font-size: 15px; color: gray;">${rawText}</span>`;
+			}
+		}
+	</script>
+
+</body>
+</html>

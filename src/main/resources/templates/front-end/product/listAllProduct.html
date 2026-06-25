@@ -10,6 +10,85 @@
 		padding: 20px;
 	}
 	
+	/* 頂部導覽列外殼 */
+	.front-navbar {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		background-color: white;
+		padding: 15px 40px;
+		box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+		position: sticky; /* 鎖定在頂端，往下捲動時會跟著走 */
+		top: 0;
+		z-index: 100;
+		margin: -20px -20px 25px -20px; /* 破開 body 的內距，讓導覽列吃滿左右兩側 */
+	}
+	
+	.front-logo {
+		font-size: 22px;
+		font-weight: bold;
+		color: coral;
+		text-decoration: none;
+	}
+	
+	/* 右上角組員聯動：會員狀態區 */
+	.member-status-box {
+		display: flex;
+		align-items: center;
+		gap: 15px;
+	}
+	
+	.member-link {
+		font-size: 14px;
+		color: #555;
+		text-decoration: none;
+		font-weight: 500;
+		transition: color 0.2s;
+	}
+	
+	.member-link:hover {
+		color: dodgerblue;
+	}
+	
+	.btn-login {
+		background-color: orange;
+		color: white !important;
+		padding: 6px 16px;
+		border-radius: 20px;
+	}
+	
+	.btn-login:hover {
+		background-color: darkorange;
+	}
+	
+	/* 加上滑鼠懸停浮起特效 */
+	.product-card {
+		background-color: white;
+		border: 1px solid #eaeaea;
+		border-radius: 12px;
+		padding: 15px;
+		width: calc(25% - 20px);
+		box-sizing: border-box;
+		transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); /* 物理回彈波動 */
+		display: flex;
+		flex-direction: column;
+	}
+	
+	/* 當滑鼠移到卡片上時，卡片會立體浮起、邊框變亮 */
+	.product-card:hover {
+		transform: translateY(-6px); /* 向上浮起 6 像素 */
+		box-shadow: 0 12px 20px rgba(255, 140, 0, 0.15); /* 橘色陰影 */
+		border-color: rgba(30, 144, 255, 0.3);
+	}
+	
+	/* 圖片圓角同步加大 */
+	.prod-img {
+		width: 100%;
+		height: 180px;
+		object-fit: cover;
+		border-radius: 8px;
+	}
+	
 	.banner {
 		position: relative;       /* 讓banner裡的文字與搜尋框可以絕對定位疊在上面 */
 		width: 100%;
@@ -74,7 +153,7 @@
 	
 	/* 搜尋按鈕的 */
 	.search-btn {
-		background-color: dodgerblue;
+		background-color: orange;
 		color: white;
 		border: none;
 		padding: 10px 26px;
@@ -86,7 +165,7 @@
 	}
 	
 	.search-btn:hover {
-		background-color: navy;   /* 滑鼠移上去時藍色變深 */
+		background-color: darkorange;   /* 滑鼠移上去時橘色變深 */
 	}
 	
 	.product-container {
@@ -150,10 +229,19 @@
 	/* --- 分頁外層容器 --- */
 	.pagination-container {
 		display: flex;
-		justify-content: center; /* 讓所有頁碼按鈕在網頁最下方水平置中 */
+		justify-content: center;
 		align-items: center;
-		gap: 8px;                /* 按鈕與按鈕之間的呼吸空隙 */
-		margin: 40px 0 20px 0;   /* 拉開與上方商品卡片、下方頁尾的距離 */
+		gap: 0;
+		margin: 40px 0 20px 0;
+		font-family: sans-serif;
+		color: #333;
+	}
+	
+	/* 左側的「頁面 1 / 12」文字樣式 */
+	.page-info-text {
+		font-size: 14px;
+		color: #666;
+		margin-right: 15px; /* 與後續按鈕拉開呼吸距離 */
 	}
 	
 	/* 頁碼按鈕的平常狀態 */
@@ -161,47 +249,74 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		min-width: 36px;
-		height: 36px;
-		padding: 0 10px;
-		border: 1px solid lightgray;
-		border-radius: 4px;
+		height: 34px;
+		padding: 0 14px;
+		border: 1px solid #ddd;
 		background-color: white;
-		color: #333;
+		color: dimgray;
 		text-decoration: none;
 		font-size: 14px;
-		font-weight: bold;
 		cursor: pointer;
-		transition: all 0.2s;
+		margin-left: -1px; /* 消除連續雙邊框，讓按鈕完美相連 */
+		transition: all 0.15s ease-in-out;
+	}
+	
+	/* 第一個按鈕與最後一個按鈕的圓角 */
+	.page-item:first-of-type {
+		border-top-left-radius: 4px;
+		border-bottom-left-radius: 4px;
+	}
+	.page-item:last-of-type {
+		border-top-right-radius: 4px;
+		border-bottom-right-radius: 4px;
 	}
 	
 	/* 當滑鼠懸停 (:hover) 時變色 */
 	.page-item:hover:not(.active):not(.disabled) {
-		background-color: #f0f0f0;
-		border-color: darkgray;
-		color: black;
+		background-color: #eee;
+		border-color: #ddd;
+		color: #0056b3;
+		z-index: 2; /* 確保懸停時的邊框能亮在最上面 */
 	}
 	
 	/* 當前所在頁數（Active）變色 */
 	.page-item.active {
-		background-color: dodgerblue;
-		border-color: dodgerblue;
-		color: white;
+		background-color: orange;
+		border-color: orange;
+		color: white !important;
 		cursor: default;
+		z-index: 3;
 	}
 	
 	/* 停用狀態（Disabled，例如第一頁的上一頁） */
 	.page-item.disabled {
-		background-color: #f5f5f5;
-		color: silver;
-		border-color: #e0e0e0;
-		pointer-events: none;    /* 取消所有點擊與滑鼠事件 */
+		background-color: white;
+		color: #bbb;
+		border-color: #ddd;
+		pointer-events: none; /* 取消所有點擊與滑鼠事件 */
+		cursor: not-allowed;
 	}
 	
 </style>
 
 </head>
 <body>
+
+	<nav class="front-navbar">
+		<a th:href="@{/frontend/product/listAll}" class="front-logo">旅圖 | MapIt</a>
+		
+		<div class="member-status-box">
+			<span style="font-size: 13px; color: gray;">歡迎光臨，旅客!</span>
+			
+			<a href="/member/register" class="member-link">📝 註冊新會員</a>
+			<a href="/member/login" class="member-link btn-login">🔐 會員登入</a>
+			
+			<span style="color: lightgray;">|</span>
+			
+			<a th:href="@{/cart/show}" class="member-link" style="font-size: 16px;">🛒 購物車</a>
+		
+		</div>
+	</nav>
 
 	<div class="banner" th:style=" 'background-image: url(' + @{/images/banner.png} + ');'">
 		<div class="banner-overlay"></div>
@@ -219,9 +334,14 @@
 	</div>
 	
 	<div class="product-container">
+	
+<!-- 原本商品列有商品資訊
 		<div class="product-card" th:each="prodVO : ${frontProdList}">
-		
+			
+			原本用專案路徑
 			<img th:src="@{/images/{imgName}(imgName=${prodVO.productImg})}" class="prod-img" alt="商品圖片">
+			改存電腦硬碟
+			<img th:src="@{/upload/{imgName}(imgName=${prodVO.productImg})}" class="prod-img" alt="商品圖片">
 			
 			<h3 th:text="${prodVO.productName}">商品名稱 placeholder</h3>
 			<div class="prod-desc-text" th:text="${prodVO.productDesc}">商品描述 placeholder</div>
@@ -236,97 +356,101 @@
 				</form>
 			</div>
 		</div>
-	</div>
-	
-	<div class="pagination-container" th:if="${prodData != null and totalPages > 1 }">
 		
-		<a class="page-item" 
-			th:classappend="${currentPage == 1} ? 'disabled'" 
-			th:href="@{/frontend/product/listAll(page=1)}">
-			<< 首頁
-		</a>
-				<!-- 
-				1. classappend 在保留原本css樣式下，增加新的標籤 
-				2. (page=1)->(參數名=參數值) thymeleaf可以直接轉換為 ?page=1
-				-->
-	
-		<a class="page-item"
-			th:classappend="${currentPage == 1} ? 'disabled'"
-			th:href="@{/frontend/product/listAll(page=${currentPage - 1})}">
-			< 上一頁
-		</a>
-		
-		<th:block th:with="startPage=${currentPage - 2 < 1 ? 1 : currentPage - 2}, 
-							endPage=${currentPage + 2 > totalPages ? totalPages : currentPage + 2}">
+ -->	
+ 		<!-- 商品列表改成只顯示圖片.大標.價錢 -->
+		<div class="product-card" th:each="prodVO : ${frontProdList}">
 			
-			<a class="page-item"
-				th:each="i : ${#numbers.sequence(startPage, (endPage == 0 ? 1 : endPage))}"
-				th:classappend="${i == currentPage} ? 'active'"
-				th:href="@{/frontend/product/listAll(page=${i})}"
-				th:text="${i}">
-				1
-			</a>
-		
-		</th:block>
-				<!-- 
-					1. <th:block> thymeleaf 的隱形標籤,不是HTML的,所以要加th:
-						純粹可以寫 th:with、th:if 或 th:each 邏輯而存在的「虛擬容器」
-				 	2. th:with 的意思是：「在 HTML 現場，臨時宣告一個（或多個）只在這個區域內有效的局部變數。」
-				 		這裡宣告了兩個臨時變數(小幫手): startPage & endPage
-				 	3. 在 Thymeleaf 裡面，所有以 # 開頭的都是內建的「外掛工具箱」。#numbers 就是專門拿來處理數字、算術的工具箱。
-				 	4. .sequence(起點, 終點) 在英文裡是「數列、連續序列」的意思，搭配#numbers「給起點數字和終點數字，就會自動印出連號數字。」
-				 -->
-		
-		<a class="page-item"
-			th:classappend="${currentPage == totalPages} ? 'disabled'"
-			th:href="@{/frontend/product/listAll(page=${currentPage + 1})}">
-			下一頁 >
-		</a>
-		
-		<a class="page-item"
-			th:classappend="${currentPage == totalPages} ? 'disabled'"
-			th:href="@{/frontend/product/listAll(page=${totalPages})}">
-			末頁 >>
-		</a>
+			<form th:action="@{/frontend/product/getOne_For_Display}" method="post" style="margin:0; padding:0; cursor: pointer;">
+				<input type="hidden" name="productId" th:value="${prodVO.productId}"/>
+				
+				<button type="submit" style="background: none; border: none; padding: 0; margin: 0; width: 100%; text-align: left; cursor: pointer;">
+					
+					<img th:src="@{/upload/{imgName}(imgName=${prodVO.productImg})}" class="prod-img" alt="商品圖片">
+					
+					<h3 th:text="${prodVO.productName}" style="margin: 10px 0 5px 0;">商品名稱 placeholder</h3>
+					
+				</button>
+			</form>
+			
+			<div class="price-box" style="justify-content: flex-end; margin-top: 15px;">
+				<span class="prict-text" th:text="'NT$' + ${prodVO.productPrice}" style="font-size: 18px; color: coral; font-weight: bold;">$999999999</span>
+			</div>
+
+		</div>
 	</div>
+	
+
+	<div class="pagination-container" th:if="${prodData != null and totalPages > 1}">
+		    
+		<span class="page-info" th:text="'頁面 ' + ${currentPage} + ' / ' + ${totalPages}" style="font-size: 14px; color: #666; margin-right: 15px;">頁面 1 / 1</span>
+		
+		<div class="page-buttons" style="display: flex;">
+			
+			<a th:href="@{/frontend/product/listAll(page=1, keyword=${keyword})}" 
+			   th:classappend="${currentPage == 1} ? 'disabled' : ''" 
+			   class="page-item">« 首頁</a>
+			
+			<a th:href="@{/frontend/product/listAll(page=${currentPage - 1}, keyword=${keyword})}" 
+			   th:classappend="${currentPage == 1} ? 'disabled' : ''" 
+			   class="page-item">‹ 上一頁</a>
+			
+			<a th:each="i : ${#numbers.sequence(1, totalPages == 0 ? 1 : totalPages)}" 
+			   th:href="@{/frontend/product/listAll(page=${i}, keyword=${keyword})}"
+			   th:text="${i}"
+			   th:classappend="${i == currentPage} ? 'active' : ''"
+			   class="page-item"></a>
+			
+			<a th:href="@{/frontend/product/listAll(page=${currentPage + 1}, keyword=${keyword})}" 
+			   th:classappend="${currentPage == totalPages} ? 'disabled' : ''" 
+			   class="page-item">下一頁 ›</a>
+			
+			<a th:href="@{/frontend/product/listAll(page=${totalPages}, keyword=${keyword})}" 
+			   th:classappend="${currentPage == totalPages} ? 'disabled' : ''"
+			   class="page-item">末頁 »</a>
+		</div>
+	</div>
+	
+	
 	
 	<script>
-		// 1. 抓出網頁上所有帶有 class="prod-desc-text" 的欄位（因為有很多張商品卡片）
+		// 1抓出網頁上所有帶有 class="prod-desc-text" 的欄位（因為有很多張商品卡片）
 		const descElements = document.querySelectorAll('.prod-desc-text');
 		const formattedElements = document.querySelectorAll('.prod-desc-formatted');
 		
-		// 2. 用迴圈一筆一筆來處理
+		// 用迴圈一筆一筆處理
 		descElements.forEach((el, index) => {
-		    const rawText = el.innerText.trim(); // 拿到原始文字
-		    const targetDiv = formattedElements[index]; // 找到對應要放漂亮中文的空容器
-		    
-		    // 3. 隱藏原本難看的大括號文字
-		    el.style.display = 'none';
-		    
-		    // 4. 判斷：如果是大括號開頭，代表是 JSON 格式
-		    if (rawText.startsWith('{')) {
-		        try {
-		            // 核心：JS 內建最厲害的 JSON 拆解工具，直接把字串變物件
-		            const data = JSON.parse(rawText);
-		            
-		            // 把裡面的中文拆出來，用 HTML 標籤排版好
-		            targetDiv.innerHTML = `
-		                <div style="font-size: 13px; color: #555; text-align: left; margin-bottom: 10px; line-height: 1.5;">
-		                    <p style="margin: 4px 0;">🌍 <b>區域：</b>${data.area || '未填'}</p>
-		                    <p style="margin: 4px 0;">📍 <b>地點：</b>${data.address || '未填'}</p>
-		                    <p style="margin: 4px 0;">⏳ <b>期限：</b>${data.expiry || '未填'}</p>
-		                    <p style="margin: 4px 0;">📝 <b>描述：</b>${data.detail || '未填'}</p>
-		                </div>
-		            `;
-		        } catch (e) {
-		            // 萬一解析失敗，就當作一般純文字顯示
-		            targetDiv.innerHTML = `<p style="font-size: 15px; color: gray; margin-bottom: 15px;">${rawText}</p>`;
-		        }
-		    } else {
-		        // 5. 如果不是大括號開頭，代表是舊的純文字資料，直接印出來
-		        targetDiv.innerHTML = `<p style="font-size: 15px; color: gray; margin-bottom: 15px;">${rawText}</p>`;
-		    }
+			const rawText = el.innerText.trim(); // 拿到原始文字
+			const targetDiv = formattedElements[index]; // 找到對應的容器
+			
+			// 隱藏原本大括號的文字
+			el.style.display = 'none';
+			
+			// 判斷:如果是大括號開頭，表示是JSON格式
+			if (rawText.startsWith('{')) {
+				try {
+					// JS的JSON拆解工具，網頁瀏覽器現場把文字變成變數 data，將字串變物件
+					const data = JSON.parse(rawText);
+					
+					// 把裡面的中文拆出來，用 HTML 標籤排好
+					targetDiv.innerHTML = `
+						<div style="font-size: 13px; color: #555; text-align: left; margin-bottom: 10px; line-height: 1.5;">
+							<p style="margin: 4px; 0">📍 <b>地點:</b>${data.address || '未填'}</p>	
+							<p style="margin: 4px; 0">🕒 <b>營業時間:</b>${data.businessHours || '未填'}</p>
+							<p style="margin: 4px; 0">⏳ <b>票券使用期限：</b>${data.expiry || '未填'}</p>
+							<p style="margin: 4px; 0">📝 <b>補充資訊：</b>${data.remark || '未填'}</p>
+						</div>
+					`;
+				} catch (e) {
+					// 萬一解析失敗，就當作一般純文字顯示
+					targetDiv.innerHTML = `<p style="font-size: 15px; color: gray; margin-bottom: 15px;">${rawText}</p>`;
+				}
+			} else {
+				// 如果不是大括號開頭，代表是舊的純文字資料，直接印出來
+				targetDiv.innerHTML = `<p style="font-size: 15px; color: gray; margin-bottom: 15px;">${rawText}</p>`;
+			}
 		});
+
 	</script>
 	
 </body>

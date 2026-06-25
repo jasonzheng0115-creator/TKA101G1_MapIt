@@ -34,7 +34,7 @@ public class ProdVO implements Serializable{
 	private String productName;
 	
 	@NotEmpty(message = "商品描述: 請勿空白")
-	@Size(max = 50, message = "商品描述不可超過50字")
+	@Size(max = 1000, message = "商品描述不可超過1000字")
 	@Column(name = "PRODUCT_DESC")
 	private String productDesc;
 	
