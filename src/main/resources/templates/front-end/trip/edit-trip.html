@@ -252,7 +252,6 @@
 <body>
 
     <!-- ====== 頂部資訊列 ====== -->
-    <!-- ====== 頂部資訊列 ====== -->
     <div class="header">
         <div class="trip-info">
             <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 8px;">
@@ -261,7 +260,7 @@
                     style="font-size: 20px; font-weight: 500; color: #4A6274; border: 1px solid #D1D8DD; background: rgba(255,255,255,0.5); padding: 4px 10px; border-radius: 6px; width: 300px; outline: none;">
                 <!-- 儲存修改按鈕 -->
                 <button class="btn btn-add" onclick="updateTripBasicInfo()"
-                    style="padding: 6px 14px; font-size: 13px; border-radius: 6px;">💾 儲存行程資訊</button>
+                    style="padding: 6px 14px; font-size: 13px; border-radius: 6px;">💾 儲存行程</button>
             </div>
             <div style="display: flex; gap: 16px; align-items: center; font-size: 13px; color: #8C9DAA;">
                 <div>
@@ -282,9 +281,12 @@
             </div>
         </div>
         <div class="header-actions">
+            <button class="btn btn-back" onclick="openCollabModal()"
+                style="border-color: rgba(123, 143, 161, 0.25); color: #5A7A8A;">👥 旅遊群組管理</button>
             <button class="btn btn-add" onclick="openModal()">＋ 加入新景點</button>
             <a th:href="@{/trip/my-trips}" class="btn btn-back">← 返回列表</a>
         </div>
+
     </div>
 
 
@@ -311,7 +313,7 @@
             <h3>🔍 搜尋景點</h3>
 
             <div class="search-box">
-                <input type="text" id="searchInput" placeholder="輸入景點名稱（例如：東京鐵塔、清水寺）">
+                <input type="text" id="searchInput" placeholder="輸入景點關鍵字（例如：台北、台北101觀景台）">
                 <button class="btn-search" onclick="searchAttractions()">搜尋</button>
             </div>
 
@@ -321,8 +323,34 @@
         </div>
     </div>
 
-    <!-- ====== JavaScript（邏輯完全不變，只更新 inline style 配色） ====== -->
-    <script>
+    <!-- ====== 👥 協作者管理彈出視窗 ====== -->
+    <div id="collabModal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeCollabModal()">&times;</span>
+            <h3>👥 旅遊群組管理</h3>
+
+            <!-- 🛠️ 新增協作者區塊 (只有擁有者可見，預設隱藏，由 JS 動態控制顯示) -->
+            <div id="addCollabSection" style="margin-bottom: 20px; display: none;">
+                <label style="font-size: 13px; color: #8C9DAA; display: block; margin-bottom: 8px;">🆕 邀請好友加入</label>
+                <div class="search-box">
+                    <input type="text" id="collabAccountInput" placeholder="輸入好友的帳號 (Account)">
+                    <button class="btn-search" onclick="addCollaborator()">新增</button>
+                </div>
+            </div>
+
+            <!-- 協作者列表顯示區 -->
+            <div style="border-top: 1px solid rgba(123, 143, 161, 0.1); padding-top: 15px;">
+                <h4 style="font-size: 14px; color: #4A6274; margin-bottom: 12px;">群組成員列表</h4>
+                <div id="collabList">
+                    <p style="color: #B4BCC3; text-align: center; font-weight: 300;">⏳ 載入中，請稍候...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ====== JavaScript（加入 th:inline="javascript"，這樣才能在 JavaScript 中直接讀取 Thymeleaf 變數） ====== -->
+    <script th:inline="javascript">
         const modal = document.getElementById('searchModal');
         const searchInput = document.getElementById('searchInput');
 
@@ -344,11 +372,148 @@
             document.getElementById('searchResults').innerHTML = '<p style="color: #B4BCC3; text-align: center; font-weight: 300;">請輸入關鍵字開始搜尋...</p>';
         }
 
+
+        // 💡 取得當前使用者是否為行程擁有者的 boolean 值 (透過 Thymeleaf 傳遞進來)
+        const isOwner = [[${ trip.custVO.custId == loginCustId }]];
+
+        // ===== 👥 協作者管理彈出視窗控制 =====
+        const collabModal = document.getElementById('collabModal');
+
+        function openCollabModal() {
+            collabModal.style.display = 'flex';
+            // 動態判斷：如果是行程擁有者，才顯示「新增協作者區塊」
+            if (isOwner) {
+                document.getElementById('addCollabSection').style.display = 'block';
+            }
+            loadCollaborators(); // 載入協作者列表
+        }
+
+        function closeCollabModal() {
+            collabModal.style.display = 'none';
+            document.getElementById('collabAccountInput').value = '';
+            document.getElementById('collabList').innerHTML = '<p style="color: #B4BCC3; text-align: center; font-weight: 300;">⏳ 載入中，請稍候...</p>';
+        }
+
+        // 💡 監聽整個視窗的點擊事件，當使用者點擊彈出視窗外面時，自動關閉該視窗
         window.onclick = function (event) {
             if (event.target == modal) {
                 closeModal();
+            } else if (event.target == collabModal) {
+                closeCollabModal();
             }
         }
+
+        // 1. 撈取該行程的成員清單 (GET)
+        function loadCollaborators() {
+            const urlParts = window.location.pathname.split('/');
+            const tripId = urlParts[urlParts.length - 1];
+
+            fetch(`/api/collabs/${tripId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("無法取得群組成員清單");
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const listDiv = document.getElementById('collabList');
+
+                    if (data.length === 0) {
+                        listDiv.innerHTML = '<p style="color: #B4BCC3; text-align: center; font-weight: 300; padding: 15px 0;">目前尚無其他成員加入此行程</p>';
+                        return;
+                    }
+
+                    let html = '<ul style="list-style: none; padding: 0; margin: 0;">';
+                    data.forEach(collab => {
+                        html += `
+                            <li style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(123, 143, 161, 0.08);">
+                                <div>
+                                    <span style="font-weight: 500; color: #4A6274;">${collab.custName}</span>
+                                    <span style="font-size: 12px; color: #8C9DAA; margin-left: 8px;">(@${collab.custAccount})</span>
+                                </div>
+                        `;
+                        // 💡 只有行程擁有者，才渲染出垃圾桶「移除」按鈕
+                        if (isOwner) {
+                            html += `
+                                <button onclick="removeCollaborator(${collab.collabId})" 
+                                        style="background: transparent; border: none; font-size: 16px; cursor: pointer; color: #c95c5c; padding: 4px;" 
+                                        title="移除成員">🗑️</button>
+                            `;
+                        }
+                        html += `</li>`;
+                    });
+                    html += '</ul>';
+                    listDiv.innerHTML = html;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('collabList').innerHTML = '<p style="color: #8B6060; text-align: center;">系統異常，載入失敗！</p>';
+                });
+        }
+
+        // 2. 新增協作者 (POST)
+        function addCollaborator() {
+            const urlParts = window.location.pathname.split('/');
+            const tripId = urlParts[urlParts.length - 1];
+            const accountInput = document.getElementById('collabAccountInput');
+            const custAccount = accountInput.value.trim();
+
+            if (!custAccount) {
+                alert("⚠️ 請輸入朋友的帳號！");
+                return;
+            }
+
+            // 發送非同步 POST 請求，傳遞 JSON 包裹給後端 CollabApiController
+            fetch(`/api/collabs/${tripId}/add`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    custAccount: custAccount
+                })
+            })
+                .then(response => {
+                    if (response.ok) {
+                        alert("🎉 新增好友成功！");
+                        accountInput.value = ''; // 新增成功後，將輸入欄位清空
+                        loadCollaborators(); // 重新撈取名單以重新渲染畫面
+                    } else {
+                        // 若失敗，取得後端傳過來的文字訊息 (如：找不到此帳號) 並拋出錯誤
+                        return response.text().then(text => { throw new Error(text) });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("❌ 新增失敗：" + error.message);
+                });
+        }
+
+        // 3. 移除協作者 (DELETE)
+        function removeCollaborator(collabId) {
+            if (!confirm("⚠️ 確定要將此會員從成員名單中移除嗎？")) {
+                return;
+            }
+
+            // 發送非同步 DELETE 請求給後端 CollabApiController
+            fetch(`/api/collabs/${collabId}`, {
+                method: 'DELETE'
+            })
+                .then(response => {
+                    if (response.ok) {
+                        alert("🗑️ 成員已成功移除！");
+                        loadCollaborators(); // 重新撈取名單以重新渲染畫面
+                    } else {
+                        return response.text().then(text => { throw new Error(text) });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("❌ 移除失敗：" + error.message);
+                });
+        }
+
+
 
         function searchAttractions() {
             const keyword = document.getElementById('searchInput').value;
