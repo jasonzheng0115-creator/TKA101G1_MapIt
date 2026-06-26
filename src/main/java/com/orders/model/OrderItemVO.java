@@ -2,6 +2,7 @@ package com.orders.model;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.prod.model.ProdVO;
 
 import jakarta.persistence.Column;
@@ -41,6 +42,7 @@ public class OrderItemVO implements Serializable {
 	// 因為我們在上面已經定義過一個普通的「private Integer orderId;」用來存數字了。
 	// JPA 規定：同一個欄位（ORDER_ID）不能有兩個人同時具備寫入權限，否則資料庫會打架。
 	// 所以我們把這條「物件水管」設為唯讀，只用來在畫面上「撈資料、顯示訂單內容」。
+	@JsonIgnore  //OrdersVO跟OrderItemVO會反覆應主訂單跟明細(無窮迴圈),@JsonIgnore指到這裡暫停
 	private OrdersVO ordersVO;
 	
 	@ManyToOne(fetch = FetchType.LAZY)

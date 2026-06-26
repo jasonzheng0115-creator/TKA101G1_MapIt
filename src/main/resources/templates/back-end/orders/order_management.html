@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>訂單管理中心</title>
+<link th:href="@{/css/backend-common.css}" rel="stylesheet">
+<style>
+
+	.order-table {
+		width: 100%;
+		border-collapse: collapse;
+		margin-top: 15px;
+		font-size: 14px;
+	}
+	.order-table th, .order-table td {
+		padding: 12px;
+		text-align: left;
+		border-bottom: 1px solid lightgray;
+	}
+	.order-table th {
+		background-color: whitesmoke;
+		color: black;
+		font-weight: 600;
+	}
+	
+	.btn-cancel-order {
+		background-color: crimson;
+		color: white;
+		padding: 6px 14px;
+		border: 1px solid crimson;
+		border-radius: 4px;
+		cursor: pointer;
+		font-size: 12px;
+		font-weight: bold;
+		transition: all 0.2s;
+	}
+	.btn-cancel-order:hover {
+		background-color: firebrick;
+		border-color: firebrick;
+	}
+</style>
+
+</head>
+<body>
+
+	<div class="navbar">
+		<a class="navbar-brand" href="#">🏢 後台管理系統</a>
+		<div class="navbar-nav">
+			<a th:href="@{/supplier/select_page}">供應商管理</a>
+			<a th:href="@{/product/select_page}">商品管理</a>
+			<a th:href="@{/ap/select_page}">應付帳款</a>
+			<a class="active" th:href="@{/orders/backend-list}">訂單管理</a> 
+		</div>
+	</div>
+
+	<div class="container-fluid">
+		<div class="main-card">
+			
+			<h3>📋 全站訂單管理中心</h3>
+			
+			<div class="action-header" style="margin-bottom: 25px;">
+				<a th:href="@{/orders/backend-list}" class="page-item active">
+					📋 全站訂單總覽
+				</a>
+			</div>
+			
+			<p style="color: gray; font-size: 13px; margin-bottom: 15px;">
+				💡 提示：管理員可在此即時監控所有消費者的下單紀錄。若遇客戶要求退款，可點擊「強制取消」按鈕一鍵發動逆向退庫存流程。
+			</p>
+
+			<div style="overflow-x: auto;">
+				<table class="order-table">
+					<thead>
+						<tr>
+							<th>訂單編號</th>
+							<th>會員編號</th>
+							<th>成立時間</th>
+							<th>總金額</th>
+							<th>當前狀態</th>
+							<th>取消原因備註</th>
+							<th style="text-align: center;">後台權限操作</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="order : ${allOrdersList}" th:id="'order-row-' + ${order.orderId}">
+							<td th:text="${order.orderId}">10025</td>
+							<td th:text="'會員 #' + ${order.custVO.custId}">會員 #1</td>
+							<td th:text="${order.orderTimestamp}">2026-06-27 00:15:00</td>
+							<td th:text="'NT$ ' + ${order.orderPrice}" style="font-weight: bold; color: black;">NT$ 999</td>
+							
+							<td th:id="'status-text-' + ${order.orderId}" 
+								th:text="${order.orderStatus}" 
+								th:style="${order.orderStatus == '已取消' ? 'color: crimson; font-weight: bold;' : 'color: dodgerblue; font-weight: bold;'}">
+								已付款
+							</td>
+							
+							<td th:id="'cancel-text-' + ${order.orderId}" 
+								th:text="${order.orderCancel != null ? order.orderCancel : '—'}" 
+								style="color: gray; font-style: italic;">
+								—
+							</td>
+							
+							<td style="text-align: center;">
+								<button th:id="'cancel-btn-' + ${order.orderId}"
+										th:if="${order.orderStatus != '已取消'}"
+										th:onclick="'executeBackendCancel(' + ${order.orderId} + ')'"
+										class="btn-cancel-order">
+									❌ 強制取消訂單
+								</button>
+								<span th:if="${order.orderStatus == '已取消'}" style="color: silver; font-size: 13px;">🚫 權限已關閉</span>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			
+		</div>
+	</div>
+
+	<script>
+	function executeBackendCancel(orderId) {
+		const reason = prompt("請輸入後台強制取消此訂單的原因（該原因將同步反映至消費者前台）：");
+		
+		if (reason === null) return; // 點擊取消
+		if (reason.trim() === "") {
+			alert("⚠️ 操作失敗：必須輸入原因才能執行逆向退庫存流程！");
+			return;
+		}
+		
+		// 發動非同步請求，去叩動後台第二條 Java 水管
+		fetch('/orders/backend-cancel', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+			body: new URLSearchParams({
+				'orderId': orderId,
+				'cancelReason': reason
+			})
+		})
+		.then(response => {
+			if (response.ok) return response.json();
+			return response.text().then(text => { throw new Error(text); });
+		})
+		.then(data => {
+			// 局部刷新，畫面一秒響應
+			alert('🎉 逆向工程發動成功！該訂單已失效，商品庫存與累積銷量已全數「物歸原主」！');
+			
+			document.getElementById('status-text-' + orderId).innerText = '已取消';
+			document.getElementById('status-text-' + orderId).style.color = 'crimson';
+			document.getElementById('cancel-text-' + orderId).innerText = reason;
+			
+			const btn = document.getElementById('cancel-btn-' + orderId);
+			if (btn) {
+				btn.parentNode.innerHTML = '<span style="color: silver; font-size: 13px;">🚫 權限已關閉</span>';
+			}
+		})
+		.catch(error => {
+			alert('❌ 後台操作異常：' + error.message);
+		});
+	}
+	</script>
+
+</body>
+</html>

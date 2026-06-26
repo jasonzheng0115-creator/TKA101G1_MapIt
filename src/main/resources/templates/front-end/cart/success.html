@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>訂單成立成功</title>
+<style>
+	body {
+		background-color: whitesmoke;
+		font-family: sans-serif;
+		padding: 20px;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+	
+	/* 導覽列 */
+	.front-navbar {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		background-color: white;
+		padding: 15px 40px;
+		box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+		position: sticky;
+		top: 0;
+		z-index: 100;
+		margin: -20px -20px 25px -20px;
+		width: calc(100% + 40px);
+		box-sizing: border-box;
+	}
+	
+	.front-logo {
+		font-size: 22px;
+		font-weight: bold;
+		color: coral;
+		text-decoration: none;
+	}
+	
+	.member-link {
+		font-size: 14px;
+		color: orange;
+		text-decoration: none;
+		font-weight: bold;
+	}
+	
+	.success-container {
+		background-color: white;
+		border-radius: 16px;
+		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+		border: 1px solid lightgray;
+		max-width: 550px;
+		width: 100%;
+		padding: 35px;
+		box-sizing: border-box;
+		text-align: center;
+	}
+	
+	.success-header h1 {
+		color: darkorange;
+		font-size: 26px;
+		margin-bottom: 10px;
+	}
+	
+	.success-header p {
+		color: gray;
+		font-size: 14px;
+		margin-bottom: 30px;
+		line-height: 1.5;
+	}
+	
+	/* 電子收據與明細卡片 */
+	.receipt-card, .detail-card, .ticket-box {
+		text-align: left;
+		background-color: white;
+		border: 1px solid whitesmoke;
+		border-radius: 8px;
+		padding: 20px;
+		margin-bottom: 20px;
+	}
+	
+	.receipt-card h3, .detail-card h3, .ticket-box h3 {
+		margin: 0 0 15px 0;
+		color: black;
+		font-size: 16px;
+		border-left: 4px solid orange;
+		padding-left: 8px;
+	}
+	
+	
+	.receipt-card ul {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		font-size: 14px;
+		line-height: 2;
+	}
+	
+	/* 明細表格排版 */
+	table {
+		width: 100%;
+		border-collapse: collapse;
+		font-size: 14px;
+	}
+	
+	th, td {
+		padding: 10px;
+		text-align: left;
+		border-bottom: 1px solid whitesmoke;
+	}
+	
+	th {
+		color: gray;
+	}
+	
+	/*  QR Code 位置 */
+	.ticket-box {
+		background-color: white;
+		text-align: center;
+	}
+	
+	.ticket-box h3 {
+		text-align: left;
+	}
+	
+	.qrcode-placeholder {
+		display: inline-block;
+		margin-top: 15px;
+		padding: 20px;
+		border: 2px dashed orange;
+		border-radius: 12px;
+		background-color: white;
+		width: 180px;
+		height: 180px;
+		box-sizing: border-box;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+	
+	.qrcode-main {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+	
+</style>
+</head>
+<body>
+
+	<nav class="front-navbar">
+		<a th:href="@{/frontend/product/listAll}" class="front-logo">旅圖 | MapIt</a>
+		<div class="member-status-box">
+			<a th:href="@{/frontend/product/listAll}" class="member-link" style="font-size: 16px;">🌐 回首頁逛逛</a>
+		</div>
+	</nav>
+	
+	<div class="success-container">
+		
+		<div class="success-header">
+			<h1>🎉 感謝您的訂購！</h1>
+			<p>您的付款已扣款成功，以下為您的電子收據與入場憑證。</p>
+		</div>
+		
+		<div class="receipt-card">
+			<h3>🧾 訂單基本資訊</h3>
+			<ul>
+				<li><strong>訂單編號：</strong> <span th:text="${order.orderId}">10025</span></li>
+				<li><strong>訂單時間：</strong> <span th:text="${order.orderTimestamp}">2026-06-26 23:15:44</span></li>
+				<li><strong>實付總金額：</strong> <span style="color: coral; font-weight: bold;" th:text="'NT$ ' + ${order.orderPrice}">NT$ 999</span></li>
+				<li><strong>付款狀態：</strong> <span>🟢 刷卡成功 (已付款)</span></li>
+			</ul>
+		</div>
+		
+		<div class="detail-card">
+			<h3>📋 購買項目明細</h3>
+			<table>
+				<thead>
+					<tr>
+						<th>商品名稱</th>
+						<th>數量</th>
+						<th>購買單價</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="item : ${order.orderItems}">
+						<td>
+							<span th:text="${item.prodVO.productName}" style="font-weight: bold; color: black;">
+								台北101門票 placeholder
+							</span>
+							<br>
+							<small th:text="'(商品編號 #' + ${item.productId} + ')'" style="color: gray; font-size: 11px;">
+								(商品編號 #1)
+							</small>
+						</td>
+						<td th:text="${item.itemQty} + ' 張'">1 張</td>
+						<td th:text="'NT$ ' + ${item.itemPrice}">NT$ 999</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		
+		<div class="ticket-box">
+			<h3>🎫 您的數位入場券 (QR Code)</h3>
+			<p style="color: gray; font-size: 13px;">（未來對接完成後，此處將由票券倉模組自動發行真實 QR Code）</p>
+			
+			<div class="qrcode-placeholder">
+				<div class="qrcode-placeholder">
+					<span style="font-size: 48px;">📱</span>
+					<p style="font-size: 12px; margin-top: 5px; color: dimgray;">[ 虛擬憑證 待票券倉對接 ]</p>
+				</div>
+		</div>
+		
+	</div>
+
+</body>
+</html>

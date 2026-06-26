@@ -358,7 +358,11 @@
 				// 付款成功！
 				alert('🎉 付款成功！訂單已成立！');
 				// **我卡住的點** 帶去「訂單成功頁面」印明細
-				console.log('後端回傳的成功訂單資料：', data);
+// 				console.log('後端回傳的成功訂單資料：', data);
+				
+				// 跨頁 跳轉到成功頁面
+				// data.orderId 是OrdersService 分兩階段儲存成功後回傳的新流水號
+				window.location.href = '/orders/success?orderId=' + data.orderId;
 			})
 			.catch(error => {
 				// 付款失敗！
