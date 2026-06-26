@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>我的歷史訂單</title>
+<style>
+
+	body {
+		font-family: 'Segoe UI', Arial, sans-serif;
+		color: darkslategray;
+		background-color: whitesmoke;
+		margin: 0;
+		padding: 0;
+	}
+	
+	.front-navbar {
+		background-color: white;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 15px 30px;
+		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+		border-bottom: 3px solid orange;
+	}
+	
+	.front-logo {
+		font-size: 22px;
+		font-weight: bold;
+		color: darkorange;
+		text-decoration: none;
+	}
+	
+	.member-status-box {
+		display: flex;
+		align-items: center;
+	}
+	
+	.member-link {
+		color: darkslategray;
+		text-decoration: none;
+		font-weight: 500;
+		transition: color 0.2s;
+	}
+	
+	.member-link:hover {
+		color: orange;
+	}
+	
+	.orders-page-container {
+		max-width: 1000px;
+		margin: 40px auto;
+		padding: 0 20px;
+	}
+	
+	.page-header {
+		margin-bottom: 30px;
+		border-left: 6px solid orange;
+		padding-left: 15px;
+	}
+	
+	.page-header h2 {
+		color: darkslategray;
+		margin: 0 0 5px 0;
+		font-size: 24px;
+	}
+	
+	.page-header p {
+		color: gray;
+		margin: 0;
+		font-size: 14px;
+	}
+	
+	.empty-orders-box {
+		background-color: white;
+		padding: 40px;
+		text-align: center;
+		border-radius: 8px;
+		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+		color: gray;
+		border: 1px dashed orange;
+	}
+	
+	.order-master-card {
+		background-color: white;
+		border-radius: 8px;
+		box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+		margin-bottom: 25px;
+		overflow: hidden;
+		border-top: 4px solid orange;
+		transition: transform 0.2s;
+	}
+	
+	.order-master-card:hover {
+		transform: translateY(-2px);
+	}
+	
+	.order-card-header {
+		background-color: seashell;
+		padding: 15px 20px;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		border-bottom: 1px solid lightgray;
+	}
+	
+	.header-label {
+		color: gray;
+	}
+	
+	.order-time-split {
+		color: gray;
+		margin-left: 10px;
+		font-size: 14px;
+	}
+	
+	.status-badge {
+		font-weight: bold;
+		padding: 4px 12px;
+		border-radius: 20px;
+		background-color: white;
+		font-size: 14px;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+	}
+	
+	.order-card-body {
+		padding: 20px;
+	}
+	
+	.item-details-table {
+		width: 100%;
+		border-collapse: collapse;
+		text-align: left;
+	}
+	
+	.item-details-table th {
+		background-color: whitesmoke;
+		color: darkslategray;
+		padding: 12px;
+		font-weight: 600;
+		border-bottom: 2px solid lightgray;
+	}
+	
+	.item-details-table td {
+		padding: 15px 12px;
+		border-bottom: 1px solid whitesmoke;
+		color: darkslategray;
+	}
+	
+	.order-card-footer {
+		background-color: white;
+		padding: 15px 20px;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		border-top: 1px dashed lightgray;
+	}
+	
+	.total-amount-box {
+		font-size: 16px;
+		color: darkslategray;
+		font-weight: bold;
+	}
+	
+	.footer-price {
+		color: tomato;
+		font-size: 22px;
+		font-weight: 800;
+	}
+	
+	.action-buttons-box {
+		display: flex;
+		align-items: center;
+	}
+	
+	.btn-view-receipt {
+		background-color: orange;
+		color: white;
+		text-decoration: none;
+		padding: 10px 20px;
+		border-radius: 6px;
+		font-weight: bold;
+		font-size: 14px;
+		transition: background-color 0.2s;
+		display: inline-block;
+	}
+	
+	.btn-view-receipt:hover {
+		background-color: darkorange;
+	}
+	
+	.cancel-reason-text {
+		color: crimson;
+		background-color: lavenderblush;
+		padding: 6px 12px;
+		border-radius: 4px;
+	}
+	
+</style>
+</head>
+<body>
+
+	<nav class="front-navbar">
+		<a th:href="@{/frontend/product/listAll}" class="front-logo">旅圖 |
+			MapIt</a>
+		<div class="member-status-box">
+			<a th:href="@{/frontend/product/listAll}" class="member-link"
+				style="font-size: 16px; margin-right: 20px;">🛒 繼續逛逛</a> <a
+				th:href="@{/orders/my-orders}" class="member-link"
+				style="font-size: 16px;">📋 我的訂單</a>
+		</div>
+	</nav>
+
+	<div class="orders-page-container">
+
+		<div class="page-header">
+			<h2>📋 您歷史購買的訂單紀錄</h2>
+			<p>您可以在此查詢所有行程、門票訂單狀態，並確認數位憑證。</p>
+		</div>
+
+		<div th:if="${#lists.isEmpty(ordersList)}" class="empty-orders-box">
+			<p>目前還沒有任何訂單紀錄喔！快去商城逛逛吧！✨</p>
+		</div>
+
+		<div th:unless="${#lists.isEmpty(ordersList)}"
+			th:each="order : ${ordersList}" class="order-master-card">
+
+			<div class="order-card-header">
+				<div>
+					<span class="header-label">訂單編號：</span> <strong
+						th:text="${order.orderId}">10025</strong> <span
+						class="order-time-split"
+						th:text="'| 成立時間：' + ${order.orderTimestamp}">|
+						成立時間：2026-06-26</span>
+				</div>
+				<div>
+					<span class="status-badge"
+						th:text="${order.orderStatus == '已取消' ? '🔴 已取消' : '🟢 已付款'}">🟢
+						已付款</span>
+				</div>
+			</div>
+
+			<div class="order-card-body">
+				<table class="item-details-table">
+					<thead>
+						<tr>
+							<th>購買項目</th>
+							<th>數量</th>
+							<th>單價</th>
+							<th>小計</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="item : ${order.orderItems}">
+							<td><span th:text="${item.prodVO.productName}"
+								style="font-weight: bold;">商品名稱</span> <br> <small
+								th:text="'(編號 #' + ${item.productId} + ')'" style="color: gray;">(#1)</small>
+							</td>
+							<td th:text="${item.itemQty} + ' 張'">1 張</td>
+							<td th:text="'NT$ ' + ${item.itemPrice}">NT$ 999</td>
+							<td th:text="'NT$ ' + (${item.itemPrice} * ${item.itemQty})"
+								style="font-weight: bold;">NT$ 999</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+
+			<div class="order-card-footer">
+				<div class="total-amount-box">
+					實付總額：<span class="footer-price"
+						th:text="'NT$ ' + ${order.orderPrice}">NT$ 99999999</span>
+				</div>
+				<div class="action-buttons-box">
+					<a th:if="${order.orderStatus != '已取消'}"
+						th:href="@{/orders/success(orderId=${order.orderId})}"
+						class="btn-view-receipt"> 🧾 查看電子收據 </a>
+
+					<div th:if="${order.orderStatus == '已取消'}"
+						class="cancel-reason-text">
+						<small th:text="'❌ 取消原因：' + ${order.orderCancel}">❌
+							取消原因：買錯了</small>
+					</div>
+				</div>
+			</div>
+
+		</div>
+	</div>
+
+</body>
+</html>

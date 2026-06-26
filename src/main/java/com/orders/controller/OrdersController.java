@@ -14,8 +14,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.orders.model.OrdersRepository;
 import com.orders.model.OrdersService;
 import com.orders.model.OrdersVO;
 import com.prod.model.CartVO;
@@ -37,6 +39,9 @@ public class OrdersController {
 	
 	@Autowired
 	private ProdService prodSvc;
+	
+	@Autowired
+	private OrdersRepository ordersRepository;
 	
 	
 	// 核心 API：前端送出購物車資料結帳
@@ -146,7 +151,64 @@ public class OrdersController {
 		// 導向網頁
 		return "front-end/cart/checkout";
 	}
-
+	
+	// 導向「訂單成立與成功收據」頁面
+	// 網址：GET http://localhost:8080/orders/success?orderId=10025
+	@GetMapping("/success")
+	public String showSuccess(
+			@RequestParam("orderId") Integer orderId, 
+			ModelMap model) {
+		
+		// 用ID去資料庫拿出訂單主檔
+		OrdersVO order = ordersSvc.getOneOrders(orderId); // 對齊 OrdersService 撈單筆的方法名稱
+		
+		// 把整筆訂單裝箱送去成功頁面
+		model.addAttribute("order", order);
+		
+		// 導向成功的頁面
+		return "front-end/cart/success";
+	}
+	
+	// 前台會員歷史訂單
+	// 網址：GET http://localhost:8080/orders/my-orders
+	@GetMapping("/my-orders")
+	public String showMyOrders(ModelMap model) {
+		
+		// 先寫1號會員
+		Integer currentCustId = 1; 
+		List<OrdersVO> list = ordersSvc.getOrdersByCustId(currentCustId);
+		
+		// 訂單裝箱給 Thymeleaf 渲染
+		model.addAttribute("ordersList", list);
+		
+		// 導向前台列表
+		return "front-end/cart/order_list";
+	}
+	
+	
+	// 後台訂單列表
+	@GetMapping("/backend-list")
+	public String showBackendOrders(ModelMap model) {
+		List<OrdersVO> list = ordersRepository.findAll();
+		model.addAttribute("allOrdersList", list);
+		return "back-end/orders/order_management"; // 導向後台html
+	}
+	
+	@PostMapping("/backend-cancel")
+	@ResponseBody
+	public ResponseEntity<?> backendCancelOrder(
+			@RequestParam("orderId") Integer orderId,
+			@RequestParam("cancelReason") String cancelReason) {
+		try {
+			// Service的取消訂單逆向邏輯
+			OrdersVO updatedOrder = ordersSvc.cancelOrder(orderId, cancelReason);
+			return ResponseEntity.ok(updatedOrder);
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body("取消失敗" + e.getMessage());
+		}
+		
+	}
+	
 	
 }
 

@@ -91,3 +91,6 @@ Thumbs.db
 uploads/
 /.apt_generated/
 /.apt_generated_tests/
+/docker-compose.yml
+/Dockerfile
+/.dockerignore
