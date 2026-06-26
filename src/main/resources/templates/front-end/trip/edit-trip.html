@@ -6,6 +6,9 @@
     <title>編輯行程 - 行程排版區</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap"
         rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+
     <style>
         * {
             margin: 0;
@@ -246,6 +249,13 @@
             border-top: 1px solid rgba(123, 143, 161, 0.1);
             padding-top: 15px;
         }
+
+        /* 拖拉景點卡片時的虛線佔位符樣式 */
+        .sortable-ghost {
+            opacity: 0.4;
+            background-color: #E2E8F0 !important;
+            border: 2px dashed #7B8FA1 !important;
+        }
     </style>
 </head>
 
@@ -330,13 +340,22 @@
             <h3>👥 旅遊群組管理</h3>
 
             <!-- 🛠️ 新增協作者區塊 (只有擁有者可見，預設隱藏，由 JS 動態控制顯示) -->
+            <!-- 🛠️ 新增協作者區塊 (只有擁有者可見，預設隱藏，由 JS 動態控制顯示) -->
             <div id="addCollabSection" style="margin-bottom: 20px; display: none;">
                 <label style="font-size: 13px; color: #8C9DAA; display: block; margin-bottom: 8px;">🆕 邀請好友加入</label>
                 <div class="search-box">
-                    <input type="text" id="collabAccountInput" placeholder="輸入好友的帳號 (Account)">
+                    <div style="position: relative; flex: 1;">
+                        <input type="text" id="collabAccountInput" placeholder="輸入好友的帳號 (Account)" autocomplete="off"
+                            style="width: 100%;">
+                        <!-- 下拉自動完成清單 -->
+                        <div id="collabSuggestions"
+                            style="display: none; position: absolute; top: 100%; left: 0; width: 100%; background: #ffffff; border: 1px solid rgba(123, 143, 161, 0.2); border-radius: 8px; box-shadow: 0 4px 12px rgba(90, 122, 138, 0.15); z-index: 1010; max-height: 200px; overflow-y: auto; margin-top: 4px;">
+                        </div>
+                    </div>
                     <button class="btn-search" onclick="addCollaborator()">新增</button>
                 </div>
             </div>
+
 
             <!-- 協作者列表顯示區 -->
             <div style="border-top: 1px solid rgba(123, 143, 161, 0.1); padding-top: 15px;">
@@ -477,6 +496,7 @@
                     if (response.ok) {
                         alert("🎉 新增好友成功！");
                         accountInput.value = ''; // 新增成功後，將輸入欄位清空
+                        document.getElementById('collabSuggestions').style.display = 'none'; // 💾 隱藏選單
                         loadCollaborators(); // 重新撈取名單以重新渲染畫面
                     } else {
                         // 若失敗，取得後端傳過來的文字訊息 (如：找不到此帳號) 並拋出錯誤
@@ -609,14 +629,15 @@
                     let html = '';
                     data.forEach(item => {
                         html += `
-                        <div style="background: rgba(255,255,255,0.5); border: 1px solid rgba(123,143,161,0.1); padding: 16px 20px; margin-bottom: 10px; border-left: 4px solid #7B8FA1; border-radius: 12px; transition: all 0.3s ease;">
+                        <div class="trip-item-card" data-id="${item.itemId}" style="background: rgba(255,255,255,0.5); border: 1px solid rgba(123,143,161,0.1); padding: 16px 20px; margin-bottom: 10px; border-left: 4px solid #7B8FA1; border-radius: 12px; transition: all 0.3s ease;">
                             
                             <!-- 上半部：標題與刪除按鈕 -->
                             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
                                 <div style="display: flex; align-items: center; gap: 16px;">
-                                    <div style="background: #7B8FA1; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 500; font-size: 13px; flex-shrink: 0;">
+                                    <div class="drag-handle" style="background: #7B8FA1; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 500; font-size: 13px; flex-shrink: 0; cursor: grab;">
                                         ${item.seqNo}
                                     </div>
+
                                     <div>
                                         <h4 style="margin: 0 0 4px 0; color: #4A6274; font-weight: 500; font-size: 15px;">${item.attrName}</h4>
                                         <p style="margin: 0; font-size: 12px; color: #8C9DAA; font-weight: 300;">${item.attrAddress}</p>
@@ -651,9 +672,64 @@
 
 
                     listDiv.innerHTML = html;
+                    initSortable(); // 卡片渲染完後重新初始化拖拉綁定
                 })
                 .catch(error => console.error('Error fetching items:', error));
         }
+
+        let sortableInstance = null;
+        function initSortable() {
+            const listDiv = document.getElementById('tripItemList');
+            // 如果原本已經有 Sortable 實體，先銷毀它以防重複綁定產生衝突
+            if (sortableInstance) {
+                sortableInstance.destroy();
+            }
+
+            // 初始化拖拉功能
+            sortableInstance = Sortable.create(listDiv, {
+                animation: 250, // 卡片滑移的動畫速度 (毫秒)
+                handle: '.drag-handle', // 限制只有按在數字圓圈上才能拖拉，防範誤觸
+                ghostClass: 'sortable-ghost', // 套用拖曳時的虛線外觀樣式
+                onEnd: function () {
+                    // 當使用者拖曳結束放開滑鼠時，立刻向後端發送最新排序
+                    saveNewOrder();
+                }
+            });
+        }
+
+        function saveNewOrder() {
+            const listDiv = document.getElementById('tripItemList');
+            const cards = listDiv.getElementsByClassName('trip-item-card');
+            const itemIds = [];
+
+            // 依據目前網頁卡片的可見順序，收集所有 itemId
+            for (let card of cards) {
+                itemIds.push(parseInt(card.getAttribute('data-id'), 10));
+            }
+
+            // 發送非同步 POST 請求至後端 Controller 更新 seqNo
+            fetch('/api/trip-items/reorder', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(itemIds)
+            })
+                .then(response => {
+                    if (response.ok) {
+                        // 排序儲存成功，重新載入明細，自動刷新圓圈的 seqNo 數字
+                        loadTripItems();
+                    } else {
+                        return response.text().then(text => { throw new Error(text) });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error saving order:', error);
+                    alert("❌ 儲存排序失敗：" + error.message);
+                    loadTripItems(); // 若失敗，重載以復原卡片原本位置
+                });
+        }
+
 
         function deleteTripItem(itemId) {
             if (!confirm('確定要從行程中移除這個景點嗎？')) {
@@ -795,6 +871,74 @@
 
             return `<span style="color: #B4BCC3;">${openTimeStr}</span>`;
         }
+
+        // ===== 👥 協作者帳號自動完成與模糊搜尋功能 =====
+        let collabDebounceTimer;
+        const collabAccountInput = document.getElementById('collabAccountInput');
+        const collabSuggestions = document.getElementById('collabSuggestions');
+
+        collabAccountInput.addEventListener('input', function () {
+            clearTimeout(collabDebounceTimer);
+            const keyword = this.value.trim();
+
+            if (!keyword) {
+                collabSuggestions.style.display = 'none';
+                collabSuggestions.innerHTML = '';
+                return;
+            }
+
+            // 防抖設計：使用者停止輸入 200 毫秒後，才向後端請求資料，減少伺服器負擔
+            collabDebounceTimer = setTimeout(() => {
+                fetch(`/api/collabs/search-users?keyword=${keyword}`)
+                    .then(response => response.json())
+                    .then(users => {
+                        if (users.length === 0) {
+                            collabSuggestions.style.display = 'none';
+                            collabSuggestions.innerHTML = '';
+                            return;
+                        }
+
+                        let html = '';
+                        users.forEach(user => {
+                            html += `
+                                <div style="padding: 10px 16px; cursor: pointer; border-bottom: 1px solid rgba(123,143,161,0.08); font-size: 13px; color: #4A6274; display: flex; justify-content: space-between;" 
+                                     class="collab-suggestion-item"
+                                     onclick="selectCollabUser('${user.custAccount}')">
+                                    <span style="font-weight: 500;">👤 ${user.custName}</span>
+                                    <span style="color: #8C9DAA; font-weight: 300;">(${user.custAccount})</span>
+                                </div>
+                            `;
+                        });
+                        collabSuggestions.innerHTML = html;
+                        collabSuggestions.style.display = 'block';
+
+                        // 加上滑入/滑出時的 Hover 背景切換效果
+                        const items = collabSuggestions.getElementsByClassName('collab-suggestion-item');
+                        for (let item of items) {
+                            item.addEventListener('mouseenter', () => item.style.backgroundColor = '#F0F4F8');
+                            item.addEventListener('mouseleave', () => item.style.backgroundColor = 'transparent');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching users:', error);
+                    });
+            }, 200);
+        });
+
+        // 點選清單項目後，將帳號填入輸入框，並隱藏選單
+        function selectCollabUser(account) {
+            collabAccountInput.value = account;
+            collabSuggestions.style.display = 'none';
+            collabSuggestions.innerHTML = '';
+        }
+
+        // 當使用者點擊頁面其他任何地方時，自動收起自動完成選單
+        document.addEventListener('click', function (e) {
+            if (e.target !== collabAccountInput && e.target !== collabSuggestions) {
+                collabSuggestions.style.display = 'none';
+            }
+        });
+
     </script>
 
 </body>
