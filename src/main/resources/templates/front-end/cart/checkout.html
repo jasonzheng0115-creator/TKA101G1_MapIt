@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>確認訂單與付款</title>
+<style>
+
+	body {
+		background-color: whitesmoke;
+		font-family: sans-serif;
+		padding: 20px;
+		display: flex;
+		flex-direction: column;
+		align-items: center; /* 讓內容在頁面中線置中 */
+	}
+	
+	/* 頂部導覽列 完全對齊首頁*/
+	.front-navbar {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		background-color: white;
+		padding: 15px 40px;
+		box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+		position: sticky;
+		top: 0;
+		z-index: 100;
+		margin: -20px -20px 25px -20px;
+		width: calc(100% + 40px);
+		box-sizing: border-box;
+	}
+	
+	.front-logo {
+		font-size: 22px;
+		font-weight: bold;
+		color: coral;
+		text-decoration: none;
+	}
+	
+	.member-status-box {
+		display: flex;
+		align-items: center;
+		gap: 15px;
+	}
+	
+	.member-link {
+		font-size: 14px;
+		color: dimgray;
+		text-decoration: none;
+		font-weight: 500;
+		transition: color 0.2s;
+	}
+	
+	.member-link:hover {
+		color: orange;
+	}
+	
+	h1 {
+		font-size: 24px;
+		color: black;
+		margin-bottom: 25px;
+		text-align: center;
+	}
+	
+	/* 商品清單確認區 */
+	.order-items-box {
+		background-color: white;
+		border-radius: 12px;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+		border: 1px solid lightgray;
+		max-width: 600px;
+		width: 100%;
+		padding: 24px;
+		box-sizing: border-box;
+		margin-bottom: 20px;
+	}
+	
+	.order-items-box h3 {
+		margin: 0 0 15px 0;
+		color: darkorange;
+		font-size: 18px;
+	}
+	
+	table {
+		width: 100%;
+		border-collapse: collapse;
+		font-size: 15px;
+	}
+	
+	th, td {
+		padding: 12px;
+		text-align: left;
+		border-bottom: 1px solid whitesmoke;
+	}
+	
+	th {
+		color: gray;
+		font-weight: bold;
+	}
+	
+	td {
+		color: black;
+	}
+	
+	/* 付款與聯絡表單區 */
+	.checkout-form-box {
+		background-color: white;
+		border-radius: 12px;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+		border: 1px solid lightgray;
+		max-width: 600px;
+		width: 100%;
+		padding: 24px;
+		box-sizing: border-box;
+	}
+	
+	.form-group {
+		margin-bottom: 20px;
+		display: flex;
+		flex-direction: column;
+	}
+	
+	.form-group label {
+		font-size: 15px;
+		font-weight: bold;
+		color: black;
+		margin-bottom: 8px;
+	}
+	
+	/* 輸入框與下拉選單 */
+	.form-group input, .form-group select {
+		padding: 10px 14px;
+		border: 1px solid lightgray;
+		border-radius: 6px;
+		font-size: 14px;
+		background-color: white;
+		color: black;
+		outline: none;
+		transition: border-color 0.2s;
+	}
+	
+	/* 輸入框點擊 */
+	.form-group input:focus {
+		border-color: orange;
+	}
+	
+	/* 總金額大區塊 */
+	.total-price-box {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-top: 25px;
+		padding-top: 15px;
+		border-top: 2px dashed whitesmoke; /* 虛線:收據感 */
+	}
+	
+	.total-price-box span {
+		font-size: 16px;
+		font-weight: bold;
+		color: black;
+	}
+	
+	.total-price-box strong {
+		font-size: 22px;
+		color: coral; 
+		font-weight: bold;
+	}
+	
+	/* 確認付款按鈕 */
+	#submit-payment-btn {
+		width: 100%;
+		background-color: orange;
+		color: white;
+		border: none;
+		padding: 14px;
+		border-radius: 25px;
+		cursor: pointer;
+		font-size: 16px;
+		font-weight: bold;
+		margin-top: 20px;
+		box-shadow: 0 4px 12px rgba(255, 165, 0, 0.3);
+		transition: all 0.2s;
+	}
+	
+	#submit-payment-btn:hover {
+		background-color: darkorange; /* 移上去變深橘 */
+		box-shadow: 0 4px 12px rgba(255, 140, 0, 0.4);
+	}
+
+</style>
+</head>
+<body>
+
+	<nav class="front-navbar">
+		<a th:href="@{/frontend/product/listAll}" class="front-logo">旅圖 | MapIt</a>
+		<div class="member-status-box">
+			<span style="font-size: 13px; color: gray;">歡迎光臨，請確認您的訂單項目</span>
+			<a th:href="@{/cart/show}" class="member-link" style="font-size: 16px;">🛒 返回購物車</a>
+		</div>
+	</nav>
+	
+	<h1>📝 填寫聯絡資料與付款方式</h1>
+	
+	<div class="order-items-box">
+		<h3>📋 商品清單確認</h3>
+		<table>
+			<thead>
+				<tr>
+					<th>商品名稱</th>
+					<th>數量</th>
+					<th>小記</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="cartVO : ${cartList}"
+					class="item-row-data"
+				    th:data-product-id="${cartVO.product.productId}"
+				    th:data-quantity="${cartVO.quantity}"
+				    th:data-price="${cartVO.product.productPrice}">
+				    
+						<td th:text="${cartVO.product.productName}">台北101門票 placeholder</td>
+						<td th:text="${cartVO.quantity} + ' 件'">111111 件</td>
+						<td th:text="'NT$ ' + ${cartVO.subtotal}">NT$ 9999999999</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	
+	<div class="checkout-form-box">
+		<div class="form-group">
+			<label>👤 聯絡人姓名：</label>
+			<input type="text" id="receiverName" placeholder="請輸入真實姓名" value="" required />
+		</div>
+		<div class="form-group">
+			<label>📞 聯絡電話：</label>
+			<input type="tel" id="receiverPhone" placeholder="請輸入手機號碼" value="" required>
+		</div>
+		<div class="form-group">
+			<label style="font-weight: bold; color: darkorange;">💳 線上刷卡結帳：</label>
+			
+			<div style="margin-top: 10px;">
+				<label style="font-size: 13px; color: gray;">卡號 (16位數字)：</label>
+				<input type="text" id="creditCardNumber" placeholder="1234567812345678" maxlength="16" required style="width: 100%; box-sizing: border-box;">
+			</div>
+			
+			<div style="display: flex; gap: 15px; margin-top: 10px;">
+				<div style="flex: 1;">
+					<label style="font-size: 13px; color: gray;">有效期限 (MM/YY)：</label>
+					<input type="text" id="cardExpiry" placeholder="12/28" maxlength="5" required style="width: 100%; box-sizing: border-box;">
+				</div>
+				<div style="flex: 1;">
+					<label style="font-size: 13px; color: gray;">安全碼 (3位數字)：</label>
+					<input type="password" id="cardCVC" placeholder="123" maxlength="3" required style="width: 100%; box-sizing: border-box;">
+				</div>
+			</div>
+		</div>
+		<div class="total-price-box">
+			<span>應付總金額：</span>
+			<strong id="finalAmountText" th:text="'NT$ ' + ${totalAmount}">NT$ 99999999</strong>
+		</div>
+		
+		<button type="button" id="submit-payment-btn">
+			🔒 確認付款並送出訂單
+		</button>
+	</div>
+	
+	<script>
+		document.getElementById('submit-payment-btn').addEventListener('click', function() {
+			
+			// 1. 抓取聯絡人資料
+			const receiverName = document.getElementById('receiverName').value.trim();
+			const receiverPhone = document.getElementById('receiverPhone').value.trim();
+			
+			// 2. 抓取信用卡資料
+			const cardNum = document.getElementById('creditCardNumber').value.trim();
+			const cardExpiry = document.getElementById('cardExpiry').value.trim();
+			const cardCVC = document.getElementById('cardCVC').value.trim();
+			
+			// 聯絡人防呆
+			if(!receiverName || !receiverPhone) {
+				alert('請填寫完整的聯絡人姓名與電話！');
+				return;
+			}
+			
+			// 信用卡字數驗證
+			const cardNumReg = /^[0-9]{16}$/; // 必須是 16 位全數字
+			const cvcReg = /^[0-9]{3}$/;     // 必須是 3 位全數字
+			
+			if(!cardNumReg.test(cardNum)) {
+				alert('❌ 信用卡號格式錯誤！請輸入 16 位純數字。');
+				return;
+			}
+			
+			if(!cardExpiry.includes('/') || cardExpiry.length < 5) {
+				alert('❌ 有效期限格式錯誤！請依照 MM/YY 格式輸入（例如 12/28）。');
+				return;
+			}
+			
+			if(!cvcReg.test(cardCVC)) {
+				alert('❌ 安全碼錯誤！請輸入卡片背面 3 位純數字。');
+				return;
+			}
+			
+			// 3. 驗證都無誤後，動態搜刮畫面上的隱形貼紙
+			const itemsArray = [];
+			const rowElements = document.querySelectorAll('.item-row-data');
+			
+			rowElements.forEach(row => {
+				const prodId = parseInt(row.getAttribute('data-product-id'));
+				const qty = parseInt(row.getAttribute('data-quantity'));
+				const price = parseInt(row.getAttribute('data-price'));
+				
+				// 配合 @IdClass 主鍵
+				// OrderItemVO 裡，變數名稱 productId、itemQty、itemPrice
+				itemsArray.push({
+					productId: prodId,
+					itemQty: qty,
+					itemPrice: price
+				});
+			});
+
+			const finalAmountText = document.getElementById('finalAmountText').innerText;
+			const totalAmountNum = parseInt(finalAmountText.replace(/[^0-9]/g, ''));
+
+			// 打包最終要丟給 OrdersController 的主物件
+			const orderData = {
+				// 主訂單 CustVO custVO
+				custVO: {
+					custId: 1 // 先寫死 1 號顧客，對齊原本的展示
+				},
+				orderStatus: "1",             // 訂單狀態: 字串 "1"
+				paymentMethod: "1",           // 付款方式: 字串 "1" 
+				paymentStatus: true,          // 付款狀態: Boolean true
+				orderPrice: totalAmountNum,   // 訂單總金額
+				
+				// 放入明細清單
+				orderItems: itemsArray 
+			};
+			
+			console.log("JPA 複合主鍵對齊！發送精準 JSON 資料：", orderData);
+			
+			// 4. 發動 Fetch API 送去給 OrdersController
+			fetch('/orders/checkout', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(orderData)
+			})
+			.then(response => {
+				if (response.ok) {
+					return response.json(); // 結帳成功，拿到後端回傳帶有最新主鍵的 savedOrder
+				} else {
+					return response.text().then(text => { throw new Error(text) }); // 商業邏輯失敗 (如庫存不足)
+				}
+			})
+			.then(data => {
+				// 付款成功！
+				alert('🎉 付款成功！訂單已成立！');
+				// **我卡住的點** 帶去「訂單成功頁面」印明細
+				console.log('後端回傳的成功訂單資料：', data);
+			})
+			.catch(error => {
+				// 付款失敗！
+				alert('❌ 付款失敗，原因：' + error.message);
+			});
+		});
+	</script>
+
+</body>
+</html>

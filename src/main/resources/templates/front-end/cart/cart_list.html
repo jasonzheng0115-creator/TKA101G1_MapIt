@@ -388,10 +388,10 @@
 				<span>商品總計:</span>
 				<strong th:text="'NT$ ' + ${totalAmount}">NT$999999999 placeholder</strong>
 			</div>
-			<button type="button" class="checkout-btn">前往結帳</button>
+			<a th:href="@{/orders/showCheckout}" style="text-decoration: none; display: block; width: 100%;">
+			    <button type="button" class="checkout-btn">前往結帳</button>
+			</a>
 		</div>
-		
-
 		
 	</div>
 	
