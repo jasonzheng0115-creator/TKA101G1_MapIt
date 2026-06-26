@@ -1,6 +1,7 @@
 package com.trip.controller;
 
 import com.cust.model.CustVO;
+import com.cust.model.CustRepository;
 import com.trip.model.CollabItemService;
 import com.trip.model.CollabItemVO;
 import jakarta.servlet.http.HttpSession;
@@ -19,6 +20,9 @@ public class CollabApiController {
 
     @Autowired
     private CollabItemService collabItemService;
+
+    @Autowired
+    private com.cust.model.CustRepository custRepository;
 
     // 1. 撈取特定行程的所有協作者 (GET /api/collabs/{tripId})
     @GetMapping("/{tripId}")
@@ -119,4 +123,32 @@ public class CollabApiController {
             return ResponseEntity.status(400).body("移除失敗：" + e.getMessage());
         }
     }
+
+    // 4. 關鍵字搜尋會員帳號 (GET /api/collabs/search-users)
+    @GetMapping("/search-users")
+    public ResponseEntity<?> searchUsers(
+            @RequestParam(value = "keyword", required = false, defaultValue = "") String keyword) {
+        if (keyword.trim().isEmpty()) {
+            return ResponseEntity.ok(new ArrayList<>());
+        }
+
+        // 搜尋包含關鍵字的帳號
+        List<CustVO> list = custRepository.findByCustAccountContaining(keyword);
+
+        // 只過濾出必要的屬性以回傳前端，防止 Jackson 序列化出錯 (Circular Reference)
+        List<Map<String, Object>> resultList = new ArrayList<>();
+        // 限制顯示前 10 筆，避免下拉清單過長
+        int limit = Math.min(list.size(), 10);
+        for (int i = 0; i < limit; i++) {
+            CustVO cust = list.get(i);
+            Map<String, Object> map = new HashMap<>();
+            map.put("custId", cust.getCustId());
+            map.put("custName", cust.getCustName());
+            map.put("custAccount", cust.getCustAccount());
+            resultList.add(map);
+        }
+
+        return ResponseEntity.ok(resultList);
+    }
+
 }

@@ -125,4 +125,36 @@ public class TripItemService {
         tripItemRepository.save(item);
     }
 
+    // 5. 重新排序行程明細的序號 (SeqNo)
+    @Transactional
+    public void reorderTripItems(List<Integer> itemIds, Integer loginCustId) {
+        if (itemIds == null || itemIds.isEmpty())
+            return;
+
+        // 1. 用第一個 ID 撈出明細以取得行程 ID
+        TripItemVO firstItem = tripItemRepository.findById(itemIds.get(0))
+                .orElseThrow(() -> new RuntimeException("找不到景點明細"));
+        Integer tripId = firstItem.getTrip().getTripId();
+
+        // 2. 權限防護：檢查是否有編輯權限（建立者或協作者）
+        if (!collabItemService.hasEditPermission(tripId, loginCustId)) {
+            throw new RuntimeException("你沒有權限修改此行程！");
+        }
+
+        // 3. 用簡單的 for 迴圈，依據傳入的順序更新資料庫中的 seqNo
+        for (int i = 0; i < itemIds.size(); i++) {
+            Integer itemId = itemIds.get(i);
+            TripItemVO item = tripItemRepository.findById(itemId)
+                    .orElseThrow(() -> new RuntimeException("找不到景點明細 ID: " + itemId));
+
+            // 安全防呆：防範跨行程非法修改他人明細
+            if (!item.getTrip().getTripId().equals(tripId)) {
+                throw new RuntimeException("非法操作：不允許跨行程修改順序！");
+            }
+
+            item.setSeqNo(i + 1); // 序號從 1 開始遞增
+            tripItemRepository.save(item);
+        }
+    }
+
 }

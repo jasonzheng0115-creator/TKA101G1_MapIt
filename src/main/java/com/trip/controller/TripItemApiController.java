@@ -99,4 +99,23 @@ public class TripItemApiController {
         }
     }
 
+    // 5. 拖拉排序景點明細 (POST /api/trip-items/reorder)
+    @PostMapping("/reorder")
+    public ResponseEntity<?> reorderTripItems(@RequestBody List<Integer> itemIds, HttpSession session) {
+        // 權限檢查：確認有登入
+        CustVO loginCust = (CustVO) session.getAttribute("loginCust");
+        if (loginCust == null) {
+            return ResponseEntity.status(401).body("請先登入");
+        }
+
+        try {
+            // 呼叫 Service 執行重新排序
+            tripItemService.reorderTripItems(itemIds, loginCust.getCustId());
+            return ResponseEntity.ok("排序更新成功");
+        } catch (Exception e) {
+            // 捕捉任何異常（例如權限不足或非法跨行程修改），並回傳給前端
+            return ResponseEntity.status(400).body("排序更新失敗：" + e.getMessage());
+        }
+    }
+
 }
