@@ -279,15 +279,6 @@
                     <input type="date" id="tripDateInput" th:value="${trip.tripDate}"
                         style="padding: 4px; border: 1px solid #D1D8DD; border-radius: 4px; color: #4A6274; outline: none;">
                 </div>
-                <div>
-                    狀態設定：
-                    <!-- 公開/私有下拉選單 -->
-                    <select id="tripStatusInput"
-                        style="padding: 4px; border: 1px solid #D1D8DD; border-radius: 4px; color: #4A6274; outline: none;">
-                        <option value="true" th:selected="${trip.tripStatus}">🌍 公開 (所有人可見)</option>
-                        <option value="false" th:selected="${!trip.tripStatus}">🔒 私有 (僅自己與協作者可見)</option>
-                    </select>
-                </div>
             </div>
         </div>
         <div class="header-actions">
@@ -311,9 +302,14 @@
             </div>
         </div>
 
-        <div class="right-panel">
-            <h3>🗺️ Google Map 預留區</h3>
+        <div class="right-panel"
+            style="padding: 0; display: block; overflow: hidden; border: none; background: transparent;">
+            <!-- 🗺️ 實體地圖容器，設定寬高為 100% 撐滿右側面板 -->
+            <div id="map"
+                style="width: 100%; height: 100%; border-radius: 16px; box-shadow: 0 4px 20px rgba(90, 122, 138, 0.06);">
+            </div>
         </div>
+
     </div>
 
     <!-- ====== 搜尋景點彈出視窗 ====== -->
@@ -372,6 +368,13 @@
     <script th:inline="javascript">
         const modal = document.getElementById('searchModal');
         const searchInput = document.getElementById('searchInput');
+
+        // 💾 新增：定義地圖、標記與連線的全域變數
+        let map = null;
+        let markers = [];
+        let polyline = null;
+        let directionsRenderer = null;
+        let directionsService = null;
 
         searchInput.addEventListener('keypress', function (event) {
             if (event.key === 'Enter') {
@@ -627,52 +630,68 @@
                     }
 
                     let html = '';
-                    data.forEach(item => {
+                    data.forEach((item, index) => {
                         html += `
-                        <div class="trip-item-card" data-id="${item.itemId}" style="background: rgba(255,255,255,0.5); border: 1px solid rgba(123,143,161,0.1); padding: 16px 20px; margin-bottom: 10px; border-left: 4px solid #7B8FA1; border-radius: 12px; transition: all 0.3s ease;">
+                        <div class="trip-item-card" data-id="${item.itemId}" style="background: rgba(255,255,255,0.55); border: 1px solid rgba(123,143,161,0.12); padding: 18px 20px; margin-bottom: 12px; border-left: 4px solid #7B8FA1; border-radius: 12px; transition: all 0.3s ease; display: flex; flex-direction: column;">
                             
-                            <!-- 上半部：標題與刪除按鈕 -->
-                            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-                                <div style="display: flex; align-items: center; gap: 16px;">
-                                    <div class="drag-handle" style="background: #7B8FA1; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 500; font-size: 13px; flex-shrink: 0; cursor: grab;">
-                                        ${item.seqNo}
-                                    </div>
-
-                                    <div>
-                                        <h4 style="margin: 0 0 4px 0; color: #4A6274; font-weight: 500; font-size: 15px;">${item.attrName}</h4>
-                                        <p style="margin: 0; font-size: 12px; color: #8C9DAA; font-weight: 300;">${item.attrAddress}</p>
-                                    </div>
-                                </div>
-                                <button onclick="deleteTripItem(${item.itemId})" style="background: transparent; border: none; font-size: 16px; cursor: pointer; color: #c95c5c; padding: 5px;" title="移除景點">🗑️</button>
+                            <!-- 1. 到達時間 (最上層) -->
+                            <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                                <span style="font-size: 12px; color: #8C9DAA; min-width: 65px; font-weight: 500;">🕒 到達時間</span>
+                                <input type="datetime-local" id="arr_${item.itemId}" value="${item.arrivalTime}" onchange="onArrivalChange(${item.itemId})" style="padding: 6px 10px; font-size: 12px; border: 1px solid #D1D8DD; border-radius: 6px; outline: none; color: #4A6274; background: #FFF; width: 100%; max-width: 200px;">
                             </div>
 
-                            <!-- 下半部：新增的時間與備註編輯區 -->
-                            <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; background: rgba(255,255,255,0.7); padding: 10px; border-radius: 8px;">
-                                <div>
-                                    <label style="font-size: 11px; color: #8C9DAA; display: block; margin-bottom: 4px;">抵達時間</label>
-                                    <input type="datetime-local" id="arr_${item.itemId}" value="${item.arrivalTime}" style="padding: 6px; font-size: 12px; border: 1px solid #D1D8DD; border-radius: 6px; outline: none; color: #4A6274;">
+                            <!-- 2. 景點資訊區塊 (置中，帶有淡雅藍灰背景與左邊線) -->
+                            <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(240,244,248,0.7); padding: 10px 14px; border-radius: 8px; margin-bottom: 12px; border-left: 3px solid #7B8FA1;">
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div class="drag-handle" style="background: #7B8FA1; color: white; width: 26px; height: 26px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 500; font-size: 12px; flex-shrink: 0; cursor: grab;" title="按住可拖曳排序">
+                                        ${item.seqNo}
+                                    </div>
+                                    <div>
+                                        <h4 style="margin: 0 0 3px 0; color: #4A6274; font-weight: 500; font-size: 14px;">${item.attrName}</h4>
+                                        <p style="margin: 0; font-size: 11px; color: #8C9DAA; font-weight: 300; word-break: break-all;">${item.attrAddress}</p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <label style="font-size: 11px; color: #8C9DAA; display: block; margin-bottom: 4px;">離開時間</label>
-                                    <input type="datetime-local" id="dep_${item.itemId}" value="${item.depTime}" style="padding: 6px; font-size: 12px; border: 1px solid #D1D8DD; border-radius: 6px; outline: none; color: #4A6274;">
+                                <button onclick="deleteTripItem(${item.itemId})" style="background: transparent; border: none; font-size: 15px; cursor: pointer; color: #c95c5c; padding: 5px; flex-shrink: 0;" title="移除景點">🗑️</button>
+                            </div>
+
+                            <!-- 3. 備註區塊 (第三層) -->
+                            <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                                <span style="font-size: 12px; color: #8C9DAA; min-width: 65px; font-weight: 500;">📝 備註</span>
+                                <input type="text" id="note_${item.itemId}" value="${item.itemNote}" placeholder="請輸入備忘錄（如：抵達後先集合）..." style="padding: 6px 10px; font-size: 12px; border: 1px solid #D1D8DD; border-radius: 6px; outline: none; color: #4A6274; background: #FFF; flex: 1;">
+                            </div>
+
+                            <!-- 4. 離開時間與儲存按鈕 (底層並排) -->
+                            <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+                                <div style="display: flex; align-items: center; gap: 8px; flex: 1;">
+                                    <span style="font-size: 12px; color: #8C9DAA; min-width: 65px; font-weight: 500;">🕒 離開時間</span>
+                                    <input type="datetime-local" id="dep_${item.itemId}" value="${item.depTime}" onchange="onDepartureChange(${item.itemId})" oninput="onDepartureChange(${item.itemId})" style="padding: 6px 10px; font-size: 12px; border: 1px solid #D1D8DD; border-radius: 6px; outline: none; color: #4A6274; background: #FFF; width: 100%; max-width: 200px;">
                                 </div>
-                                <div style="flex: 1; min-width: 150px;">
-                                    <label style="font-size: 11px; color: #8C9DAA; display: block; margin-bottom: 4px;">專屬備忘錄</label>
-                                    <input type="text" id="note_${item.itemId}" value="${item.itemNote}" placeholder="例如：記得買門票..." style="padding: 6px; font-size: 12px; width: 100%; border: 1px solid #D1D8DD; border-radius: 6px; outline: none; color: #4A6274;">
-                                </div>
-                                <div>
-                                    <button onclick="updateTripItem(${item.itemId})" class="btn btn-add" style="padding: 6px 14px; font-size: 12px; border-radius: 6px;">💾 儲存</button>
-                                </div>
+                                <button onclick="updateTripItem(${item.itemId})" class="btn btn-add" style="padding: 6px 14px; font-size: 12px; border-radius: 6px; flex-shrink: 0; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">💾 儲存</button>
                             </div>
 
                         </div>
-                    `;
+
+                        `;
+
+                        if (index < data.length - 1) {
+                            html += `
+                            <div class="transit-time-container" id="transit_time_${index}" style="display: flex; align-items: center; justify-content: flex-start; margin: 12px 0 12px 24px; font-size: 13px; color: #7B8FA1; font-weight: 500;">
+                                <span style="display: flex; align-items: center; gap: 8px;">
+                                    <span style="font-size: 16px;">🚗</span> 
+                                    <span class="transit-time-text">⏳ 計算車程中...</span>
+                                </span>
+                            </div>
+                            `;
+                        }
+
                     });
+
 
 
 
                     listDiv.innerHTML = html;
                     initSortable(); // 卡片渲染完後重新初始化拖拉綁定
+                    updateMapState(data); // 卡片渲染完後，同步更新地圖標記與連線
                 })
                 .catch(error => console.error('Error fetching items:', error));
         }
@@ -754,7 +773,74 @@
                 });
         }
 
+        // 💾 步驟 4-A 新增：當到達時間修改時，自動預設並同步離開時間，隨後進行防呆檢核
+        function onArrivalChange(itemId) {
+            const arrInput = document.getElementById("arr_" + itemId);
+            const depInput = document.getElementById("dep_" + itemId);
+            if (arrInput && depInput) {
+                // 自動預設同步
+                depInput.value = arrInput.value;
+                // 執行防呆校驗
+                validateTimes(itemId);
+            }
+        }
+        // 💾 步驟 4-A 新增：當離開時間被使用者手動修改時，進行防呆檢核
+        function onDepartureChange(itemId) {
+            validateTimes(itemId);
+        }
+        // 💾 步驟 4-A 新增：時間防呆校驗核心邏輯 (檢核、變色、顯示警告)
+        function validateTimes(itemId) {
+            const arrInput = document.getElementById("arr_" + itemId);
+            const depInput = document.getElementById("dep_" + itemId);
+            if (!arrInput || !depInput) return true;
+            const arrVal = arrInput.value;
+            const depVal = depInput.value;
+            const depLabel = depInput.previousElementSibling; // 取得 🕒 離開時間 的標題元素
+            // 尋找是否已經有警告標語存在
+            let warnSpan = document.getElementById("warn_" + itemId);
+            // 檢查：離開時間不可早於到達時間
+            if (arrVal && depVal && depVal < arrVal) {
+                // 變更為紅色警告樣式
+                depInput.style.borderColor = "#c95c5c";
+                depInput.style.color = "#c95c5c";
+                if (depLabel) {
+                    depLabel.style.color = "#c95c5c";
+                }
+                // 如果還沒有顯示警告字眼，就動態建立一個
+                if (!warnSpan) {
+                    warnSpan = document.createElement("span");
+                    warnSpan.id = "warn_" + itemId;
+                    warnSpan.className = "time-warning-text";
+                    warnSpan.style.color = "#c95c5c";
+                    warnSpan.style.fontSize = "11px";
+                    warnSpan.style.marginLeft = "8px";
+                    warnSpan.style.fontWeight = "bold";
+                    warnSpan.textContent = "⚠️ 離開時間不可早於到達時間！";
+                    depInput.parentNode.appendChild(warnSpan);
+                }
+                return false;
+            } else {
+                // 恢復為原本正常的灰藍色樣式
+                depInput.style.borderColor = "#D1D8DD";
+                depInput.style.color = "#4A6274";
+                if (depLabel) {
+                    depLabel.style.color = "#8C9DAA";
+                }
+                // 移除警告標語
+                if (warnSpan) {
+                    warnSpan.remove();
+                }
+                return true;
+            }
+        }
+
         function updateTripItem(itemId) {
+            // 儲存前防呆，拒絕發送更新請求
+            if (!validateTimes(itemId)) {
+                alert("❌ 離開時間不能早於到達時間，請修正後再點選儲存！");
+                return;
+            }
+
             // 透過動態生成的 ID 抓取這三個輸入框的值
             const arrTime = document.getElementById(`arr_${itemId}`).value;
             const depTime = document.getElementById(`dep_${itemId}`).value;
@@ -790,7 +876,6 @@
             // 抓取畫面上三個輸入框的值
             const tripName = document.getElementById('tripNameInput').value;
             const tripDate = document.getElementById('tripDateInput').value;
-            const tripStatus = document.getElementById('tripStatusInput').value;
 
             // 從網址列抓取目前的 tripId (例如 /trip/edit/5 就會抓到 5)
             const urlParts = window.location.pathname.split('/');
@@ -805,7 +890,6 @@
                 body: JSON.stringify({
                     tripName: tripName,
                     tripDate: tripDate,
-                    tripStatus: tripStatus
                 })
             })
                 .then(response => {
@@ -823,9 +907,9 @@
 
 
 
-        window.onload = function () {
-            loadTripItems();
-        };
+        // window.onload = function () {
+        //     loadTripItems();
+        // };
 
         function getOpenStatusHtml(openTimeStr) {
             if (!openTimeStr) {
@@ -939,7 +1023,165 @@
             }
         });
 
+
+        // ===== 🗺️ Google Map 初始化方法 =====
+        function initMap() {
+            console.log("🗺️ Google Maps SDK 載入成功！");
+
+            // 1. 建立 Google Map 物件
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: 25.033964, lng: 121.564472 },
+                zoom: 12,
+                mapTypeControl: false,
+                streetViewControl: false,
+                styles: [
+                    { featureType: "poi", stylers: [{ visibility: "off" }] },
+                    { featureType: "transit", stylers: [{ visibility: "off" }] },
+                    { featureType: "road", elementType: "labels.icon", stylers: [{ visibility: "off" }] },
+                    { featureType: "road", elementType: "geometry", stylers: [{ color: "#EAEAEA" }] },
+                    { featureType: "water", elementType: "geometry", stylers: [{ color: "#C9DDF2" }] },
+                    { featureType: "landscape", elementType: "geometry", stylers: [{ color: "#F7F7F7" }] }
+                ]
+            });
+
+            // 2. 💾 步驟 5-B 新增：初始化導航服務與渲染器，設定線條顏色不與地圖混色
+            directionsService = new google.maps.DirectionsService();
+            directionsRenderer = new google.maps.DirectionsRenderer({
+                map: map,
+                suppressMarkers: true, // ⚠️ 非常重要：隱藏 Google 預設的 A、B 標記，因為我們要自己畫帶數字的標記！
+                preserveViewport: false, // 讓地圖在載入導航線後自動縮放到最適合的範圍
+                polylineOptions: {
+                    strokeColor: "#4F46E5", // 使用高對比靛藍色，清晰明瞭
+                    strokeOpacity: 0.85,
+                    strokeWeight: 5
+                }
+            });
+
+            // 3. 確定地圖與導航服務建立完畢，才去抓後端景點明細
+            loadTripItems();
+        }
+
+
+        // ===== 🗺️ 步驟 4 新增：更新地圖標記與實際導航路線 =====
+        function updateMapState(data) {
+            // 1. 清除地圖上舊的標記 (Markers)
+            markers.forEach(marker => marker.setMap(null));
+            markers = [];
+
+            // 2. 清除地圖上舊的導航路線
+            if (directionsRenderer) {
+                directionsRenderer.setDirections({ routes: [] });
+            }
+
+            if (!data || data.length === 0) {
+                return;
+            }
+
+            // 3. 遍歷景點明細，建立我們的自訂數字標記 (Markers)
+            const bounds = new google.maps.LatLngBounds();
+            const points = []; // 用來存所有景點的 LatLng 格式座標
+
+            data.forEach(item => {
+                const position = {
+                    lat: parseFloat(item.latitude),
+                    lng: parseFloat(item.longitude)
+                };
+                points.push(position);
+                bounds.extend(position);
+
+                // 建立自訂數字標記
+                const marker = new google.maps.Marker({
+                    position: position,
+                    map: map,
+                    title: item.attrName,
+                    label: {
+                        text: String(item.seqNo), // 數字序號 (1, 2, 3...)
+                        color: "#FFFFFF",
+                        fontWeight: "bold",
+                        fontSize: "14px"
+                    }
+                });
+                markers.push(marker);
+            });
+
+            // 4. 根據景點數量，計算並繪製實際開車導航路線
+            if (data.length === 1) {
+                // 只有一個景點：地圖直接置中該景點
+                map.setCenter(points[0]);
+                map.setZoom(15);
+            } else if (data.length >= 2) {
+                // 兩個以上景點：準備導航請求
+                const origin = points[0]; // 起點是第一個景點
+                const destination = points[points.length - 1]; // 終點是最後一個景點
+                const waypoints = []; // 中途景點陣列
+
+                // 將第 2 個到倒數第 2 個景點塞入中途點 (Waypoints)
+                for (let i = 1; i < points.length - 1; i++) {
+                    waypoints.push({
+                        location: points[i],
+                        stopover: true // 指明這是一個必須停靠的站點，而不是路過
+                    });
+                }
+
+                // 送出路網導航請求
+                directionsService.route({
+                    origin: origin,
+                    destination: destination,
+                    waypoints: waypoints,
+                    travelMode: google.maps.TravelMode.DRIVING // 規劃開車路線
+                }, function (response, status) {
+                    if (status === google.maps.DirectionsStatus.OK) {
+                        // 規劃成功：讓渲染器把美麗的靛藍色導航線畫在地圖上
+                        directionsRenderer.setDirections(response);
+
+                        // ==========================================
+                        // 💾 步驟 2 新增：讀取各路段 (legs) 的車程時間並更新卡片資訊
+                        // ==========================================
+                        const legs = response.routes[0].legs; // 取得所有路段的車程陣列
+                        for (let i = 0; i < legs.length; i++) {
+                            const durationText = legs[i].duration.text; // 取得像是 "15 分鐘" 或 "約 53 分" 的字串
+
+                            // 尋找對應索引的 HTML 容器並更新文字
+                            const container = document.getElementById("transit_time_" + i);
+                            if (container) {
+                                const textSpan = container.querySelector(".transit-time-text");
+                                if (textSpan) {
+                                    textSpan.textContent = "約 " + durationText;
+                                }
+                            }
+                        }
+                        // ==========================================
+
+                    } else {
+                        console.error("導航路線規劃失敗，原因：" + status);
+                        // 備用方案：若導航失敗，則用地圖邊界縮放，至少保證地圖顯示正常
+                        map.fitBounds(bounds);
+
+                        // ==========================================
+                        // 💾 步驟 2 新增：若導航失敗，將所有時間改為「無法取得車程」
+                        // ==========================================
+                        const containers = document.querySelectorAll(".transit-time-container");
+                        for (let i = 0; i < containers.length; i++) {
+                            const textSpan = containers[i].querySelector(".transit-time-text");
+                            if (textSpan) {
+                                textSpan.textContent = "無法取得車程時間";
+                            }
+                        }
+                        // ==========================================
+                    }
+                });
+
+            }
+        }
+
+
+
     </script>
+
+    <!-- 💾 步驟 2 新增：載入 Google Maps JavaScript API ( async defer 保證不卡網頁速度) -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCE4YKL8rdzbBLQnVS1st55-QOEhXM0juE&callback=initMap"
+        async defer></script>
+
 
 </body>
 

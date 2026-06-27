@@ -311,8 +311,6 @@
                     <h3 th:text="${trip.tripName}">行程名稱</h3>
                     <p class="trip-meta">
                         <span th:text="${trip.tripDate}">2026-01-01</span>
-                        <span th:if="${trip.tripStatus}" class="status status-public">公開</span>
-                        <span th:unless="${trip.tripStatus}" class="status status-private">私有</span>
 
                         <!-- 💡 新增：顯示行程建立者資訊 (loginCustId 是在 TripController 傳入的登入者ID) -->
                         <span style="margin-left: 12px; font-weight: 300; font-size: 12px;">

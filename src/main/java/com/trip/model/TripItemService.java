@@ -65,6 +65,9 @@ public class TripItemService {
             // 新增：把 LocalDateTime 轉換成字串回傳給前端 (處理空值)
             map.put("arrivalTime", item.getArrivalTime() != null ? item.getArrivalTime().toString() : "");
             map.put("depTime", item.getDepTime() != null ? item.getDepTime().toString() : "");
+            // 經緯度
+            map.put("latitude", item.getAttraction().getLat());
+            map.put("longitude", item.getAttraction().getLng());
 
             resultList.add(map);
         }
