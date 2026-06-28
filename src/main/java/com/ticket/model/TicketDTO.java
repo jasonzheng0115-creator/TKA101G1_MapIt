@@ -1,9 +1,9 @@
 package com.ticket.model;
 
-//把VO拿來的資料，自訂一個專屬的json格式
+//票券詳細資訊功能，把VO拿來的資料，自訂一個專屬的json格式
 public class TicketDTO {
 	private Integer tktId;
-	private String productId;
+	private Integer productId;
 	private String productName;
 	private String saleStatus;
 	
@@ -14,10 +14,10 @@ public class TicketDTO {
 	public void setTktId(Integer tktId) {
 		this.tktId = tktId;
 	}
-	public String getProductId() {
+	public Integer getProductId() {
 		return productId;
 	}
-	public void setProductId(String productId) {
+	public void setProductId(Integer productId) {
 		this.productId = productId;
 	}
 	public String getProductName() {

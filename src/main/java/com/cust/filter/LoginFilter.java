@@ -17,13 +17,20 @@ public class LoginFilter extends OncePerRequestFilter {
 	@Override
 	protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
 		String uri = request.getRequestURI();
-		if (uri.equals("/") ||
-				uri.equals("/customer/login") ||
-				uri.equalsIgnoreCase("/customer/loginCheck") ||
-				uri.equals("/customer/register")) {
+		
+		//絕對必須公開的白名單
+		if (uri.equals("/customer/login") ||
+			uri.equalsIgnoreCase("/customer/loginCheck") ||
+			uri.equals("/customer/register")) {
 			return true;
 		}
-		return false;
+		//黑名單
+		if(uri.startsWith("/customer") ||
+		   uri.startsWith("/order")) {
+			return false;
+		}
+		//剩下的全部公開
+		return true;
 	}
 
 	@Override // 做filter的基礎
