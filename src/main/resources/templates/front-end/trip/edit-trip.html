@@ -375,6 +375,15 @@
         let polyline = null;
         let directionsRenderer = null;
         let directionsService = null;
+        // 全域定義的 5 種莫蘭迪配色，讓卡片與地圖標記可以共享同一個顏色
+        const morandiStyles = [
+            { name: "玫瑰粉", bg: "rgba(244, 224, 224, 0.65)", border: "#C99E9E", line: "#D36A6A" }, // Day 1
+            { name: "鼠尾草綠", bg: "rgba(224, 238, 224, 0.65)", border: "#9EC99E", line: "#5A9E5A" }, // Day 2
+            { name: "霧霾藍", bg: "rgba(224, 230, 244, 0.65)", border: "#9EB0C9", line: "#4F86B5" }, // Day 3
+            { name: "丁香紫", bg: "rgba(234, 224, 244, 0.65)", border: "#A99EC9", line: "#8A5AB5" }, // Day 4
+            { name: "暖沙黃", bg: "rgba(244, 238, 224, 0.65)", border: "#C9BE9E", line: "#C4924A" }  // Day 5
+        ];
+
 
         searchInput.addEventListener('keypress', function (event) {
             if (event.key === 'Enter') {
@@ -629,22 +638,56 @@
                         return;
                     }
 
+
+                    // 💾 步驟 5-A 新增：依據出發日期，預先計算每個景點屬於「第幾天 (dayNo)」與「當日序號 (daySeqNo)」
+                    const tripDateStr = document.getElementById('tripDateInput').value;
+                    const startDate = new Date(tripDateStr);
+                    const dayCounters = {}; // 用來統計每一天各有幾個景點
+                    let lastDayNo = 1; // 貼心設計：如果景點沒設定時間，自動沿用前一個景點的天數
+
+                    data.forEach(item => {
+                        let dayNo = lastDayNo;
+                        if (item.arrivalTime) {
+                            const arrDate = new Date(item.arrivalTime.split('T')[0]);
+                            const diffTime = arrDate.getTime() - startDate.getTime();
+                            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                            dayNo = diffDays >= 0 ? diffDays + 1 : 1;
+                        }
+                        item.dayNo = dayNo;
+                        lastDayNo = dayNo; // 更新 lastDayNo 傳給下一個
+
+                        // 計算在當天是第幾個景點
+                        if (!dayCounters[dayNo]) {
+                            dayCounters[dayNo] = 0;
+                        }
+                        dayCounters[dayNo]++;
+                        item.daySeqNo = dayCounters[dayNo];
+                    });
+
                     let html = '';
                     data.forEach((item, index) => {
+                        // 取得當天的莫蘭迪樣式
+                        const style = morandiStyles[(item.dayNo - 1) % 5];
+
                         html += `
-                        <div class="trip-item-card" data-id="${item.itemId}" style="background: rgba(255,255,255,0.55); border: 1px solid rgba(123,143,161,0.12); padding: 18px 20px; margin-bottom: 12px; border-left: 4px solid #7B8FA1; border-radius: 12px; transition: all 0.3s ease; display: flex; flex-direction: column;">
+                        <div class="trip-item-card" data-id="${item.itemId}" style="background: ${style.bg}; border: 1px solid rgba(123,143,161,0.12); padding: 18px 20px; margin-bottom: 12px; border-left: 4px solid ${style.border}; border-radius: 12px; transition: all 0.3s ease; display: flex; flex-direction: column;">
                             
+                            <!-- Day 天數與配色標籤 -->
+                            <div style="font-size: 11px; font-weight: bold; color: ${style.line}; margin-bottom: 6px; letter-spacing: 0.5px;">
+                                DAY ${item.dayNo}
+                            </div>
+
                             <!-- 1. 到達時間 (最上層) -->
                             <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
                                 <span style="font-size: 12px; color: #8C9DAA; min-width: 65px; font-weight: 500;">🕒 到達時間</span>
                                 <input type="datetime-local" id="arr_${item.itemId}" value="${item.arrivalTime}" onchange="onArrivalChange(${item.itemId})" style="padding: 6px 10px; font-size: 12px; border: 1px solid #D1D8DD; border-radius: 6px; outline: none; color: #4A6274; background: #FFF; width: 100%; max-width: 200px;">
                             </div>
 
-                            <!-- 2. 景點資訊區塊 (置中，帶有淡雅藍灰背景與左邊線) -->
-                            <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(240,244,248,0.7); padding: 10px 14px; border-radius: 8px; margin-bottom: 12px; border-left: 3px solid #7B8FA1;">
+                            <!-- 2. 景點資訊區塊 (置中，背景與序號圓圈動態變為莫蘭迪色) -->
+                            <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.5); padding: 10px 14px; border-radius: 8px; margin-bottom: 12px; border-left: 3px solid ${style.border};">
                                 <div style="display: flex; align-items: center; gap: 12px;">
-                                    <div class="drag-handle" style="background: #7B8FA1; color: white; width: 26px; height: 26px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 500; font-size: 12px; flex-shrink: 0; cursor: grab;" title="按住可拖曳排序">
-                                        ${item.seqNo}
+                                    <div class="drag-handle" style="background: ${style.border}; color: white; width: 26px; height: 26px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 500; font-size: 12px; flex-shrink: 0; cursor: grab;" title="按住可拖曳排序">
+                                        ${item.daySeqNo} <!-- 顯示當日序號 -->
                                     </div>
                                     <div>
                                         <h4 style="margin: 0 0 3px 0; color: #4A6274; font-weight: 500; font-size: 14px;">${item.attrName}</h4>
@@ -653,6 +696,7 @@
                                 </div>
                                 <button onclick="deleteTripItem(${item.itemId})" style="background: transparent; border: none; font-size: 15px; cursor: pointer; color: #c95c5c; padding: 5px; flex-shrink: 0;" title="移除景點">🗑️</button>
                             </div>
+
 
                             <!-- 3. 備註區塊 (第三層) -->
                             <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
@@ -1062,7 +1106,7 @@
         }
 
 
-        // ===== 🗺️ 步驟 4 新增：更新地圖標記與實際導航路線 =====
+        // ===== 更新地圖標記與實際導航路線 =====
         function updateMapState(data) {
             // 1. 清除地圖上舊的標記 (Markers)
             markers.forEach(marker => marker.setMap(null));
@@ -1089,18 +1133,33 @@
                 points.push(position);
                 bounds.extend(position);
 
+                // 計算出此景點當天 (dayNo) 對應的顏色
+                const style = morandiStyles[(item.dayNo - 1) % 5];
+
                 // 建立自訂數字標記
                 const marker = new google.maps.Marker({
                     position: position,
                     map: map,
                     title: item.attrName,
+
+                    // 自訂圓形圖標，套用天數顏色
+                    icon: {
+                        path: google.maps.SymbolPath.CIRCLE,
+                        fillColor: style.border, // 使用莫蘭迪邊框色
+                        fillOpacity: 0.9,
+                        scale: 13, // 圓圈的大小
+                        strokeColor: "#FFFFFF", // 外圍的白色邊框
+                        strokeWeight: 2
+                    },
+
                     label: {
-                        text: String(item.seqNo), // 數字序號 (1, 2, 3...)
+                        text: String(item.daySeqNo), // 改為顯示"當日"序號 (1, 2, 3...)
                         color: "#FFFFFF",
                         fontWeight: "bold",
                         fontSize: "14px"
                     }
                 });
+
                 markers.push(marker);
             });
 
