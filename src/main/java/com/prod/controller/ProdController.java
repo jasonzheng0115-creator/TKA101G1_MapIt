@@ -35,9 +35,10 @@ public class ProdController {
 
 	@Autowired
 	private SplrService splrSvc;
-
+	
+	// 改成動態路徑,所以註解
 	// 指定電腦裡的實體硬碟資料夾路徑
-	private static final String UPLOAD_DIR = "C:/upload/products/";
+//	private static final String UPLOAD_DIR = "C:/upload/products/";
 
 	@GetMapping("/select_page")
 	public String select_page(ModelMap model) {
@@ -121,10 +122,12 @@ public class ProdController {
 		if (file != null && !file.isEmpty()) {
 
 			try {
-
-				File dir = new File(UPLOAD_DIR);
+				// 動態取得跟目錄
+				String userHome = System.getProperty("user.home");
+				File dir = new File(userHome, "upload/products");
+				
 				if (!dir.exists())
-					dir.mkdirs(); // C:/upload/products/ 不存在就自動創立
+					dir.mkdirs(); // 不存在就自動創立
 
 				// 用 UUID 防止檔名重複衝突
 				String originalFilename = file.getOriginalFilename();
@@ -172,7 +175,10 @@ public class ProdController {
 		// 圖片覆蓋
 		if (file != null && !file.isEmpty()) {
 			try {
-				File dir = new File(UPLOAD_DIR);
+				// 動態取得跟目錄
+				String userHome = System.getProperty("user.home");
+				File dir = new File(userHome, "upload/products");
+				
 				if (!dir.exists())
 					dir.mkdirs();
 

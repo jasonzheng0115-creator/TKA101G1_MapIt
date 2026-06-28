@@ -33,6 +33,9 @@ public class OrdersService {
 			throw new IllegalArgumentException("結帳失敗：訂單內必須包含至少一項商品項目！");
 		}
 		
+		// 將新訂單的狀態初始化為「已結單」,新訂單產生表示完成付款
+	    ordersVO.setOrderStatus("已結單");
+		
 		// 走訪每一筆明細，進行「庫存安全校驗與扣減」
 		for (OrderItemVO item : ordersVO.getOrderItems()) {
 			// 透過商品 Repository，拿著明細裡的 productId 去資料庫取出該商品的最新狀態
