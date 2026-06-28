@@ -26,90 +26,87 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
 @Controller
-@RequestMapping("/customer") //設定門牌
+@RequestMapping("/customer") // 設定門牌
 public class CustController {
-	
-	@Autowired //自動new CustService()
-	CustService custService;
-	
-	
-	@GetMapping("/login") //登入功能，指向前端的登入html
-	public String loginPage(){
-		return "front-end/customer/login";
-	}	
 
-	@PostMapping("/loginCheck") //拿前端給的資料
+	@Autowired // 自動new CustService()
+	CustService custService;
+
+	@GetMapping("/login") // 登入功能，指向前端的登入html
+	public String loginPage() {
+		return "front-end/customer/login";
+	}
+
+	@PostMapping("/loginCheck") // 拿前端給的資料
 	public String loginCheck(
-		//@Request...貼標籤，指定要前端這兩筆資料(需前端對應)
-		//HttpSession用來記憶已登入的狀態，到其他頁面不需重新登入
-		//ModelMap用來把資料或錯誤訊息，打包送回給前端	
-		@RequestParam("custAccount") String custAccount,
-		@RequestParam("custPassword") String custPassword,
-		HttpSession session,
-		ModelMap model) {
-			//檢查使用者帳號或密碼是否空白，空白就返回登入畫面
-			if(custAccount == null || custAccount.trim().isEmpty() || custPassword == null || custPassword.trim().isEmpty()){
-			model.addAttribute("errorMsg","帳號或密碼請勿空白");
+			// @Request...貼標籤，指定要前端這兩筆資料(需前端對應)
+			// HttpSession用來記憶已登入的狀態，到其他頁面不需重新登入
+			// ModelMap用來把資料或錯誤訊息，打包送回給前端
+			@RequestParam("custAccount") String custAccount,
+			@RequestParam("custPassword") String custPassword,
+			HttpSession session,
+			ModelMap model) {
+		// 檢查使用者帳號或密碼是否空白，空白就返回登入畫面
+		if (custAccount == null || custAccount.trim().isEmpty() || custPassword == null
+				|| custPassword.trim().isEmpty()) {
+			model.addAttribute("errorMsg", "帳號或密碼請勿空白");
 			return "front-end/customer/login";
-			}
-			//檢查使用者輸入的帳號和密碼都正確
-			CustVO custVO = custService.login(custAccount, custPassword);
-			//輸入錯誤就返回登入畫面
-			if(custVO == null) {
-				model.addAttribute("errorMsg","帳號或密碼錯誤");
-				return "front-end/customer/login";
-			}
-			//成功登入後，存入session長期記憶，保持登入狀態
-			session.setAttribute("loginCust",custVO);
-			//查詢正確就轉向登入成功的畫面
-			model.addAttribute("loginCust",custVO);
-			return "front-end/index";
 		}
-	
-	
-	@GetMapping("/loginSuccess") //過濾器使用，讓使用者無法條過登入功能，直接透過網址登入
+		// 檢查使用者輸入的帳號和密碼都正確
+		CustVO custVO = custService.login(custAccount, custPassword);
+		// 輸入錯誤就返回登入畫面
+		if (custVO == null) {
+			model.addAttribute("errorMsg", "帳號或密碼錯誤");
+			return "front-end/customer/login";
+		}
+		// 成功登入後，存入session長期記憶，保持登入狀態
+		session.setAttribute("loginCust", custVO);
+		// 查詢正確就轉向登入成功的畫面
+		model.addAttribute("loginCust", custVO);
+		return "redirect:/";
+	}
+
+	@GetMapping("/loginSuccess") // 過濾器使用，讓使用者無法條過登入功能，直接透過網址登入
 	public String LoginSuccess(HttpSession session, ModelMap model) {
-		if(session.getAttribute("loginCust") == null) {
+		if (session.getAttribute("loginCust") == null) {
 			return "front-end/customer/login";
 		}
-		model.addAttribute("loginCust",session.getAttribute("loginCust"));
+		model.addAttribute("loginCust", session.getAttribute("loginCust"));
 		return "front-end/customer/loginSuccess";
 	}
-	
-	
-	@GetMapping("/logout") //登出功能，指向前端的登入html
+
+	@GetMapping("/logout") // 登出功能，指向前端的登入html
 	public String logout(HttpSession session) {
-		session.invalidate(); 
-		return "redirect:/customer/login";	
+		session.invalidate();
+		return "redirect:/";
 	}
-	
-	
-	@GetMapping("/register") //註冊功能，指向前端的登入html
+
+	@GetMapping("/register") // 註冊功能，指向前端的登入html
 	public String registerPage(ModelMap model) {
 		// 先在model裡塞一個空的CustVO，當前端HTML載入時，Thymeleaf會跟這個空的物件進行綁定
 		model.addAttribute("newCust", new CustVO());
 		return "front-end/customer/register";
 	}
+
 	@PostMapping("/register")
 	public String register(
-		@Valid @ModelAttribute("newCust") CustVO custVO,		
-		BindingResult result,ModelMap model){		
-		//如果格式驗證有誤(和BindingResult一起使用)
-		if(result.hasErrors()) {
+			@Valid @ModelAttribute("newCust") CustVO custVO,
+			BindingResult result, ModelMap model) {
+		// 如果格式驗證有誤(和BindingResult一起使用)
+		if (result.hasErrors()) {
 			return "front-end/customer/register";
 		}
-		//註冊成功，重新導回登入頁面
+		// 註冊成功，重新導回登入頁面
 		try {
-		custService.register(custVO);
-		return "redirect:/customer/login";
-		//如果Service檢查報錯，把訊息回傳
-		}catch(RuntimeException e) {
-			model.addAttribute("errorMsg",e.getMessage());
+			custService.register(custVO);
+			return "redirect:/customer/login";
+			// 如果Service檢查報錯，把訊息回傳
+		} catch (RuntimeException e) {
+			model.addAttribute("errorMsg", e.getMessage());
 			return "front-end/customer/register";
 		}
-		}
-	
-	
+	}
+
 	@GetMapping("/updateProfile") // 修改個人資料功能，指向前端的登入html
 	public String updateProfile(HttpSession session, ModelMap model) {
 		// 取得先前會員的就個人資料
@@ -117,18 +114,15 @@ public class CustController {
 		model.addAttribute("loginCust", oldData);
 		return "front-end/customer/updateProfile";
 	}
-	
+
 	@PostMapping("/updateProfile")
 	public String updateProfile(
-		// 驗證前端傳來的新個人資料
-		@Valid @ModelAttribute
-		("loginCust") CustVO custVO, BindingResult result, HttpSession session,
-		// 拿取前端的檔案
-		@RequestParam
-		("cust_img_file") MultipartFile file,
-		// 防呆required = false 代表沒傳來也沒關係
-		@RequestParam
-		(value = "remove_img_flag", required = false) String removeImgFlag, ModelMap model) {
+			// 驗證前端傳來的新個人資料
+			@Valid @ModelAttribute("loginCust") CustVO custVO, BindingResult result, HttpSession session,
+			// 拿取前端的檔案
+			@RequestParam("cust_img_file") MultipartFile file,
+			// 防呆required = false 代表沒傳來也沒關係
+			@RequestParam(value = "remove_img_flag", required = false) String removeImgFlag, ModelMap model) {
 		// 如果錯誤退回給前端，提供錯誤提示資訊
 		if (result.hasErrors()) {
 			System.out.println("發生錯誤的欄位與原因如下：" + result.getAllErrors());
@@ -181,87 +175,84 @@ public class CustController {
 		session.setAttribute("loginCust", custVO);
 		return "redirect:/customer/loginSuccess";
 	}
-			
-	@GetMapping("/empCustomerList") //後台查詢所有會員資料功能，進入後台頁面，預設顯示所有會員
+
+	@GetMapping("/empCustomerList") // 後台查詢所有會員資料功能，進入後台頁面，預設顯示所有會員
 	public String empCustomerList(ModelMap model) {
-		//預設一個空的查找條件，讓複合查詢撈出所有已存在會員的資料
-		Map<String,String[]> emptyMap = new HashMap<>();
+		// 預設一個空的查找條件，讓複合查詢撈出所有已存在會員的資料
+		Map<String, String[]> emptyMap = new HashMap<>();
 		List<CustVO> list = custService.getAll(emptyMap);
-		
+
 		model.addAttribute("custList", list);
 		return "back-end/customer/empCustomerList";
 	}
-	
-	@PostMapping("/empCustomerList") 
-	public String listAllEmp(HttpServletRequest req,ModelMap model) {
-		//把前端給的所有條件，用map裝起來
-		Map<String,String[]> map = req.getParameterMap();
-		//將map丟給service，並篩選出符合條件的會員資料
+
+	@PostMapping("/empCustomerList")
+	public String listAllEmp(HttpServletRequest req, ModelMap model) {
+		// 把前端給的所有條件，用map裝起來
+		Map<String, String[]> map = req.getParameterMap();
+		// 將map丟給service，並篩選出符合條件的會員資料
 		List<CustVO> list = custService.getAll(map);
-		//防呆，如果清單是空的，沒有任何符合條件的會員資料
-		if(list.isEmpty()) {
+		// 防呆，如果清單是空的，沒有任何符合條件的會員資料
+		if (list.isEmpty()) {
 			model.addAttribute("erroeMsg", "查無符合條件的會員資料");
 		}
 		model.addAttribute("custList", list);
 		return "back-end/customer/empCustomerList";
-		
+
 	}
-	
-	
-	//後台修改單筆會員資料功能(用前後端分離的方式寫)
-	@GetMapping("/empUpdateCustomer") //只是把空白的網頁丟給瀏覽器 
+
+	// 後台修改單筆會員資料功能(用前後端分離的方式寫)
+	@GetMapping("/empUpdateCustomer") // 只是把空白的網頁丟給瀏覽器
 	public String empUpdateCustomer() {
 		return "back-end/customer/empUpdateCustomer";
 	}
-	//載入好網頁後，將資料庫會員舊資料，做成JSON給前端API
-	@GetMapping("/api/getOne") 
-	@ResponseBody //這個標籤是指只給JSON資料，不給HTML網頁
+
+	// 載入好網頁後，將資料庫會員舊資料，做成JSON給前端API
+	@GetMapping("/api/getOne")
+	@ResponseBody // 這個標籤是指只給JSON資料，不給HTML網頁
 	public CustVO getOneCustomerJson(
-		@RequestParam("custId") Integer custId) {
+			@RequestParam("custId") Integer custId) {
 		return custService.getOneCust(custId);
 	}
-	@PostMapping("/api/update") //把要前端要修改JSON格式的新資料接進來
+
+	@PostMapping("/api/update") // 把要前端要修改JSON格式的新資料接進來
 	@ResponseBody
 	public String updateCustomerJson(
-		@Valid @RequestBody CustVO custVO,
-		BindingResult result) {
-		if(result.hasErrors()) {
+			@Valid @RequestBody CustVO custVO,
+			BindingResult result) {
+		if (result.hasErrors()) {
 			String errorMsg = result.getFieldError().getDefaultMessage();
 			return errorMsg;
 		}
 		custService.updateProfile(custVO);
 		return "success";
 	}
-	
-	
-	
+
 	@GetMapping("/selectPage")
 	public String selectPage() {
 		return null;
 	}
+
 	@PostMapping("/selectPage")
 	public String selectPage(
-		ModelMap model) { 
-		
+			ModelMap model) {
+
 		return null;
 	}
-	
-	@GetMapping("/ticket") //票券匣功能
+
+	@GetMapping("/ticket") // 票券匣功能
 	public String ticket() {
 		return "front-end/ticket/ticket";
 	}
-	
-	
-	@GetMapping("/message") //通知功能
+
+	@GetMapping("/message") // 通知功能
 	public String message() {
 		return "front-end/message/message";
 	}
-	
-	
-	@GetMapping("/orderHistory") //歷史訂單功能
+
+	@GetMapping("/orderHistory") // 歷史訂單功能
 	public String orderHistory() {
 		return "front-end/customer/orderHistory";
 	}
-	
-}
 
+}
