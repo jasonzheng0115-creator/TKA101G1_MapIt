@@ -6,6 +6,8 @@ USE testdb;
 -- =======================================================
 -- 0. 刪除舊表 (請務必按此順序，由子表刪除至主表)
 -- =======================================================
+DROP TABLE IF EXISTS EMPLOYEE;
+DROP TABLE IF EXISTS DEPT;
 DROP TABLE IF EXISTS COLLAB_ITEM;
 DROP TABLE IF EXISTS TRIP_ITEM;
 DROP TABLE IF EXISTS TRIP;
@@ -409,3 +411,60 @@ INSERT INTO COLLAB_ITEM (TRIP_ID, CUST_ID) VALUES
 (6, 2),  -- 行程6 : 甄有錢(6) 邀請 魏笙芷(2) 加入旅遊群組 (備註：魏笙芷為管理員，可測試權限)
 (8, 6),  -- 行程8 : 魏笙芷(2) 邀請 甄有錢(6) 加入旅遊群組
 (10, 3); -- 行程10 : 尤勇池(5) 邀請 陸仁賈(3) 加入旅遊群組
+
+
+-- =======================================================
+-- 8. 建立部門資料表 (DEPT)
+-- =======================================================
+CREATE TABLE DEPT (
+    DEPT_ID   INT AUTO_INCREMENT COMMENT '部門編號',
+    DEPT_NAME VARCHAR(20) NOT NULL COMMENT '部門名稱',
+    CONSTRAINT dept_id_key PRIMARY KEY (DEPT_ID)
+) AUTO_INCREMENT = 1; -- 部門編號從 1 開始
+
+INSERT INTO DEPT (DEPT_NAME) VALUES
+('行政部'), -- DEPT_ID = 1
+('財務部'), -- DEPT_ID = 2
+('資訊部'), -- DEPT_ID = 3
+('行銷部'), -- DEPT_ID = 4
+('客服部'); -- DEPT_ID = 5
+
+
+-- =======================================================
+-- 9. 建立員工資料表 (EMPLOYEE)
+-- 從1001開始編號
+-- =======================================================
+CREATE TABLE EMPLOYEE (
+    EMP_ID     INT AUTO_INCREMENT COMMENT '員工編號',
+    EMP_NAME   VARCHAR(10) NOT NULL COMMENT '員工姓名',
+    EMP_SEX    CHAR(1) NOT NULL COMMENT '性別: F女, M男',
+    EMP_TEL    VARCHAR(15) NOT NULL COMMENT '電話',
+    EMP_EMAIL  VARCHAR(40) NOT NULL COMMENT '電子信箱',
+    DEPT_ID    INT NOT NULL COMMENT '所屬部門編號', -- 這裡改為對應 DEPT 的 ID
+    EMP_ACC    VARCHAR(20) NOT NULL COMMENT '帳號',
+    EMP_PWD    VARCHAR(20) NOT NULL COMMENT '密碼',
+    EMP_STATUS BOOLEAN NOT NULL DEFAULT TRUE COMMENT '啟用狀態: true啟用, false停用',
+    CONSTRAINT emp_id_key PRIMARY KEY (EMP_ID),
+    -- 設定外鍵約束，確保 DEPT_ID 必須存在於 DEPT 資料表中
+    CONSTRAINT fk_emp_dept FOREIGN KEY (DEPT_ID) REFERENCES DEPT(DEPT_ID)
+) AUTO_INCREMENT = 1001; -- 從1001開始編號
+
+INSERT INTO EMPLOYEE (EMP_NAME, EMP_SEX, EMP_TEL, EMP_EMAIL, DEPT_ID, EMP_ACC, EMP_PWD, EMP_STATUS) VALUES
+
+-- 【資訊部 (DEPT_ID = 3)】
+('莊孝維', 'M', '0912345678', 'zhuang@example.com', 3, 'it_zhuang', 'pwd123', TRUE),
+('史珍香', 'F', '0923456789', 'shi@example.com', 3, 'it_shi', 'pwd456', TRUE),
+
+-- 【行政部 (DEPT_ID = 1)】
+('殷櫻美', 'F', '0934567890', 'yin@example.com', 1, 'admin_yin', 'pwd789', TRUE),
+
+-- 【財務部 (DEPT_ID = 2)】
+('甄郝野', 'F', '0945678901', 'zhen@example.com', 2, 'fin_zhen', 'pwd321', TRUE),
+
+-- 【行銷部 (DEPT_ID = 4)】
+('賈正經', 'M', '0956789012', 'jia@example.com', 4, 'mkt_jia', 'pwd654', TRUE),
+('盧筱筱', 'F', '0967890123', 'lu@example.com', 4, 'mkt_lu', 'pwd987', TRUE),
+
+-- 【客服部 (DEPT_ID = 5)】
+('侯賽雷', 'M', '0978901234', 'hou@example.com', 5, 'cs_hou', 'pwd012', TRUE),
+('吳法度', 'M', '0989012345', 'wu@example.com', 5, 'cs_wu', 'pwd345', FALSE);       -- 測試停權狀態
