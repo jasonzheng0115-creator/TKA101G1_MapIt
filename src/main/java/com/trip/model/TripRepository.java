@@ -1,6 +1,5 @@
 package com.trip.model;
 
-import com.trip.model.TripVO;
 import com.cust.model.CustVO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

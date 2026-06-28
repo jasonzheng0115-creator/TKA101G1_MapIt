@@ -22,7 +22,7 @@ public class CollabApiController {
     private CollabItemService collabItemService;
 
     @Autowired
-    private com.cust.model.CustRepository custRepository;
+    private CustRepository custRepository;
 
     // 1. 撈取特定行程的所有協作者 (GET /api/collabs/{tripId})
     @GetMapping("/{tripId}")
