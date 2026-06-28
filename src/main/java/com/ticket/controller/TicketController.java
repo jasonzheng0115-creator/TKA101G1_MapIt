@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ticket.model.TicketDTO;
 import com.ticket.model.TicketService;
+import com.ticket.model.TicketTotalDTO;
 import com.ticket.model.TicketVO;
 
 @Controller
@@ -22,22 +23,21 @@ public class TicketController {
 	@Autowired
 	TicketService ticketservice;
 	
-	@Autowired
-	com.prod.model.ProdService prodSvc; // 注入商品服務，用來拿商品清單
+	@Autowired //自動注入，用來拿商品清單
+	com.prod.model.ProdService prodSvc;
 	
+	//票券詳細功能
     @GetMapping("/ticketList")
     public String ticketList(ModelMap model) {
-        // 去資料庫把「所有商品」撈出來，放在名為 prodList 的托盤上，交給前端 HTML
+        // 去資料庫把所有商品撈出來，放在名為prodList的托盤上，交給前端 HTML
         model.addAttribute("prodList", prodSvc.getAll());
         return "back-end/ticket/ticketList"; 
     }
 	
 	@GetMapping("api/ticketList")
 	@ResponseBody //轉換單一個為JSON，要注意VO不可以用lazy，用了要加@JsonIgnoreProperties忽略
-	
 	public List<TicketDTO> TicketJson( //因為原本的資料太多，所以改用自訂的Json資料(DTO)
 		@RequestParam(value="prodId",required=false) Integer prodId) {
-		
 		//跟資料庫拿TicketVO
 		List<TicketVO> ticketListAll;
 			if(prodId != null) {
@@ -45,10 +45,9 @@ public class TicketController {
 			}else {
 				ticketListAll = ticketservice.getAllTickets();
 			}
-		
 		//準備空的DTO陣列
 		List<TicketDTO> resultList = new ArrayList<>();
-		//開始抄寫進去DTO
+		//開始抄寫進去DTO for(元素類型 變數名稱 : 陣列或集合名稱)
 		for(TicketVO vo : ticketListAll) {
 			TicketDTO dto = new TicketDTO();
 			//抄寫表格本身的資料
@@ -75,6 +74,16 @@ public class TicketController {
 		//回傳乾淨的結果給fetch(url)
 			return resultList;
 		}
+	
+	//票券統整功能
+	@GetMapping("api/ticketAll")
+	@ResponseBody //轉換單一個為JSON
+	public List<TicketTotalDTO> TicketTotalJSON(
+		@RequestParam(value="prodId",required=false) Integer prodId,
+		@RequestParam(value="prodName",required=false) String prodName
+		){
+		return ticketservice.getTicketTotal(prodId,prodName);
+	}
 	
 	
 }
