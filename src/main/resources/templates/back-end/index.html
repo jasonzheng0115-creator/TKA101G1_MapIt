@@ -84,12 +84,12 @@
                         <li class="nav-item" th:if="${session.loginEmp}">
                             <span class="nav-link text-secondary px-3">
                                 <i class="bi bi-person-badge-fill text-dark"></i>
-                                <span th:text="${session.loginEmp.empName} + ' 您好 (管理員)'">管理員 您好</span>
+                                <span th:text="${session.loginEmp.empName} + ' 您好'">管理員 您好</span>
                             </span>
                         </li>
                         <li class="nav-item ms-lg-2">
                             <a class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-bold shadow-sm"
-                                th:href="@{/back-end/emp/logout}">登出</a>
+                                th:href="@{/emp/logout}">登出</a>
                         </li>
                     </ul>
                 </div>
@@ -100,13 +100,13 @@
         <nav class="sub-navbar-backend py-1">
             <div class="container-fluid px-4 px-lg-5">
                 <ul class="nav justify-content-center fw-bold">
-                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/supplier/select_page}">供應商管理</a></li>
                     <li class="nav-item"><a class="nav-link px-4" th:href="@{/product/select_page}">商品管理</a></li>
-                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/ap/select_page}">應付帳款</a></li>
                     <li class="nav-item"><a class="nav-link px-4" th:href="@{/orders/backend-list}">訂單管理</a></li>
                     <li class="nav-item"><a class="nav-link px-4" th:href="@{/customer/empCustomerList}">會員管理</a></li>
-                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/back-end/emp/select_page}">員工管理</a></li>
-                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/back-end/dept/listAllDept}">部門管理</a></li>
+                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/supplier/select_page}">廠商管理</a></li>
+                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/ap/select_page}">應付帳款</a></li>
+                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/emp/select_page}">員工管理</a></li>
+                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/dept/listAllDept}">部門管理</a></li>
                 </ul>
             </div>
         </nav>
@@ -149,19 +149,28 @@
 
             <!-- 4. 員工管理 -->
             <div class="col-md-4">
-                <a th:href="@{/back-end/emp/select_page}" class="portal-card p-4 text-center">
+                <a th:href="@{/emp/select_page}" class="portal-card p-4 text-center">
                     <div class="portal-icon"><i class="bi bi-person-workspace"></i></div>
                     <h4 class="fw-bold">員工管理</h4>
-                    <p class="text-muted fs-7">設定後台管理員與員工帳號權限</p>
+                    <p class="text-muted fs-7">新增、檢索與管理員工帳號狀態</p>
                 </a>
             </div>
 
-            <!-- 5. 供應商管理 -->
+            <!-- 5. 廠商管理 -->
             <div class="col-md-4">
                 <a th:href="@{/supplier/select_page}" class="portal-card p-4 text-center">
                     <div class="portal-icon"><i class="bi bi-building"></i></div>
-                    <h4 class="fw-bold">供應商管理</h4>
-                    <p class="text-muted fs-7">管理星辰等合作旅行社與供應商</p>
+                    <h4 class="fw-bold">廠商管理</h4>
+                    <p class="text-muted fs-7">管理合作旅行社與供應商</p>
+                </a>
+            </div>
+
+            <!-- 6. 部門管理 -->
+            <div class="col-md-4">
+                <a th:href="@{/dept/listAllDept}" class="portal-card p-4 text-center">
+                    <div class="portal-icon"><i class="bi bi-diagram-3"></i></div>
+                    <h4 class="fw-bold">部門管理</h4>
+                    <p class="text-muted fs-7">新增、修改公司部門</p>
                 </a>
             </div>
         </div>

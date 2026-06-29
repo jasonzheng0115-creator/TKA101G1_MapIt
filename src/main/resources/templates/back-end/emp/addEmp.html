@@ -124,20 +124,20 @@
         <!-- 主選單 (Top Bar) -->
         <nav class="navbar navbar-expand-lg navbar-light navbar-backend py-2">
             <div class="container-fluid px-4 px-lg-5">
-                <a class="navbar-brand fw-bold fs-3" href="@{/manage}" style="color: var(--primary-orange);">MapIt <span
-                        class="fs-5 text-secondary">後台管理系統</span></a>
+                <a class="navbar-brand fw-bold fs-3" th:href="@{/manage}" style="color: var(--primary-orange);">MapIt
+                    <span class="fs-5 text-secondary">後台管理系統</span></a>
 
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center" style="font-size: 0.9rem;">
                         <li class="nav-item" th:if="${session.loginEmp}">
                             <span class="nav-link text-secondary px-3">
                                 <i class="bi bi-person-badge-fill text-dark"></i>
-                                <span th:text="${session.loginEmp.empName} + ' 您好 (管理員)'">管理員 您好</span>
+                                <span th:text="${session.loginEmp.empName} + ' 您好'">管理員 您好</span>
                             </span>
                         </li>
                         <li class="nav-item ms-lg-2">
                             <a class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-bold shadow-sm"
-                                th:href="@{/back-end/emp/logout}">登出</a>
+                                th:href="@{/emp/logout}">登出</a>
                         </li>
                     </ul>
                 </div>
@@ -148,14 +148,14 @@
         <nav class="sub-navbar-backend py-1">
             <div class="container-fluid px-4 px-lg-5">
                 <ul class="nav justify-content-center fw-bold">
-                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/supplier/select_page}">供應商管理</a></li>
                     <li class="nav-item"><a class="nav-link px-4" th:href="@{/product/select_page}">商品管理</a></li>
-                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/ap/select_page}">應付帳款</a></li>
                     <li class="nav-item"><a class="nav-link px-4" th:href="@{/orders/backend-list}">訂單管理</a></li>
                     <li class="nav-item"><a class="nav-link px-4" th:href="@{/customer/empCustomerList}">會員管理</a></li>
-                    <li class="nav-item"><a class="nav-link active px-4" th:href="@{/back-end/emp/select_page}">員工管理</a>
+                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/supplier/select_page}">廠商管理</a></li>
+                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/ap/select_page}">應付帳款</a></li>
+                    <li class="nav-item"><a class="nav-link active px-4" th:href="@{/emp/select_page}">員工管理</a>
                     </li>
-                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/back-end/dept/listAllDept}">部門管理</a></li>
+                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/dept/listAllDept}">部門管理</a></li>
                 </ul>
             </div>
         </nav>
@@ -175,7 +175,7 @@
                         th:text="${errorMsg}"></div>
 
                     <!-- 新增表單 -->
-                    <form method="post" th:action="@{/back-end/emp/insert}" th:object="${empVO}">
+                    <form method="post" th:action="@{/emp/insert}" th:object="${empVO}">
 
                         <!-- 預設啟用狀態為 true (隱藏欄位) -->
                         <input type="hidden" th:field="*{empStatus}">
@@ -262,8 +262,7 @@
                             <div class="col-md-12 mt-5 d-flex justify-content-end gap-3 border-top pt-4">
                                 <button type="reset"
                                     class="btn btn-light px-4 py-2 fw-bold text-secondary border">重設欄位</button>
-                                <a th:href="@{/back-end/emp/listAllEmp}"
-                                    class="btn btn-outline-orange px-4 py-2">取消返回</a>
+                                <a th:href="@{/emp/listAllEmp}" class="btn btn-outline-orange px-4 py-2">取消返回</a>
                                 <button type="submit" class="btn btn-orange px-5 py-2">確認新增 🚀</button>
                             </div>
                         </div>
