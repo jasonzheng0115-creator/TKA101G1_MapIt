@@ -6,6 +6,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,10 +17,9 @@ import com.attr.model.AttrImageRepository;
 import com.attr.model.AttrImageVO;
 import com.attr.model.AttrService;
 import com.attr.model.AttrVO;
+import com.prod.model.ProdService;
+import com.prod.model.ProdVO;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import jakarta.servlet.http.HttpSession;
 
 /**
@@ -31,6 +33,7 @@ public class IndexController {
 
     private final AttrService attrService;
     private final AttrImageRepository attrImageRepository;
+    private final ProdService prodService;
 
     // 從 application.properties 讀取 Google Maps API Key
     @Value("${google.maps.api.key:}")
@@ -39,9 +42,10 @@ public class IndexController {
     /**
      * 建構子注入
      */
-    public IndexController(AttrService attrService, AttrImageRepository attrImageRepository) {
+    public IndexController(AttrService attrService, AttrImageRepository attrImageRepository, ProdService prodService) {
         this.attrService = attrService;
         this.attrImageRepository = attrImageRepository;
+        this.prodService = prodService;
     }
 
     /**
@@ -90,6 +94,11 @@ public class IndexController {
 
         // 將 Google Maps API Key 傳遞給前端
         model.addAttribute("googleMapsApiKey", googleMapsApiKey);
+        
+        // 隨機撈取數個商品顯示在首頁 by Mavis
+        List<ProdVO> randomProducts = prodService.getRandomProducts(6);
+        model.addAttribute("randomProducts", randomProducts);
+        // ==================================================
 
         return "front-end/index"; // Thymeleaf 會自動找到 templates/index.html
     }
