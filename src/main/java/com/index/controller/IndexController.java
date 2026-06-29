@@ -22,7 +22,7 @@ import jakarta.servlet.http.HttpSession;
 
 /**
  * IndexController - 首頁控制器
- * 
+ * test
  * 用途：處理網站首頁的請求
  * 當使用者訪問 http://localhost:8080/ 時，會導向到 index.html 頁面
  */
