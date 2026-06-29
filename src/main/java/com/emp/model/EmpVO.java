@@ -7,6 +7,8 @@ import com.dept.model.DeptVO;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -19,6 +21,7 @@ public class EmpVO implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "EMP_ID")
     private Integer empId; // 員工編號 (PK)
 
@@ -48,12 +51,11 @@ public class EmpVO implements Serializable {
     @Column(name = "EMP_STATUS")
     private Boolean empStatus; // 啟用狀態 (true:啟用, false:停用)
 
-
     public EmpVO() {
     }
 
-    public EmpVO(Integer empId, String empName, String empSex, String empTel, String empEmail, 
-                 DeptVO deptVO, String empAcc, String empPwd, Boolean empStatus) {
+    public EmpVO(Integer empId, String empName, String empSex, String empTel, String empEmail,
+            DeptVO deptVO, String empAcc, String empPwd, Boolean empStatus) {
         this.empId = empId;
         this.empName = empName;
         this.empSex = empSex;

@@ -44,16 +44,7 @@ public class IndexController {
         this.attrImageRepository = attrImageRepository;
     }
 
-    /**
-     * 首頁路由
-     * 
-     * @return 回傳 Thymeleaf 模板名稱 "index"（對應 templates/index.html）
-     */
-    @GetMapping("/")
-    public String index(ModelMap model, HttpSession session,
-            @PageableDefault(size = 10, sort = "attrId") Pageable pageable) {
-        // 1. 嘗試從 Session 中取出名為 "loginCust" 的登入會員資料
-        com.cust.model.CustVO loginCust = (com.cust.model.CustVO) session.getAttribute("loginCust");
+        // 2. 判斷session裡有沒有custVO這個物件
         if (loginCust != null) {
             // 2. 如果已登入，將會員名字存入 Model 傳給前端
             model.addAttribute("userName", loginCust.getCustName());

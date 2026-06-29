@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>票券庫存管理 - MapIt 後台</title>
+    <title>票券庫存總覽 - MapIt 後台</title>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         :root {
             --bg-color: #f4f7fc;
@@ -19,6 +20,8 @@
             --success-bg: #d1fae5;
             --warning-color: #f59e0b;
             --warning-bg: #fef3c7;
+            --danger-color: #ef4444;
+            --danger-bg: #fee2e2;
         }
 
         body {
@@ -34,7 +37,6 @@
             margin: 0 auto;
         }
 
-        /* 標題區塊 */
         .page-header {
             margin-bottom: 32px;
             display: flex;
@@ -50,7 +52,6 @@
             letter-spacing: -0.5px;
         }
 
-        /* 玻璃擬真/質感卡片設計 */
         .glass-card {
             background: var(--card-bg);
             border-radius: 16px;
@@ -58,14 +59,13 @@
             padding: 24px;
             margin-bottom: 24px;
             border: 1px solid rgba(255, 255, 255, 0.5);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
-        /* 搜尋區塊 */
         .search-form {
             display: flex;
             gap: 16px;
             align-items: flex-end;
+            flex-wrap: wrap;
         }
 
         .form-group {
@@ -85,37 +85,22 @@
             border: 1px solid var(--border-color);
             border-radius: 8px;
             font-size: 15px;
-            outline: none;
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
             min-width: 250px;
-        }
-
-        .form-control:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
-
-        .btn {
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 15px;
-            cursor: pointer;
-            border: none;
-            transition: all 0.2s ease;
         }
 
         .btn-primary {
             background-color: var(--primary-color);
-            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+        
+        .btn-outline-info {
+            border-radius: 8px;
+            font-weight: 600;
         }
 
-        .btn-primary:hover {
-            background-color: var(--primary-hover);
-            transform: translateY(-1px);
-        }
-
-        /* 資料表格設計 */
         .table-container {
             overflow-x: auto;
             border-radius: 12px;
@@ -131,72 +116,33 @@
         th, td {
             padding: 16px 24px;
             border-bottom: 1px solid var(--border-color);
+            vertical-align: middle;
         }
 
         th {
             background-color: #f8fafc;
             font-size: 13px;
             font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
             color: var(--text-secondary);
         }
 
-        tr:last-child td {
-            border-bottom: none;
-        }
-
-        tr:hover td {
-            background-color: #f8fafc;
-        }
-
-        /* 狀態標籤 */
         .status-badge {
             padding: 6px 12px;
             border-radius: 20px;
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 600;
             display: inline-block;
+            min-width: 60px;
+            text-align: center;
         }
-
-        .status-unsold {
-            background-color: var(--success-bg);
-            color: var(--success-color);
-        }
-
-        .status-sold {
-            background-color: var(--warning-bg);
-            color: var(--warning-color);
-        }
-
-        /* 數量統計面板預留區 */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 24px;
-        }
-
-        .stat-card {
-            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-            padding: 20px;
-            border-radius: 16px;
-            border: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .stat-title {
-            font-size: 14px;
-            color: var(--text-secondary);
-            font-weight: 600;
-        }
-
-        .stat-value {
-            font-size: 32px;
-            font-weight: 700;
-            color: var(--text-primary);
+        
+        .status-unsold { background-color: var(--success-bg); color: var(--success-color); }
+        .status-sold { background-color: var(--danger-bg); color: var(--danger-color); }
+        .status-void { background-color: #f1f5f9; color: #64748b; }
+        
+        .status-col {
+            width: 180px;
+            text-align: center;
         }
     </style>
 </head>
@@ -204,115 +150,170 @@
 
 <div class="container">
     <div class="page-header">
-        <h1>🎟️ 票券庫存大清單</h1>
+        <h1>🎟️ 票券庫存大清單 (聚合統計)</h1>
     </div>
-
-    <!-- 統計面板預留位 (你可以在 Controller 算好傳過來，或是之後再做) -->
-    <!-- 
-    <div class="stats-grid">
-        <div class="stat-card">
-            <span class="stat-title">總票數</span>
-            <span class="stat-value">1,250</span>
-        </div>
-        ...
-    </div>
-    -->
 
     <!-- 搜尋區塊 -->
     <div class="glass-card">
-        <!-- 【教練提示】這裡把 action 指向你的 Controller 門牌 -->
-        <form action="/ticket/ticketList" method="get" class="search-form">
+        <form class="search-form" onsubmit="event.preventDefault(); searchTickets();">
             <div class="form-group">
-                <label for="prodId">選擇商品進行查詢</label>
-                <!-- 【關鍵點】使用下拉選單，前端顯示名稱，後端傳遞 ID -->
-                <select id="prodId" name="prodId" class="form-control">
-                    <option value="">-- 顯示所有票券 --</option>
-                    <!-- 使用 Thymeleaf 迴圈，從後端傳過來的 prodList 動態產生選項 -->
-                    <option th:each="prod : ${prodList}" 
-                            th:value="${prod.productId}" 
-                            th:text="${prod.productName}">
-                    </option>
-                </select>
+                <label for="searchProdId">🔍 商品編號 (精確查詢)</label>
+                <input type="number" id="searchProdId" class="form-control" placeholder="例如: 1">
             </div>
-            <button type="button" class="btn btn-primary" onclick="searchTickets()">查詢票券</button>
+            <div class="form-group">
+                <label for="searchProdName">🔍 商品名稱 (模糊查詢)</label>
+                <input type="text" id="searchProdName" class="form-control" placeholder="例如: 台北一日遊">
+            </div>
+            <button type="button" class="btn btn-primary" onclick="searchTickets()">查詢庫存</button>
+            <button type="reset" class="btn btn-light" onclick="setTimeout(searchTickets, 100)">清除</button>
         </form>
     </div>
 
-    <!-- 票券列表區塊 -->
+    <!-- 票券統計總表區塊 -->
     <div class="glass-card">
         <div class="table-container">
             <table>
                 <thead>
                     <tr>
-                        <th>票券編號 (TKT_ID)</th>
-                        <th>所屬商品 (PROD_ID)</th>
-                        <th>銷售狀態</th>
+                        <th>商品編號 (ID)</th>
+                        <th>商品名稱</th>
+                        <th class="status-col">🟢 未售出(庫存)</th>
+                        <th class="status-col">🔴 已售出</th>
+                        <th class="status-col">⚪ 已作廢</th>
                         <th>操作</th>
                     </tr>
                 </thead>
-                <tbody></tbody>
+                <tbody id="ticketTableBody">
+                    <!-- JavaScript 將會把 TicketTotalDTO 的資料填入這裡 -->
+                </tbody>
             </table>
         </div>
     </div>
 </div>
 
+<!-- ========================================== -->
+<!-- 彈出視窗 (Modal) : 用來顯示特定商品的所有散裝票券 -->
+<!-- ========================================== -->
+<div class="modal fade" id="ticketDetailModal" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalTitle">商品票券明細</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>票券實體編號 (TKT_ID)</th>
+                    <th>銷售狀態</th>
+                </tr>
+            </thead>
+            <tbody id="modalTableBody">
+                <!-- JavaScript 將會把特定商品的 TicketDTO 填入這裡 -->
+            </tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 引入 Bootstrap 的 JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
-	//拿後端資料的函數
-	function findTicketsAPI(prodId){
-		
-		//準備接後端JSON資料的門牌
-		var url = "/ticket/api/ticketList"
-		
-		//如果proId不等於空值 (!==嚴格不等於)
-		if(prodId !== undefined){
-			//?prodId=路徑到此為止，後面是參數
-			url = url+"?prodId="+prodId;
-		}
+	// 網頁載入完成時，去抓取票券查詢功能的資料
+	window.onload = function() {searchTickets();};
+
 	
-		fetch(url)
-			.then(function(response){
-				return response.json(); //包裹拆開變成json格式
+	//票券查詢功能
+	function searchTickets(){
+		var inputId = document.getElementById("searchProdId").value;
+		var inputName = document.getElementById("searchProdName").value;
+		var url = "/ticket/api/ticketAll?prodId="+inputId+"&prodName="+inputName;
+	fetch(url) //接到api網址
+		.then(function(response){
+			return response.json(); //把uri拆成json格式
 		})
-		.then(function(data){
-			//data已經是從後端傳過來的JSON資料了
-			var tbody = document.querySelector("tbody");
-			//先把原本的HTML表格內容清空(如沒有就會顯示上一次查詢的結果，繼續疊加)
-			tbody.innerHTML = ""
-		
-			for(var i=0 ; i<data.length ; i=i+1){
-				var ticket = data[i];
+		.then(function(data){ //拿到json格式的報表
+
+			//每次查詢時都先清空網頁的資料，避免疊加上一次的搜尋結果資料
+			var tbody = document.getElementById("ticketTableBody");
+			tbody.innerHTML="";
+	
+			//寫上搜尋的所有結果
+			for(var i=0;i<data.length;i++){
+				var prodListOne = data[i]; //拿出一份單獨的商品報表
 				
-				//html字串組合
 				var trHTML = "<tr>";
-				trHTML = trHTML+"<td>"+ticket.tktId+"</td>";
-				trHTML = trHTML+"<td>"+ticket.productName+"</td>";
-				trHTML = trHTML+"<td>"+ticket.saleStatus+"</td>";
-				trHTML = trHTML+"<td><a href='#'>查看明細</a></td>";
-				trHTML = trHTML+"</tr>"
-				//組合好的tbody塞進html裡
-				tbody.innerHTML = tbody.innerHTML+trHTML;
+				trHTML = trHTML+"<td>"+prodListOne.productId +"</td>";
+				trHTML = trHTML+"<td>"+prodListOne.productName +"</td>";
+				trHTML = trHTML+"<td class='status-col'><span class='status-badge status-unsold'>"
+					+prodListOne.unsoldCount +"</span></td>";
+				trHTML = trHTML+"<td class='status-col'><span class='status-badge status-sold'>"
+					+prodListOne.soldCount +"</span></td>";
+				trHTML = trHTML+"<td class='status-col'><span class='status-badge status-void'>"
+					+prodListOne.cancelCount +"</span></td>";
+				trHTML = trHTML + "<td><button class='btn btn-sm btn-outline-info' onclick='openDetailModal(" 
+					+ prodListOne.productId
+					+ ",\" "+ prodListOne.productName +"\")'>查看明細</button></td>";
+				trHTML = trHTML+"</tr>";
+				tbody.innerHTML=tbody.innerHTML+trHTML;
 			}
-		})
-		//如果失敗會跑這
-		.catch(function(error){
-			console.error("抓取資料失敗:", error);	
 		});
 	}
-	 window.onload = function() {
-		 findTicketsAPI();
-	 };
-	 
-	 //查詢票券的功能
-	 function searchTickets(){
-		var searchElement = document.getElementById("prodId");
-		var selectValue = searchElement.value;
+	
+	//票券詳細視窗
+	//點查看明細的按鈕後，會把商品編號(productId)傳進來(modal代表視窗)
+	function openDetailModal(productId,productName) {
+		//拿取商品票券明細的內容，改寫顯示的文字
+		document.getElementById("modalTitle").innerHTML="商品編號: "+ productId + " / 商品名稱:"+productName+" - 票券明細"
+		//資料去後端找需要時間，提供載入中的字樣，避免使用者以為當機或重複點按
+		var modalTbody=document.getElementById("modalTableBody");
+		modalTbody.innerHTML="<tr><td colspan='2' style='text-align:center;'>資料飛奔中...請稍候</td></tr>";
+		//呼叫bootStrap，啟動彈出視窗
+		var myModal = new bootstrap.Modal(document.getElementById('ticketDetailModal'));
+		myModal.show();
 		
-		if(selectValue !== ""){
-			findTicketsAPI(selectValue);
-		}else{
-			findTicketsAPI();
+	var detailUrl = "/ticket/api/ticketList?prodId=" +productId;
+	fetch(detailUrl) //接到api網址
+	.then(function(response){
+		return response.json(); //把uri拆成json格式
+	})
+	.then(function(detailData){
+		modalTbody.innerHTML="";
+		
+		if(detailData.length ===0){
+			modalTbody.innerHTML = "<tr><td colspan='2' style ='text-align:center; color:red;'>這項商品目前沒有任何票券喔！ </td></tr>";
+			return; //直接結束，不跑迴圈
 		}
-	 }
+		
+		for(var i=0;i<detailData.length;i++){
+			var ticket = detailData[i]; //拿出單獨一份詳細票券資料
+			
+			// 準備彩色名牌
+			var statusBadge = "";
+			if(ticket.saleStatus === "未售出") {
+				statusBadge = "<span class='status-badge status-unsold'>未售出</span>";
+			} else if (ticket.saleStatus === "已售出") {
+				statusBadge = "<span class='status-badge status-sold'>已售出</span>";
+			} else {
+				statusBadge = "<span class='status-badge status-void'>已作廢</span>";
+			}
+			
+			var trHTML = "<tr>"
+			trHTML = trHTML + "<td>" +ticket.tktId + "</td>";
+			trHTML = trHTML + "<td>" +statusBadge + "</td>";
+			trHTML = trHTML + "</tr>"
+			modalTbody.innerHTML = modalTbody.innerHTML +trHTML;
+		}
+	});
+	}
+	
+	
 </script>
 </body>
 </html>
