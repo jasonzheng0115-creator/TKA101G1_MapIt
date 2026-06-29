@@ -58,12 +58,6 @@
 			
 			<h3>📋 全站訂單管理中心</h3>
 			
-			<div class="action-header" style="margin-bottom: 25px;">
-				<a th:href="@{/orders/backend-list}" class="page-item active">
-					📋 全站訂單總覽
-				</a>
-			</div>
-			
 			<p style="color: gray; font-size: 13px; margin-bottom: 15px;">
 				💡 提示：管理員可在此即時監控所有消費者的下單紀錄。若遇客戶要求退款，可點擊「強制取消」按鈕一鍵發動逆向退庫存流程。
 			</p>
@@ -76,6 +70,7 @@
 							<th>會員編號</th>
 							<th>成立時間</th>
 							<th>總金額</th>
+							<th>訂單明細</th>
 							<th>當前狀態</th>
 							<th>取消原因備註</th>
 							<th style="text-align: center;">後台權限操作</th>
@@ -87,6 +82,13 @@
 							<td th:text="'會員 #' + ${order.custVO.custId}">會員 #1</td>
 							<td th:text="${order.orderTimestamp}">2026-06-27 00:15:00</td>
 							<td th:text="'NT$ ' + ${order.orderPrice}" style="font-weight: bold; color: black;">NT$ 999</td>
+							
+							<td>
+							    <div th:each="item : ${order.orderItems}" style="margin-bottom: 4px;">
+							        <span th:text="${item.prodVO.productName}" style="font-weight: 500;">商品名稱</span>
+							        <span th:text="' x ' + ${item.itemQty} + ' 張'" style="color: gray;"> x 1 張</span>
+							    </div>
+							</td>
 							
 							<td th:id="'status-text-' + ${order.orderId}" 
 								th:text="${order.orderStatus}" 
@@ -105,7 +107,7 @@
 										th:if="${order.orderStatus != '已取消'}"
 										th:onclick="'executeBackendCancel(' + ${order.orderId} + ')'"
 										class="btn-cancel-order">
-									❌ 強制取消訂單
+									❌ 取消訂單
 								</button>
 								<span th:if="${order.orderStatus == '已取消'}" style="color: silver; font-size: 13px;">🚫 權限已關閉</span>
 							</td>

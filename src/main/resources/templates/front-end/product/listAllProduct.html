@@ -303,16 +303,29 @@
 <body>
 
 	<nav class="front-navbar">
-		<a th:href="@{/frontend/product/listAll}" class="front-logo">旅圖 | MapIt</a>
+		<a th:href="@{/}" class="front-logo">旅圖 | MapIt</a>
 		
 		<div class="member-status-box">
-			<span style="font-size: 13px; color: gray;">歡迎光臨，旅客!</span>
-			
-			<a href="/member/register" class="member-link">📝 註冊新會員</a>
-			<a href="/member/login" class="member-link btn-login">🔐 會員登入</a>
+			<th:block th:if="${session.loginCust == null}">
+		        <span style="font-size: 13px; color: gray;">歡迎光臨，旅客!</span>
+		        
+		        <a th:href="@{/customer/register}" class="member-link">📝 註冊新會員</a>
+		        <a th:href="@{/customer/login}" class="member-link btn-login">🔐 會員登入</a>
+		    </th:block>
+		    
+		    
+		    <th:block th:unless="${session.loginCust == null}">
+		        <span style="font-size: 13px; color: dimgray; font-weight: bold;">
+		            👋 哈囉，<span th:text="${session.loginCust.custName}">會員姓名</span>
+		        </span>
+		        
+		        <a th:href="@{/customer/updateProfile}" class="member-link">👤 個人中心</a>
+		        <a th:href="@{/customer/orderHistory}" class="member-link">📜 我的訂單</a>
+		        
+		        <a th:href="@{/customer/logout}" class="member-link" style="color: darkred;">🚪 登出</a>
+		    </th:block>
 			
 			<span style="color: lightgray;">|</span>
-			
 			<a th:href="@{/cart/show}" class="member-link" style="font-size: 16px;">🛒 購物車</a>
 		
 		</div>

@@ -24,6 +24,7 @@ import com.prod.model.CartVO;
 import com.prod.model.ProdService;
 import com.prod.model.ProdVO;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
 @Controller
@@ -121,14 +122,25 @@ public class OrdersController {
 	
 	
 	// 1. 去 Redis 撈出商品 2. 計算總金額 3. 帶去checkout.html
+	// HttpSession session 會員登入
 	@GetMapping("/showCheckout")
-	public String showCheckout(ModelMap model) {
-		String key = "cart:member:1"; // 先對齊購物車的 1 號會員
+	public String showCheckout(ModelMap model, HttpSession session) {
 		
-		// 1. 去 Redis 把購物車裡的所有 {商品ID: 數量} 倒出來
+		// 從 Session 拿出登入成功的會員物件
+	    com.cust.model.CustVO loginCust = (com.cust.model.CustVO) session.getAttribute("loginCust");
+	    
+	    // 如果發現根本沒登入，強迫導向登入頁面
+	    if (loginCust == null) {
+	        return "redirect:/customer/login";
+	    }
+	    
+	    // 動態組合 Redis Key  拿當前會員的真實 ID 來當成 Key
+	    String key = "cart:member:" + loginCust.getCustId();
+		
+		// 去 Redis 把購物車裡的所有 {商品ID: 數量} 倒出來
 		Map<Object, Object> redisCart = redisTemplate.opsForHash().entries(key);
 		
-		// 2. 轉換資料（同購物車）
+		// 轉換資料（同購物車）
 		List<CartVO> cartList = redisCart.entrySet().stream()
 				.map(entry -> {
 					Integer productId = Integer.parseInt((String) entry.getKey());
@@ -139,12 +151,12 @@ public class OrdersController {
 				.filter(Objects::nonNull) // 過濾失效或被下架的商品
 				.collect(Collectors.toList());
 		
-		// 3. 計算總金額
+		// 計算總金額
 		int totalAmount = cartList.stream()
 				.mapToInt(com.prod.model.CartVO::getSubtotal)
 				.sum();
 		
-		// 4. 把資料裝進箱子，送去網頁
+		// 把資料裝進箱子，送去網頁
 		model.addAttribute("cartList", cartList);
 		model.addAttribute("totalAmount", totalAmount);
 		
