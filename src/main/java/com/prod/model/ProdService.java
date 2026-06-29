@@ -70,4 +70,9 @@ public class ProdService {
 		return repository.findByProductNameContaining(keyword, pageable);
 	}
 	
+	// 取得隨機上架商品
+	public List<ProdVO> getRandomProducts(int limit) {
+		return repository.findRandomProducts(limit);
+	}
+	
 }
