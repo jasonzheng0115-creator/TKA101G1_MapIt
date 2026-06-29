@@ -29,7 +29,7 @@ public class ImageDownloaderService {
     private AttrImageRepository attrImageRepository;
     
     // 下載目錄
-    private static final String DOWNLOAD_DIR = "C:/upload/attraction_images/";
+    private static final String DOWNLOAD_DIR = System.getProperty("user.home") + "/upload/attraction_images/";
     
     /**
      * 下載所有圖片到本地

@@ -117,7 +117,7 @@
         <!-- 返回按鈕 -->
         <div class="row mb-3">
             <div class="col-12">
-                <a href="/front/attr/list" class="btn btn-back">
+                <a href="/front/attr/search" class="btn btn-back">
                     <i class="bi bi-arrow-left"></i> 返回景點列表
                 </a>
             </div>
@@ -210,8 +210,17 @@
                         <div class="info-label">
                             <i class="bi bi-geo-alt"></i> 地址
                         </div>
-                        <div th:text="${attr.attrAddress != null ? attr.attrAddress : '無地址資訊'}">
-                            地址資訊
+                        <div class="d-flex align-items-center justify-content-between mt-1">
+                            <span th:text="${attr.attrAddress != null ? attr.attrAddress : '無地址資訊'}">地址資訊</span>
+                            
+                            <!-- 新增：地圖定位按鈕 -->
+                            <a th:if="${attr.attrAddress != null}" 
+                               th:href="'https://www.google.com/maps/search/?api=1&query=' + ${attr.attrName} + '+' + ${attr.attrAddress}" 
+                               target="_blank" 
+                               class="btn btn-sm btn-outline-primary ms-2 rounded-pill px-3 py-1 flex-shrink-0"
+                               style="font-size: 0.8rem;">
+                                <i class="bi bi-map-fill"></i> 看地圖
+                            </a>
                         </div>
                     </div>
                     
