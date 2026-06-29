@@ -102,22 +102,4 @@ public class IndexController {
 
         return "front-end/index"; // Thymeleaf 會自動找到 templates/index.html
     }
-    
-
 }
-
-
-
-
-
-
-
-
-    
-    
-    
-
-    
-   
-    
-    

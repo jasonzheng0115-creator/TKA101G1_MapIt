@@ -63,7 +63,16 @@ public class CustController {
 		session.setAttribute("loginCust", custVO);
 		// 查詢正確就轉向登入成功的畫面
 		model.addAttribute("loginCust", custVO);
-		return "redirect:/";
+
+		// 檢查是否有被 LoginFilter 記下的原請求路徑 (location)
+		String location = (String) session.getAttribute("location");
+		if (location != null) {
+			session.removeAttribute("location"); // 移出 session 以防後續登入重複重導向
+			return "redirect:" + location;
+		} else {
+			return "redirect:/";
+		}
+
 	}
 
 	@GetMapping("/loginSuccess") // 過濾器使用，讓使用者無法條過登入功能，直接透過網址登入

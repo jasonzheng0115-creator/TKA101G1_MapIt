@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-TW" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,9 +12,11 @@
         :root {
             --primary-orange: #ff5722;
             --primary-orange-hover: #e64a19;
-            --bg-gradient: linear-gradient(135deg, #2c3e50 0%, #0f172a 100%); /* 深邃暗色背景，凸顯後台專業感 */
+            --bg-gradient: linear-gradient(135deg, #2c3e50 0%, #0f172a 100%);
+            /* 深邃暗色背景，凸顯後台專業感 */
             --card-bg: rgba(255, 255, 255, 0.95);
         }
+
         body {
             margin: 0;
             padding: 0;
@@ -24,6 +27,7 @@
             background: var(--bg-gradient);
             font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
         }
+
         .login-card {
             background: var(--card-bg);
             padding: 3rem 2.5rem;
@@ -34,6 +38,7 @@
             text-align: center;
             backdrop-filter: blur(10px);
         }
+
         .brand-logo {
             font-size: 2.5rem;
             font-weight: 800;
@@ -42,6 +47,7 @@
             margin-bottom: 0.5rem;
             display: block;
         }
+
         .brand-subtitle {
             color: #64748b;
             font-size: 1rem;
@@ -49,10 +55,12 @@
             margin-bottom: 2rem;
             letter-spacing: 1px;
         }
+
         .form-group {
             margin-bottom: 1.5rem;
             text-align: left;
         }
+
         .form-group label {
             display: block;
             margin-bottom: 0.5rem;
@@ -60,6 +68,7 @@
             font-size: 0.9rem;
             font-weight: 600;
         }
+
         .form-group input {
             width: 100%;
             padding: 0.75rem 1rem;
@@ -69,11 +78,13 @@
             box-sizing: border-box;
             transition: border-color 0.2s, box-shadow 0.2s;
         }
+
         .form-group input:focus {
             outline: none;
             border-color: var(--primary-orange);
             box-shadow: 0 0 0 3px rgba(255, 87, 34, 0.15);
         }
+
         .submit-btn {
             width: 100%;
             padding: 0.75rem;
@@ -88,12 +99,15 @@
             margin-top: 1rem;
             box-shadow: 0 4px 12px rgba(255, 87, 34, 0.3);
         }
+
         .submit-btn:hover {
             background-color: var(--primary-orange-hover);
         }
+
         .submit-btn:active {
             transform: scale(0.98);
         }
+
         .error-message {
             color: #ef4444;
             background-color: #fef2f2;
@@ -108,12 +122,15 @@
             justify-content: center;
             gap: 8px;
         }
+
         .password-wrapper {
             position: relative;
         }
+
         .password-wrapper input {
             padding-right: 45px;
         }
+
         .eye-icon {
             position: absolute;
             right: 15px;
@@ -125,9 +142,11 @@
             font-size: 1.2rem;
             transition: color 0.2s;
         }
+
         .eye-icon:hover {
             color: var(--primary-orange);
         }
+
         .back-to-front {
             display: inline-block;
             margin-top: 1.5rem;
@@ -137,21 +156,23 @@
             font-weight: 600;
             transition: color 0.2s;
         }
+
         .back-to-front:hover {
             color: var(--primary-orange);
         }
     </style>
 </head>
+
 <body>
 
     <div class="login-card">
         <!-- 橘色品牌 Logo -->
         <a href="/" class="brand-logo">MapIt</a>
         <div class="brand-subtitle">後台管理員系統</div>
-        
+
         <!-- 登入表單 -->
-        <form method="post" th:action="@{/back-end/emp/loginCheck}">
-            
+        <form method="post" th:action="@{/emp/loginCheck}">
+
             <!-- 錯誤訊息提示區 -->
             <div class="error-message" th:if="${errorMsg != null}">
                 <i class="bi bi-exclamation-triangle-fill"></i>
@@ -160,15 +181,17 @@
 
             <!-- 帳號輸入框 -->
             <div class="form-group">
-                <label for="empAcc">管理員帳號</label>
-                <input type="text" id="empAcc" name="empAcc" placeholder="請輸入 6-12 碼英數帳號" required autocomplete="username">
+                <label for="empAcc">員工帳號</label>
+                <input type="text" id="empAcc" name="empAcc" placeholder="請輸入 6-12 碼英數帳號" required
+                    autocomplete="username">
             </div>
 
             <!-- 密碼輸入框 -->
             <div class="form-group">
-                <label for="empPwd">管理員密碼</label>
+                <label for="empPwd">員工密碼</label>
                 <div class="password-wrapper">
-                    <input type="password" id="empPwd" name="empPwd" placeholder="請輸入 8-20 碼英數密碼" required autocomplete="current-password">
+                    <input type="password" id="empPwd" name="empPwd" placeholder="請輸入 8-20 碼英數密碼" required
+                        autocomplete="current-password">
                     <i id="togglePassword" class="bi bi-eye eye-icon"></i>
                 </div>
             </div>
@@ -191,11 +214,12 @@
             // 切換密碼框的 type 屬性 (password <=> text)
             const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
             password.setAttribute('type', type);
-            
+
             // 切換眼睛 icon 樣式
             this.classList.toggle('bi-eye');
             this.classList.toggle('bi-eye-slash');
         });
     </script>
 </body>
+
 </html>
