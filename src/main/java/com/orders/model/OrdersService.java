@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.prod.model.ProdRepository;
 import com.prod.model.ProdVO;
+import com.ticket.model.TicketService;
 
 @Service
 public class OrdersService {
@@ -18,6 +19,11 @@ public class OrdersService {
 	
 	@Autowired
 	private ProdRepository prodRepository;
+	
+	// ========= 導入票券ticketService =========
+	@Autowired
+	private TicketService ticketService;
+	// ========================================
 	
 	// 結帳是一個「一連串」的動作：存訂單 ➔ 存明細 ➔ 扣商品 A 庫存 ➔ 扣商品 B 庫存。
 	// 安全結帳邏輯（創建訂單 ＋ 扣減庫存）
@@ -65,7 +71,6 @@ public class OrdersService {
 			
 			// 將最新庫存同步回存到商品表格（MySQL）中
 			prodRepository.save(prod);
-					
 		}
 		
 		// 分兩次存檔
@@ -87,7 +92,12 @@ public class OrdersService {
 		}
 		
 		// 讓主檔完整的明細再次回存
-		return ordersRepository.save(savedOrder);
+		//return ordersRepository.save(savedOrder);
+		// ===== 先存進存檔ordersRepository，再把訂單的資料傳給ticketService =====
+		OrdersVO finalOrder = ordersRepository.save(savedOrder);
+		ticketService.ticketForOrder(finalOrder);
+		return finalOrder;
+		// ==================================================================
 	}
 	
 	// 取消訂單 逆向邏輯（更新狀態 ＋ 退還庫存 ＋ 扣減銷量）

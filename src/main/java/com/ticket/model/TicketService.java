@@ -1,5 +1,6 @@
 package com.ticket.model;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,6 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import com.cust.model.CustVO;
+import com.orders.model.OrderItemVO;
+import com.orders.model.OrdersVO;
 import com.prod.model.ProdService;
 import com.prod.model.ProdVO;
 
@@ -16,8 +20,11 @@ public class TicketService {
 	@Autowired
 	private TicketRepository repository;
 	@Autowired
+	private TicketItemRepository ticketItemRepository;
+	@Autowired
 	@Lazy //解決prodService的循環依賴問題
 	private ProdService prodService;
+	
 
 	
 	//     回傳值          名稱                輸入條件參數
@@ -106,6 +113,47 @@ public class TicketService {
 		}
 		//把ProdVO每一筆都加工成為DTO，再把所有處理好的放進大箱子裡
 		return list;
+	}
+	
+	//照商品編號和訂單數量，把指定數量的票卷的銷售狀態，從未售出票券改成已售出
+	public List<TicketVO> sendTicketByProdId(Integer prodId, Integer limit){
+		List<TicketVO> unsoldTickets = repository.findUnsoldTickets(prodId, limit);
+		if(unsoldTickets.size()<limit) {
+			throw new RuntimeException("票券庫存不足");
+		}
+		for(int i=0;i<limit;i++) {
+			TicketVO ticket = unsoldTickets.get(i);
+			ticket.setTktSale(1);
+			repository.save(ticket);
+		}
+		return unsoldTickets;
+	}
+	
+	//結帳成功後，系統自動配發實體票券明細給會員
+	public void ticketForOrder(OrdersVO order) {
+		//從訂單中拿到買家
+		CustVO cust = order.getCustVO(); 
+		//拿出訂單下每一筆訂單明細 for(元素型別 變數名稱 : 陣列或集合)
+		for(OrderItemVO item : order.getOrderItems()) {
+			//呼叫上方的方法，將票券改為已售出
+			List<TicketVO> tickets = sendTicketByProdId(item.getProductId(), item.getItemQty());
+			
+			for(TicketVO ticket : tickets) {
+				TicketItemVO ticketItemVO = new TicketItemVO();
+				ticketItemVO.setTicketId(ticket);
+				ticketItemVO.setCustId(cust);
+				ticketItemVO.setTicketStatus("未使用");
+				ticketItemVO.setStartDate(order.getOrderTimestamp());
+				
+				int useTime = ticket.getProductVO().getUsePeriod();
+				LocalDateTime endTime = order.getOrderTimestamp().plusMonths(useTime);
+			    endTime = endTime.withHour(23).withMinute(59).withSecond(59);
+			    ticketItemVO.setEndDate(endTime);
+			    
+				ticketItemRepository.save(ticketItemVO);
+			}
+			
+		}
 	}
 	
 }
