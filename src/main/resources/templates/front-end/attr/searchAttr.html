@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-TW" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>搜尋結果 - MapIt 旅遊平台</title>
+    
+    <!-- Favicon-->
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
+    <!-- Bootstrap icons-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+    <!-- Core theme CSS (includes Bootstrap)-->
+    <link href="/css/styles.css" rel="stylesheet" />
+    
+    <style>
+        .search-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+        
+        .filter-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .result-count {
+            font-size: 1.1rem;
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        /* 收藏按鈕樣式 */
+        .favorite-btn {
+            position: absolute;
+            top: 0.5rem;
+            left: 0.5rem;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 10;
+        }
+        
+        .favorite-btn:hover {
+            background: rgba(255, 255, 255, 1);
+            transform: scale(1.1);
+        }
+        
+        .favorite-btn i {
+            font-size: 1.2rem;
+            color: #dc3545;
+        }
+        
+        .favorite-btn.favorited i {
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation-->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container px-4 px-lg-5">
+            <a class="navbar-brand" href="/">MapIt</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+                    <li class="nav-item"><a class="nav-link" href="/">首頁</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/front/attr/list">所有景點</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#!">關於我們</a></li>
+                </ul>
+                <!-- 搜尋表單 -->
+                <form class="d-flex me-3" action="/front/attr/search" method="get">
+                    <input class="form-control me-2" type="search" name="keyword" th:value="${keyword}" placeholder="搜尋景點..." aria-label="Search">
+                    <button class="btn btn-outline-success" type="submit">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </form>
+                <!-- 收藏按鈕 -->
+                <div class="d-flex">
+                    <a class="btn btn-outline-dark" th:href="@{/front/favorite/list}">
+                        <i class="bi-heart-fill me-1"></i>
+                        我的收藏
+                        <span class="badge bg-dark text-white ms-1 rounded-pill">0</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Search Header -->
+    <div class="search-header">
+        <div class="container">
+            <h1 class="display-5 fw-bold">
+                <i class="bi bi-search"></i> 搜尋結果
+            </h1>
+            <p class="lead mb-0" th:if="${keyword != null && !keyword.isEmpty()}">
+                關鍵字：「<span th:text="${keyword}"></span>」
+            </p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container mb-5">
+        <!-- Filter Card -->
+        <div class="filter-card">
+            <form action="/front/attr/search" method="get" class="row g-3">
+                <div class="col-md-4">
+                    <label for="keyword" class="form-label">關鍵字</label>
+                    <input type="text" class="form-control" id="keyword" name="keyword" th:value="${keyword}" placeholder="輸入景點名稱...">
+                </div>
+                <div class="col-md-3">
+                    <label for="regionId" class="form-label">地區</label>
+                    <select class="form-select" id="regionId" name="regionId">
+                        <option value="">全部地區</option>
+                        <option th:each="region : ${regions}" 
+                                th:value="${region.regionId}" 
+                                th:text="${region.regionName}"
+                                th:selected="${regionId != null && regionId == region.regionId}">
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="categoryId" class="form-label">類別</label>
+                    <select class="form-select" id="categoryId" name="categoryId">
+                        <option value="">全部類別</option>
+                        <option th:each="category : ${categories}" 
+                                th:value="${category.categoryId}" 
+                                th:text="${category.categoryName}"
+                                th:selected="${categoryId != null && categoryId == category.categoryId}">
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-funnel"></i> 篩選
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Result Count -->
+        <div class="mb-3">
+            <p class="result-count">
+                <i class="bi bi-pin-map-fill"></i> 
+                找到 <span th:text="${attrPage.totalElements}">0</span> 個景點
+            </p>
+        </div>
+
+        <!-- Results Grid -->
+        <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+    <div class="col mb-5" th:each="item : ${attrWithImages}">
+        <div class="card h-100 shadow-sm">
+            <img class="card-img-top" 
+                 th:src="${item['imageUrl'] != null && !#strings.isEmpty(item['imageUrl'])} 
+                         ? ${item['imageUrl']} 
+                         : (${item['imagePath'] != null && !#strings.isEmpty(item['imagePath'])} 
+                            ? '/attraction_images/' + ${item['imagePath']} 
+                            : 'https://dummyimage.com/450x300/dee2e6/6c757d.jpg')" 
+                 alt="景點圖片" style="height: 200px; object-fit: cover;"
+                 onerror="this.onerror=null; this.src='https://dummyimage.com/450x300/dee2e6/6c757d.jpg';">
+            
+            <div class="card-body p-4">
+                <h5 class="fw-bold" th:text="${item.attr.attrName}">景點名稱</h5>
+                <p class="text-muted small" th:text="${item.attr.attrAddress}">地址</p>
+            </div>
+            
+            <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                <div class="d-grid">
+                    <a class="btn btn-primary" 
+                       th:href="@{/front/attr/detail/{id}(id=${item.attr.attrId})}">查看詳情</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+        <!-- Pagination -->
+        <nav aria-label="Page navigation" th:if="${attrPage.totalPages > 1}">
+            <ul class="pagination justify-content-center">
+                <!-- Previous Page -->
+                <li class="page-item" th:classappend="${attrPage.first} ? 'disabled'">
+                    <a class="page-link" 
+                       th:href="@{/front/attr/search(keyword=${keyword}, regionId=${regionId}, categoryId=${categoryId}, page=${attrPage.number - 1})}"
+                       aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                
+                <!-- Page Numbers -->
+                <li class="page-item" 
+                    th:each="i : ${#numbers.sequence(0, attrPage.totalPages - 1)}"
+                    th:classappend="${i == attrPage.number} ? 'active'">
+                    <a class="page-link" 
+                       th:href="@{/front/attr/search(keyword=${keyword}, regionId=${regionId}, categoryId=${categoryId}, page=${i})}"
+                       th:text="${i + 1}">1</a>
+                </li>
+                
+                <!-- Next Page -->
+                <li class="page-item" th:classappend="${attrPage.last} ? 'disabled'">
+                    <a class="page-link" 
+                       th:href="@{/front/attr/search(keyword=${keyword}, regionId=${regionId}, categoryId=${categoryId}, page=${attrPage.number + 1})}"
+                       aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- No Results Message -->
+        <div th:if="${attrPage.totalElements == 0}" class="text-center py-5">
+            <i class="bi bi-search" style="font-size: 4rem; color: #ccc;"></i>
+            <h3 class="mt-3 text-muted">找不到符合條件的景點</h3>
+            <p class="text-muted">請嘗試調整搜尋條件或關鍵字</p>
+            <a href="/" class="btn btn-primary mt-3">返回首頁</a>
+        </div>
+    </div>
+
+    <!-- Footer-->
+    <footer class="py-5 bg-dark">
+        <div class="container"><p class="m-0 text-center text-white">Copyright &copy; MapIt 2026 - TKA101G1</p></div>
+    </footer>
+
+    <!-- Bootstrap core JS-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- 收藏功能 JavaScript -->
+    <script>
+        /**
+         * 切換收藏狀態
+         * @param {HTMLElement} button - 被點擊的收藏按鈕
+         */
+        /**
+         * 加入收藏（與 index.html 邏輯一致）
+         * 呼叫後端 /front/favorite/add，使用 form-urlencoded 格式
+         */
+        function addToFavorite(attrId) {
+            if (!attrId) return;
+            fetch('/front/favorite/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'attrId=' + attrId
+            })
+            .then(response => {
+                if (response.ok) {
+                    showToast('成功加入收藏！', 'success');
+                } else {
+                    showToast('加入收藏失敗，請稍後再試', 'danger');
+                }
+            })
+            .catch(error => {
+                console.error('收藏操作錯誤:', error);
+                showToast('收藏操作失敗，請稍後再試', 'danger');
+            });
+        }
+        
+        /**
+         * 顯示提示訊息
+         * @param {string} message - 提示訊息內容
+         * @param {string} type - 訊息類型 (success, danger, info, warning)
+         */
+        function showToast(message, type) {
+            // 創建 Toast 容器（如果不存在）
+            let toastContainer = document.getElementById('toastContainer');
+            if (!toastContainer) {
+                toastContainer = document.createElement('div');
+                toastContainer.id = 'toastContainer';
+                toastContainer.style.position = 'fixed';
+                toastContainer.style.top = '20px';
+                toastContainer.style.right = '20px';
+                toastContainer.style.zIndex = '9999';
+                document.body.appendChild(toastContainer);
+            }
+            
+            // 創建 Toast 元素
+            const toast = document.createElement('div');
+            toast.className = `alert alert-${type} alert-dismissible fade show`;
+            toast.role = 'alert';
+            toast.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            
+            toastContainer.appendChild(toast);
+            
+            // 3 秒後自動移除
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 150);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

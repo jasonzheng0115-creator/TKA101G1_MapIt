@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-TW" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>編輯類別 - MapIt 旅遊平台</title>
+    <!-- 引用共用的 head fragment -->
+    <th:block th:replace="~{layouts/backend :: head}"></th:block>
+</head>
+<body>
+    <!-- 引用共用的導航列 -->
+    <nav th:replace="~{layouts/backend :: navbar}"></nav>
+    
+    <!-- 主要內容區 -->
+    <div class="container px-4 px-lg-5 mt-5">
+        <!-- 頁面標題 -->
+        <div class="mb-4">
+            <h2><i class="bi bi-pencil-square text-warning"></i> 編輯類別</h2>
+        </div>
+        
+        <!-- 編輯表單 -->
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <form th:action="@{/category/update}" th:object="${categoryVO}" method="post">
+                    <!-- 類別編號（隱藏欄位） -->
+                    <input type="hidden" th:field="*{categoryId}">
+                    
+                    <!-- 類別編號（顯示用，唯讀） -->
+                    <div class="mb-3">
+                        <label for="categoryIdDisplay" class="form-label">
+                            類別編號
+                        </label>
+                        <input type="number" 
+                               class="form-control" 
+                               id="categoryIdDisplay" 
+                               th:value="${categoryVO.categoryId}"
+                               readonly>
+                        <div class="form-text">類別編號為自動產生的主鍵，無法修改</div>
+                    </div>
+                    
+                    <!-- 類別名稱 -->
+                    <div class="mb-3">
+                        <label for="categoryName" class="form-label">
+                            類別名稱 <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" 
+                               class="form-control" 
+                               id="categoryName" 
+                               th:field="*{categoryName}"
+                               th:classappend="${#fields.hasErrors('categoryName')} ? 'is-invalid' : ''"
+                               placeholder="請輸入類別名稱（例如：觀光景點、美食餐廳）"
+                               maxlength="50"
+                               required>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('categoryName')}" th:errors="*{categoryName}">
+                            類別名稱錯誤訊息
+                        </div>
+                    </div>
+                    
+                    <!-- 按鈕區 -->
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-warning">
+                            <i class="bi bi-check-circle"></i> 確認更新
+                        </button>
+                        <a th:href="@{/category/listAll}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> 取消
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 引用共用的頁尾 -->
+    <footer th:replace="~{layouts/backend :: footer}"></footer>
+    
+    <!-- 引用共用的 scripts -->
+    <th:block th:replace="~{layouts/backend :: scripts}"></th:block>
+</body>
+</html>

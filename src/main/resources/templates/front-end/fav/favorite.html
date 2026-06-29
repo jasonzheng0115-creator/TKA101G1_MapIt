@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-TW" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="MapIt 旅遊平台 - 我的收藏" />
+        <meta name="author" content="TKA101G1" />
+        <title>我的收藏 - MapIt 旅遊平台</title>
+        <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+        <link href="/css/styles.css" rel="stylesheet" />
+    </head>
+    <body>
+        <!-- ========== 導覽列 (Navbar) - 完全照抄 index.html ========== -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container px-4 px-lg-5">
+                <a class="navbar-brand" href="/">MapIt</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+                        <li class="nav-item"><a class="nav-link" href="/">首頁</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/front/attr/list">所有景點</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#!">關於我們</a></li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">景點分類</a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" href="/front/attr/list">所有景點</a></li>
+                                <li><hr class="dropdown-divider" /></li>
+                                <li><a class="dropdown-item" href="#!">熱門景點</a></li>
+                                <li><a class="dropdown-item" href="#!">最新景點</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <form class="d-flex me-3" action="/front/attr/search" method="get">
+                        <input class="form-control me-2" type="search" name="keyword" placeholder="搜尋景點..." aria-label="Search">
+                        <button class="btn btn-outline-success" type="submit">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </form>
+                    <div class="d-flex">
+                        <a class="btn btn-outline-dark" th:href="@{/front/favorite/list}">
+                            <i class="bi-heart-fill me-1"></i>
+                            我的收藏
+                            <span class="badge bg-dark text-white ms-1 rounded-pill">0</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- ========== 頁面標題區 ========== -->
+        <header class="bg-dark py-5">
+            <div class="container px-4 px-lg-5 my-5">
+                <div class="text-center text-white">
+                    <h1 class="display-4 fw-bolder">
+                        <i class="bi bi-heart-fill"></i> 我的收藏
+                    </h1>
+                    <p class="lead fw-normal text-white-50 mb-0">您收藏的景點清單</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- ========== 收藏景點清單區塊 ========== -->
+        <section class="py-5">
+            <div class="container px-4 px-lg-5 mt-5">
+                <!-- 如果沒有收藏景點，顯示提示訊息 -->
+                <div th:if="${favoriteList == null || #lists.isEmpty(favoriteList)}" class="text-center py-5">
+                    <i class="bi bi-heart" style="font-size: 5rem; color: #dee2e6;"></i>
+                    <h3 class="mt-4 text-muted">目前沒有收藏的景點</h3>
+                    <p class="text-muted">快去探索並收藏您喜歡的景點吧！</p>
+                    <a href="/" class="btn btn-primary mt-3">
+                        <i class="bi bi-house-door"></i> 回到首頁
+                    </a>
+                </div>
+
+                <!-- 收藏景點卡片列表 -->
+                <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+    <div class="col mb-5" th:each="item : ${favoriteList}">
+        <div class="card h-100" style="position: relative;">
+            
+            <div th:if="${item.attrVO?.avgStars != null && item.attrVO.avgStars >= 4.5}" 
+                 class="badge bg-dark text-white position-absolute" 
+                 style="top: 0.5rem; right: 0.5rem; z-index: 10;">熱門</div>
+            
+            <!-- 圖片顯示優先級：線上 imageUrl → 本地 imagePath → 預設圖 -->
+            <img class="card-img-top" 
+                 th:src="${item.attrVO.images != null && !#lists.isEmpty(item.attrVO.images)} 
+                          ? (${item.attrVO.images.iterator().next().imageUrl != null && !#strings.isEmpty(item.attrVO.images.iterator().next().imageUrl)} 
+                             ? ${item.attrVO.images.iterator().next().imageUrl} 
+                             : (${item.attrVO.images.iterator().next().imagePath != null && !#strings.isEmpty(item.attrVO.images.iterator().next().imagePath)} 
+                                ? '/attraction_images/' + ${item.attrVO.images.iterator().next().imagePath} 
+                                : 'https://dummyimage.com/450x300/dee2e6/6c757d.jpg')) 
+                          : 'https://dummyimage.com/450x300/dee2e6/6c757d.jpg'"
+                 th:alt="${item.attrVO?.attrName}"
+                 style="height: 300px; object-fit: cover;"
+                 onerror="this.onerror=null; this.src='https://dummyimage.com/450x300/dee2e6/6c757d.jpg';" />
+            
+            <div class="card-body p-4">
+                <div class="text-center">
+                    <h5 class="fw-bolder" th:text="${item.attrVO?.attrName != null ? item.attrVO.attrName : '未命名景點'}">景點名稱</h5>
+                    
+                    <div th:if="${item.attrVO?.avgStars != null}" 
+                         class="d-flex justify-content-center small text-warning mb-2">
+                         <span th:text="'平均評分: ' + ${item.attrVO.avgStars}">0.0</span>
+                    </div>
+                    
+                    <span th:text="${item.attrVO?.regionVO != null ? item.attrVO.regionVO.regionName : '未分類'}">地區</span>
+                    <span> · </span>
+                    <span th:text="${item.attrVO?.categoryVO != null ? item.attrVO.categoryVO.categoryName : '未分類'}">類別</span>
+                </div>
+            </div>
+            
+            <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                <div class="text-center">
+                    <a class="btn btn-outline-dark mt-auto me-2" 
+                       th:href="${item.attrVO?.attrId != null} ? '/front/attr/detail/' + ${item.attrVO.attrId} : '#'">
+                        <i class="bi bi-eye"></i> 查看詳情
+                    </a>
+                    <button class="btn btn-danger mt-auto" 
+                            th:attr="data-attr-id=${item.attrVO?.attrId}"
+                            onclick="removeFromFavorite(this.getAttribute('data-attr-id'))">
+                        <i class="bi bi-heart-fill"></i> 移除收藏
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+        </section>
+
+        <!-- ========== 頁尾 (Footer) - 完全照抄 index.html ========== -->
+        <footer class="py-5 bg-dark">
+            <div class="container"><p class="m-0 text-center text-white">Copyright &copy; MapIt 2026 - TKA101G1</p></div>
+        </footer>
+
+        <!-- ========== JavaScript 區域 ========== -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="/js/scripts.js"></script>
+        
+        <!-- 移除收藏功能的 JavaScript -->
+        <script>
+            /**
+             * 移除收藏功能
+             * @param {number} attrId - 景點 ID
+             */
+            function removeFromFavorite(attrId) {
+                if (!attrId) {
+                    console.error('❌ 景點 ID 不存在');
+                    return;
+                }
+                
+                // 確認是否要移除
+                if (!confirm('確定要移除此景點的收藏嗎？')) {
+                    return;
+                }
+                
+                // 發送 POST 請求到後端
+                fetch('/front/favorite/remove', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'attrId=' + attrId
+                })
+                .then(response => {
+                    if (response.ok) {
+                        alert('✅ 已成功移除收藏！');
+                        // 重新載入頁面以更新清單
+                        window.location.reload();
+                    } else {
+                        alert('❌ 移除收藏失敗，請稍後再試。');
+                    }
+                })
+                .catch(error => {
+                    console.error('❌ 發生錯誤:', error);
+                    alert('❌ 發生錯誤，請稍後再試。');
+                });
+            }
+        </script>
+    </body>
+</html>
