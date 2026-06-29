@@ -51,7 +51,7 @@ public class IndexController {
      */
     @GetMapping("/")
     public String index(ModelMap model, HttpSession session,
-            @PageableDefault(size = 300, sort = "attrId") Pageable pageable) {
+            @PageableDefault(size = 10, sort = "attrId") Pageable pageable) {
         // 1. 嘗試從 Session 中取出名為 "loginCust" 的登入會員資料
         com.cust.model.CustVO loginCust = (com.cust.model.CustVO) session.getAttribute("loginCust");
         if (loginCust != null) {

@@ -66,7 +66,7 @@
                     <li class="nav-item"><a class="nav-link text-dark px-4" href="#!">關於我們</a></li>
                     <li class="nav-item"><a class="nav-link text-dark px-4"
                             th:href="@{/frontend/product/listAll}">商城</a></li>
-                    <li class="nav-item"><a class="nav-link text-dark px-4" href="/front/attr/list">景點探索</a></li>
+                    <li class="nav-item"><a class="nav-link text-dark px-4" href="/fron/attr/list">景點探索</a></li>
                     <li class="nav-item"><a class="nav-link text-dark px-4" href="#!">主題推薦</a></li>
                     <li class="nav-item"><a class="nav-link text-dark px-4" th:href="@{/trip/my-trips}">我的行程</a></li>
                     <li class="nav-item"><a class="nav-link text-dark px-4" href="/front/favorite/list">我的收藏</a></li>
@@ -189,23 +189,17 @@
 
             <!-- 區域分類標籤 -->
             <ul class="nav nav-pills region-pills flex-nowrap overflow-auto">
-                <li class="nav-item"><a class="nav-link active" href="#" data-region="全部">全部</a></li>
-                <li class="nav-item"><a class="nav-link" href="#" data-region="北部地區">北部地區</a></li>
-                <li class="nav-item"><a class="nav-link" href="#" data-region="中部地區">中部地區</a></li>
-                <li class="nav-item"><a class="nav-link" href="#" data-region="南部地區">南部地區</a></li>
-                <li class="nav-item"><a class="nav-link" href="#" data-region="東部地區">東部地區</a></li>
-                <li class="nav-item"><a class="nav-link" href="#" data-region="離島地區">離島地區</a></li>
+                <li class="nav-item"><a class="nav-link active" href="#">全部</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">北部地區</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">中部地區</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">南部地區</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">東部地區</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">離島地區</a></li>
             </ul>
-
-            <!-- 新增：縣市二級按鈕容器 (預設隱藏) -->
-            <div id="countyPillsContainer" class="d-flex flex-wrap gap-2 mt-3 mb-2 d-none">
-                <!-- 縣市按鈕將由 JavaScript 動態生成 -->
-            </div>
 
             <!-- 景點網格排版 -->
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mt-3" id="attrGrid">
-                <div class="col attraction-item" th:each="item : ${attrWithImages}" th:attr="data-region=${item['attr']?.regionVO != null ? item['attr']?.regionVO?.regionName : ''},
-                               data-address=${item['attr']?.attrAddress != null ? item['attr']?.attrAddress : ''}">
+                <div class="col" th:each="item : ${attrWithImages}">
                     <a class="attraction-card-v2 text-decoration-none d-block h-100"
                         th:href="${item['attr']?.attrId != null} ? '/front/attr/detail/' + ${item['attr']?.attrId} : '#'">
 
@@ -257,12 +251,12 @@
                 </div>
             </div>
 
-            <!-- 分頁導航列 (已隱藏，使用前端即時過濾) -->
-            <!--
+            <!-- 分頁導航列 -->
             <div class="row mt-5" th:if="${attrPage != null && attrPage.totalPages > 1}">
                 <div class="col-12">
                     <nav aria-label="景點分頁導航">
                         <ul class="pagination justify-content-center">
+                            <!-- 上一頁按鈕 -->
                             <li class="page-item" th:classappend="${attrPage.first} ? 'disabled'">
                                 <a class="page-link text-dark" th:href="@{/(page=${attrPage.number - 1})}"
                                     aria-label="上一頁">
@@ -270,12 +264,14 @@
                                 </a>
                             </li>
 
+                            <!-- 頁碼按鈕 -->
                             <li class="page-item" th:each="pageNum : ${#numbers.sequence(0, attrPage.totalPages - 1)}">
                                 <a class="page-link"
                                     th:classappend="${pageNum == attrPage.number} ? 'bg-dark text-white border-dark' : 'text-dark'"
                                     th:href="@{/(page=${pageNum})}" th:text="${pageNum + 1}">1</a>
                             </li>
 
+                            <!-- 下一頁按鈕 -->
                             <li class="page-item" th:classappend="${attrPage.last} ? 'disabled'">
                                 <a class="page-link text-dark" th:href="@{/(page=${attrPage.number + 1})}"
                                     aria-label="下一頁">
@@ -286,7 +282,6 @@
                     </nav>
                 </div>
             </div>
-            -->
         </div>
     </section>
     <footer class="py-5 bg-dark">
@@ -331,111 +326,6 @@
                     console.error('Error:', error);
                 });
         }
-        // 縣市篩選與顯示邏輯
-        document.addEventListener('DOMContentLoaded', function () {
-            const regionLinks = document.querySelectorAll('.region-pills .nav-link');
-            const attractionItems = document.querySelectorAll('.attraction-item');
-            const countyContainer = document.getElementById('countyPillsContainer');
-
-            const regionCountyMap = {
-                '北部地區': ['基隆市', '台北市', '新北市', '桃園市', '新竹市', '新竹縣', '宜蘭縣'],
-                '中部地區': ['苗栗縣', '台中市', '彰化縣', '南投縣', '雲林縣'],
-                '南部地區': ['嘉義市', '嘉義縣', '台南市', '高雄市', '屏東縣'],
-                '東部地區': ['花蓮縣', '台東縣'],
-                '離島地區': ['澎湖縣', '金門縣', '連江縣']
-            };
-
-            regionLinks.forEach(link => {
-                link.addEventListener('click', function (e) {
-                    e.preventDefault();
-
-                    regionLinks.forEach(l => l.classList.remove('active'));
-                    this.classList.add('active');
-
-                    const selectedRegion = this.getAttribute('data-region');
-                    countyContainer.innerHTML = '';
-
-                    if (selectedRegion === '全部') {
-                        countyContainer.classList.add('d-none');
-                        attractionItems.forEach(item => item.style.display = 'block');
-                    } else {
-                        countyContainer.classList.remove('d-none');
-
-                        const allCountyBtn = document.createElement('button');
-                        allCountyBtn.className = 'btn btn-sm btn-dark px-3 rounded-pill me-2 mb-2';
-                        allCountyBtn.innerText = '全部縣市';
-                        allCountyBtn.addEventListener('click', function () {
-                            setActiveCountyBtn(this);
-                            filterAttractions(selectedRegion, null);
-                        });
-                        countyContainer.appendChild(allCountyBtn);
-
-                        const counties = regionCountyMap[selectedRegion] || [];
-                        counties.forEach(county => {
-                            const btn = document.createElement('button');
-                            btn.className = 'btn btn-sm btn-outline-secondary px-3 rounded-pill me-2 mb-2';
-                            btn.innerText = county;
-                            btn.addEventListener('click', function () {
-                                setActiveCountyBtn(this);
-                                filterAttractions(selectedRegion, county);
-                            });
-                            countyContainer.appendChild(btn);
-                        });
-
-                        filterAttractions(selectedRegion, null);
-                    }
-                });
-            });
-
-            function setActiveCountyBtn(activeBtn) {
-                const buttons = countyContainer.querySelectorAll('button');
-                buttons.forEach(btn => {
-                    btn.classList.remove('btn-dark');
-                    btn.classList.add('btn-outline-secondary');
-                });
-                activeBtn.classList.remove('btn-outline-secondary');
-                activeBtn.classList.add('btn-dark');
-            }
-
-            function filterAttractions(region, county) {
-                attractionItems.forEach(item => {
-                    const itemRegion = item.getAttribute('data-region') || '';
-                    const itemAddress = item.getAttribute('data-address') || '';
-
-                    // 標準化「台/臺」
-                    const normalizedItemRegion = itemRegion.replace(/臺/g, '台');
-
-                    // 1. 檢查一級地區是否匹配
-                    let matchesRegion = false;
-                    if (region === '全部') {
-                        matchesRegion = true;
-                    } else {
-                        // 取得目前選取地區對應的縣市清單，並統一轉成「台」
-                        const countiesInRegion = (regionCountyMap[region] || []).map(c => c.replace(/臺/g, '台'));
-                        // 檢查該景點的縣市（例如新北市）是否在該地區（例如北部地區）的縣市清單中
-                        matchesRegion = countiesInRegion.includes(normalizedItemRegion);
-                    }
-
-                    // 2. 檢查二級縣市是否匹配
-                    let matchesCounty = false;
-                    if (!county) {
-                        matchesCounty = true; // 未選取縣市按鈕，預設通過
-                    } else {
-                        const normalizedCounty = county.replace(/臺/g, '台');
-                        // 景點地區等於選中縣市，或地址中包含該縣市
-                        matchesCounty = (normalizedItemRegion === normalizedCounty) ||
-                            itemAddress.replace(/臺/g, '台').includes(normalizedCounty);
-                    }
-
-                    // 3. 兩者皆符合時顯示，否則隱藏
-                    if (matchesRegion && matchesCounty) {
-                        item.style.display = 'block';
-                    } else {
-                        item.style.display = 'none';
-                    }
-                });
-            }
-        });
     </script>
 </body>
 

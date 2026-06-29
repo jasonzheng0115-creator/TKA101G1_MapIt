@@ -20,7 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class FileUploadUtil {
     
     // 檔案上傳根目錄
-	private static final String UPLOAD_DIR = System.getProperty("user.home") + "/upload/attraction_images/";
+    private static final String UPLOAD_DIR = "C:/upload/attraction_images/";
     
     /**
      * 上傳檔案到指定目錄
