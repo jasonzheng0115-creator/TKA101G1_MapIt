@@ -22,7 +22,7 @@ import jakarta.servlet.http.HttpSession;
 
 /**
  * IndexController - 首頁控制器
- * test
+ * 
  * 用途：處理網站首頁的請求
  * 當使用者訪問 http://localhost:8080/ 時，會導向到 index.html 頁面
  */
@@ -51,7 +51,7 @@ public class IndexController {
      */
     @GetMapping("/")
     public String index(ModelMap model, HttpSession session,
-            @PageableDefault(size = 10, sort = "attrId") Pageable pageable) {
+            @PageableDefault(size = 300, sort = "attrId") Pageable pageable) {
         // 1. 嘗試從 Session 中取出名為 "loginCust" 的登入會員資料
         com.cust.model.CustVO loginCust = (com.cust.model.CustVO) session.getAttribute("loginCust");
         if (loginCust != null) {
