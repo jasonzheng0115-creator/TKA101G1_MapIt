@@ -70,9 +70,8 @@ public class EmpController {
         // 5. 登入成功，存入 session 供 Filter 檢查與頁面右上角顯示
         session.setAttribute("loginEmp", empVO);
 
-        // 6. 重導向至後台首頁 (或是商品管理首頁，看專案的路由)
-        // 由於專案目前多數選單在 /product/select_page，暫且導向該頁面，或後台專用首頁
-        return "redirect:/product/select_page";
+        // 6. 重導向至後台首頁 (儀表板)
+        return "redirect:/manage";
     }
 
     // 登出功能
