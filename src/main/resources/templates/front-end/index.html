@@ -144,33 +144,55 @@
     <section class="py-5 pb-0">
         <div class="container-fluid px-4 px-lg-5">
             <h3 class="fw-bold mb-4">遊程快搜</h3>
-            <div class="position-relative">
-                <div class="city-swimlane-container pb-4" id="itinerarySwimlane">
-                    <a href="#" class="city-card">
-                        <img src="https://picsum.photos/seed/family/400/400" alt="親子共遊">
-                        <div class="city-name">親子共遊</div>
-                    </a>
-                    <a href="#" class="city-card">
-                        <img src="https://picsum.photos/seed/couple/400/400" alt="情侶約會">
-                        <div class="city-name">情侶約會</div>
-                    </a>
-                    <a href="#" class="city-card">
-                        <img src="https://picsum.photos/seed/history/400/400" alt="歷史古蹟">
-                        <div class="city-name">歷史古蹟</div>
-                    </a>
-                    <a href="#" class="city-card">
-                        <img src="https://picsum.photos/seed/nature/400/400" alt="秘境探險">
-                        <div class="city-name">秘境探險</div>
-                    </a>
-                    <a href="#" class="city-card">
-                        <img src="https://picsum.photos/seed/food/400/400" alt="美食之旅">
-                        <div class="city-name">美食之旅</div>
-                    </a>
-                    <a href="#" class="city-card">
-                        <img src="https://picsum.photos/seed/bike/400/400" alt="單車漫遊">
-                        <div class="city-name">單車漫遊</div>
-                    </a>
-                </div>
+			<div class="position-relative">
+			
+				<div class="city-swimlane-container pb-4" id="itinerarySwimlane">
+				
+				    <a th:each="prod : ${randomProducts}" 
+				       th:href="@{/frontend/product/getOne_For_Display(productId=${prod.productId})}" 
+				       class="city-card text-decoration-none">
+				        
+				        <img th:src="${prod.productImg != null && !#strings.isEmpty(prod.productImg)} 
+				                     ? '/upload/' + ${prod.productImg} 
+				                     : 'https://dummyimage.com/400/400/dee2e6/6c757d.jpg'" 
+				             th:alt="${prod.productName}"
+				             onerror="this.onerror=null; this.src='https://dummyimage.com/400/400/dee2e6/6c757d.jpg';">
+				        
+				        <div class="city-name" style="background: none; padding: 10px;">
+				            <span th:text="${prod.productName}" style="display: block; font-weight: bold; color: white;">商品名稱</span>
+				            <span th:text="'$' + ${prod.productPrice}" style="font-size: 0.9rem; color: orange; font-weight: bold;">$0</span>
+				        </div>
+				    </a>
+				
+				</div>
+            
+<!--             <div class="position-relative"> -->
+<!--                 <div class="city-swimlane-container pb-4" id="itinerarySwimlane"> -->
+<!--                     <a href="#" class="city-card"> -->
+<!--                         <img src="https://picsum.photos/seed/family/400/400" alt="親子共遊"> -->
+<!--                         <div class="city-name">親子共遊</div> -->
+<!--                     </a> -->
+<!--                     <a href="#" class="city-card"> -->
+<!--                         <img src="https://picsum.photos/seed/couple/400/400" alt="情侶約會"> -->
+<!--                         <div class="city-name">情侶約會</div> -->
+<!--                     </a> -->
+<!--                     <a href="#" class="city-card"> -->
+<!--                         <img src="https://picsum.photos/seed/history/400/400" alt="歷史古蹟"> -->
+<!--                         <div class="city-name">歷史古蹟</div> -->
+<!--                     </a> -->
+<!--                     <a href="#" class="city-card"> -->
+<!--                         <img src="https://picsum.photos/seed/nature/400/400" alt="秘境探險"> -->
+<!--                         <div class="city-name">秘境探險</div> -->
+<!--                     </a> -->
+<!--                     <a href="#" class="city-card"> -->
+<!--                         <img src="https://picsum.photos/seed/food/400/400" alt="美食之旅"> -->
+<!--                         <div class="city-name">美食之旅</div> -->
+<!--                     </a> -->
+<!--                     <a href="#" class="city-card"> -->
+<!--                         <img src="https://picsum.photos/seed/bike/400/400" alt="單車漫遊"> -->
+<!--                         <div class="city-name">單車漫遊</div> -->
+<!--                     </a> -->
+<!--                 </div> -->
                 <!-- 輪播右滑箭頭 -->
                 <button class="scroll-arrow right-arrow shadow-sm" onclick="scrollSwimlane('itinerarySwimlane', 1)">
                     <i class="bi bi-chevron-right"></i>
@@ -440,3 +462,9 @@
 </body>
 
 </html>
+
+
+
+
+
+

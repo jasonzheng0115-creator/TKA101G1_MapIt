@@ -85,5 +85,16 @@ public class FrontProdController {
 		return "front-end/product/listOneProduct";
 		
 	}
+	
+	// 給首頁超連結使用
+	@GetMapping("/getOne_For_Display")
+	public String getOne_For_Display_Get (
+			@RequestParam("productId")Integer productId, 
+			ModelMap model) {
+		
+		ProdVO prodVO = prodSvc.getOneProd(productId);
+		model.addAttribute("prodVO", prodVO);
+		return "front-end/product/listOneProduct";
+	}
 
 }

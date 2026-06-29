@@ -36,4 +36,12 @@ public interface ProdRepository extends JpaRepository<ProdVO, Integer> {
 	//	@Query("from ProdVO where productStatus = true order by purchasedQty desc")
 	//	List<ProdVO> getTopSellingProducts(Pageable pageable);
 	
+	
+	// 隨機抓取指定數量且狀態為上架的商品(放首頁用)
+	// nativeQuery = true：直接用原生的資料庫 SQL 語法
+	// ORDER BY RAND()： 順序隨機排列
+	// LIMIT :limit：限制只拿幾筆
+	@Query(value = "SELECT * FROM PRODUCT WHERE PRODUCT_STATUS = 1 ORDER BY RAND() LIMIT :limit", nativeQuery = true)
+	List<ProdVO> findRandomProducts(@Param("limit") int limit);
+
 }
