@@ -1,16 +1,24 @@
 package com.ticket.controller;
 
+import java.awt.PageAttributes.MediaType;
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+//import com.google.zxing.BarcodeFormat;
+//import com.google.zxing.client.j2se.MatrixToImageWriter;
+//import com.google.zxing.common.BitMatrix;
+//import com.google.zxing.qrcode.QRCodeWriter;
 import com.ticket.model.TicketDTO;
 import com.ticket.model.TicketService;
 import com.ticket.model.TicketTotalDTO;
@@ -85,5 +93,30 @@ public class TicketController {
 		return ticketservice.getTicketTotal(prodId,prodName);
 	}
 	
-	
+//	//產生票券QRCode功能
+//	@GetMapping("/qrcode/{tktId}")
+//	public ResponseEntity<byte[]> getQRCode(@PathVariable("tktId") Integer tktId) {
+//		try {
+//			//決定QRCode掃描後要出現什麼內容
+//			String qrCodeContent = "http://localhost:8080/ticket/validate?tktId=" + tktId;
+//			//呼叫Google的QRCodeWriter幫忙畫圖
+//			QRCodeWriter qrCodeWriter = new QRCodeWriter();
+//			//設定寬度300,高度300的黑白點陣圖，這時候還只是 0 跟 1 的還不是真正的PNG圖片
+//			BitMatrix bitMatrix = qrCodeWriter.encode(qrCodeContent, BarcodeFormat.QR_CODE, 300, 300);
+//			//準備暫存記憶體空間，把畫好的矩陣轉成PNG圖片
+//			ByteArrayOutputStream pngOutputStream = new ByteArrayOutputStream();
+//			//把剛剛畫好的黑白矩陣，強制轉換成PNG圖片格式，然後流進剛剛準備好的記憶體水桶(pngOutputStream)裡。
+//			MatrixToImageWriter.writeToStream(bitMatrix, "PNG", pngOutputStream);
+//			//圖已經在水桶裡了，我們把水桶裡的圖變成一長串的二進位位元組 byte[]（也就是電腦看懂的圖片原始碼）。
+//	byte[] pngData = pngOutputStream.toByteArray();
+//	// 4. 把圖片直接丟給前端的瀏覽器！
+//	return ResponseEntity.ok()
+//	        .contentType(MediaType.IMAGE_PNG)
+//	        .body(pngData);
+//
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			return ResponseEntity.status(500).build();
+//		}
+//	}
 }
