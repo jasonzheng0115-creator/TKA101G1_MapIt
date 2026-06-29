@@ -19,18 +19,21 @@ public class WebMvcConfig implements WebMvcConfigurer {
          * 設定靜態資源處理器
          * 將 /attraction_images/** 的 URL 請求映射到實體檔案路徑
          */
-        @Override
-        public void addResourceHandlers(ResourceHandlerRegistry registry) {
-                // 映射景點圖片路徑：/attraction_images/** -> file:///C:/upload/attraction_images/
-                registry.addResourceHandler("/attraction_images/**")
-                                .addResourceLocations("file:///C:/upload/attraction_images/");
+	@Override
+	public void addResourceHandlers(ResourceHandlerRegistry registry) {
+	        String userHome = System.getProperty("user.home");
 
-                // 映射 /uploads/** 到本地硬碟路徑（整合自 com.attr.config.WebMvcConfig）
-                registry.addResourceHandler("/uploads/**")
-                                .addResourceLocations("file:C:/upload/attraction_images/");
+	        // 映射景點圖片路徑：/attraction_images/** -> file:<user.home>/upload/attraction_images/
+	        registry.addResourceHandler("/attraction_images/**")
+	                        .addResourceLocations("file:" + userHome + "/upload/attraction_images/");
 
-                // 保留預設的靜態資源路徑（/static/, /public/, /resources/）
-                registry.addResourceHandler("/static/**")
-                                .addResourceLocations("classpath:/static/");
-        }
+	        // 映射 /uploads/** 到本地硬碟路徑（整合自 com.attr.config.WebMvcConfig）
+	        registry.addResourceHandler("/uploads/**")
+	                        .addResourceLocations("file:" + userHome + "/upload/attraction_images/");
+
+	        // 保留預設的靜態資源路徑（/static/, /public/, /resources/）
+	        registry.addResourceHandler("/static/**")
+	                        .addResourceLocations("classpath:/static/");
+	}
+
 }

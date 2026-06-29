@@ -17,6 +17,7 @@ public class DeptVO implements Serializable {
     @Column(name = "DEPT_NAME", nullable = false, length = 20)
     private String deptName; // 部門名稱
 
+
     public DeptVO() {
     }
 
@@ -28,25 +29,26 @@ public class DeptVO implements Serializable {
     // ==========================================
     // Getter & Setter 方法
     // ==========================================
+    
+	public Integer getDeptId() {
+		return deptId;
+	}
 
-    public Integer getDeptId() {
-        return deptId;
-    }
+	public void setDeptId(Integer deptId) {
+		this.deptId = deptId;
+	}
 
-    public void setDeptId(Integer deptId) {
-        this.deptId = deptId;
-    }
+	public String getDeptName() {
+		return deptName;
+	}
 
-    public String getDeptName() {
-        return deptName;
-    }
+	public void setDeptName(String deptName) {
+		this.deptName = deptName;
+	}
 
-    public void setDeptName(String deptName) {
-        this.deptName = deptName;
-    }
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
 
-    public static long getSerialversionuid() {
-        return serialVersionUID;
-    }
-
+    
 }
