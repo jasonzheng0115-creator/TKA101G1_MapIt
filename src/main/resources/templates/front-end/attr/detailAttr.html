@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="zh-TW" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${attr.attrName} + ' - 景點詳情'">景點詳情 - MapIt 旅遊平台</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    
+    <!-- 自訂樣式 -->
+    <style>
+        body {
+            font-family: 'Microsoft JhengHei', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+        
+        /* 頁面標題區 */
+        .page-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+        
+        /* 圖片輪播區域 */
+        .carousel-container {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .carousel-item img {
+            width: 100%;
+            height: 500px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        
+        /* 景點資訊卡片 */
+        .info-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .info-item {
+            padding: 1rem 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .info-item:last-child {
+            border-bottom: none;
+        }
+        
+        .info-label {
+            font-weight: bold;
+            color: #667eea;
+            margin-right: 1rem;
+            min-width: 100px;
+            display: inline-block;
+        }
+        
+        .badge-custom {
+            font-size: 0.9rem;
+            padding: 0.5rem 1rem;
+        }
+        
+        /* 返回按鈕 */
+        .btn-back {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            transition: transform 0.2s;
+        }
+        
+        .btn-back:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- ========== 頁面標題區 ========== -->
+    <div class="page-header">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <h1 class="display-5 fw-bold">
+                        <i class="bi bi-geo-alt-fill"></i> 
+                        <span th:text="${attr.attrName}">景點名稱</span>
+                    </h1>
+                    <p class="lead mb-0">
+                        <i class="bi bi-pin-map"></i> 
+                        <span th:text="${attr.regionVO != null ? attr.regionVO.regionName : '未分類地區'}">地區</span>
+                        <span class="mx-2">|</span>
+                        <i class="bi bi-tag"></i> 
+                        <span th:text="${attr.categoryVO != null ? attr.categoryVO.categoryName : '未分類類別'}">類別</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== 主要內容區 ========== -->
+    <div class="container mb-5">
+        <!-- 返回按鈕 -->
+        <div class="row mb-3">
+            <div class="col-12">
+                <a href="/front/attr/list" class="btn btn-back">
+                    <i class="bi bi-arrow-left"></i> 返回景點列表
+                </a>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- 左側：圖片輪播 -->
+            <div class="col-lg-8">
+                <div class="carousel-container">
+                    <h4 class="mb-3">
+                        <i class="bi bi-images"></i> 景點圖片
+                    </h4>
+                    
+                    <!-- Bootstrap Carousel 輪播組件 -->
+                    <div id="attrCarousel" class="carousel slide" data-bs-ride="carousel">
+                        <!-- 輪播指示器 -->
+                        <div class="carousel-indicators" th:if="${#lists.size(images) > 1}">
+                            <button th:each="image, iterStat : ${images}" 
+                                    type="button" 
+                                    data-bs-target="#attrCarousel" 
+                                    th:attr="data-bs-slide-to=${iterStat.index}"
+                                    th:classappend="${iterStat.index == 0} ? 'active' : ''"
+                                    th:aria-label="'圖片 ' + ${iterStat.index + 1}">
+                            </button>
+                        </div>
+                        
+                        <!-- 輪播內容 -->
+                        <div class="carousel-inner">
+                            <!-- 情況一：有圖片資料 -->
+                            <div th:if="${#lists.size(images) > 0}">
+                                <div th:each="image, iterStat : ${images}" 
+                                     class="carousel-item"
+                                     th:classappend="${iterStat.index == 0} ? 'active' : ''">
+                                    <!-- 圖片顯示優先級：線上 imageUrl → 本地 imagePath → 預設圖 -->
+                                    <img th:src="${image.imageUrl != null and !#strings.isEmpty(image.imageUrl)} 
+                                                 ? ${image.imageUrl} 
+                                                 : (${image.imagePath != null and !#strings.isEmpty(image.imagePath)} 
+                                                    ? '/attraction_images/' + ${image.imagePath} 
+                                                    : '/images/default.jpg')" 
+                                         th:alt="${attr.attrName}"
+                                         class="d-block w-100"
+                                         onerror="this.onerror=null; this.src='/images/default.jpg';">
+                                </div>
+                            </div>
+                            
+                            <!-- 情況二：無圖片資料，顯示預設圖片 -->
+                            <div th:if="${#lists.size(images) == 0}" class="carousel-item active">
+                                <img src="/images/default.jpg" 
+                                     alt="預設圖片" 
+                                     class="d-block w-100">
+                                <div class="carousel-caption d-none d-md-block">
+                                    <h5>暫無圖片</h5>
+                                    <p>此景點尚未上傳圖片</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 輪播控制按鈕（只有多張圖片時才顯示） -->
+                        <div th:if="${#lists.size(images) > 1}">
+                            <button class="carousel-control-prev" type="button" data-bs-target="#attrCarousel" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">上一張</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#attrCarousel" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">下一張</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- 圖片數量提示 -->
+                    <div class="mt-3 text-center text-muted">
+                        <small>
+                            <i class="bi bi-image"></i> 
+                            共 <span th:text="${#lists.size(images)}">0</span> 張圖片
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右側：景點資訊 -->
+            <div class="col-lg-4">
+                <div class="info-card">
+                    <h4 class="mb-4">
+                        <i class="bi bi-info-circle-fill"></i> 景點資訊
+                    </h4>
+                    
+                    <!-- 地址 -->
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="bi bi-geo-alt"></i> 地址
+                        </div>
+                        <div th:text="${attr.attrAddress != null ? attr.attrAddress : '無地址資訊'}">
+                            地址資訊
+                        </div>
+                    </div>
+                    
+                    <!-- 電話 -->
+                    <div class="info-item" th:if="${attr.attrTel != null and !#strings.isEmpty(attr.attrTel)}">
+                        <div class="info-label">
+                            <i class="bi bi-telephone"></i> 電話
+                        </div>
+                        <div th:text="${attr.attrTel}">電話號碼</div>
+                    </div>
+                    
+                    <!-- 營業時間 -->
+                    <div class="info-item" th:if="${attr.openTime != null and !#strings.isEmpty(attr.openTime)}">
+                        <div class="info-label">
+                            <i class="bi bi-clock"></i> 營業時間
+                        </div>
+                        <div th:text="${attr.openTime}">營業時間</div>
+                    </div>
+                    
+                    <!-- 營業狀態 -->
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="bi bi-shop"></i> 狀態
+                        </div>
+                        <div>
+                            <span class="badge badge-custom"
+                                  th:classappend="${attr.isOpen == 'Y'} ? 'bg-success' : 'bg-secondary'"
+                                  th:text="${attr.isOpen == 'Y'} ? '正常營業' : '暫停營業'">
+                                營業狀態
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <!-- 評分 -->
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="bi bi-star-fill text-warning"></i> 評分
+                        </div>
+                        <div>
+                            <span class="text-warning fw-bold" style="font-size: 1.2rem;">
+                                <span th:text="${attr.avgStars != null ? attr.avgStars : '0.0'}">0.0</span>
+                            </span>
+                            <span class="text-muted ms-2">
+                                (<span th:text="${attr.attrVotes != null ? attr.attrVotes : 0}">0</span> 則評價)
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <!-- 地區 -->
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="bi bi-pin-map"></i> 地區
+                        </div>
+                        <div>
+                            <span class="badge bg-primary badge-custom"
+                                  th:text="${attr.regionVO != null ? attr.regionVO.regionName : '未分類'}">
+                                地區
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <!-- 類別 -->
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="bi bi-tag"></i> 類別
+                        </div>
+                        <div>
+                            <span class="badge bg-info badge-custom"
+                                  th:text="${attr.categoryVO != null ? attr.categoryVO.categoryName : '未分類'}">
+                                類別
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 操作按鈕 -->
+                <div class="d-grid gap-2">
+                    <button class="btn btn-primary btn-lg" type="button" 
+                            th:attr="data-attr-id=${attr.attrId}"
+                            onclick="addToFavorite(this.getAttribute('data-attr-id'))">
+                        <i class="bi bi-heart"></i> 加入收藏
+                    </button>
+                    <button class="btn btn-outline-primary btn-lg" type="button">
+                        <i class="bi bi-share"></i> 分享景點
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ========== 評論區域 ========== -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <!-- 評論列表 -->
+                <div class="info-card">
+                    <h4 class="mb-4">
+                        <i class="bi bi-chat-left-text-fill"></i> 景點評論
+                    </h4>
+                    
+                    <!-- 若有評論則顯示 -->
+                    <div th:if="${#lists.size(commentList) > 0}">
+                        <div th:each="comment : ${commentList}" class="info-item">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <span class="fw-bold">顧客 #<span th:text="${comment.custId}">1</span></span>
+                                    <span class="text-warning ms-2">
+                                        <i class="bi bi-star-fill" th:each="i : ${#numbers.sequence(1, comment.commentScore)}"></i>
+                                        <span th:text="${comment.commentScore} + ' 分'">5 分</span>
+                                    </span>
+                                </div>
+                                <small class="text-muted" th:text="${#temporals.format(comment.commentTime, 'yyyy-MM-dd HH:mm')}">2024-01-01 12:00</small>
+                            </div>
+                            <p class="mb-0" th:text="${comment.commentContent}">評論內容</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 若無評論則顯示提示 -->
+                    <div th:if="${#lists.size(commentList) == 0}" class="text-center text-muted py-4">
+                        <i class="bi bi-chat-left-dots" style="font-size: 3rem;"></i>
+                        <p class="mt-2">目前尚無評論，成為第一個評論的人吧！</p>
+                    </div>
+                </div>
+                
+                <!-- 新增評論表單 -->
+                <div class="info-card mt-4">
+                    <h5 class="mb-3">
+                        <i class="bi bi-pencil-square"></i> 發表評論
+                    </h5>
+                    <form action="/attr/addComment" method="post">
+                        <!-- 隱藏的景點 ID -->
+                        <input type="hidden" name="attrId" th:value="${attr.attrId}">
+                        
+                        <!-- 評分選擇 -->
+                        <div class="mb-3">
+                            <label for="commentScore" class="form-label">評分 <span class="text-danger">*</span></label>
+                            <select class="form-select" id="commentScore" name="commentScore" required>
+                                <option value="">請選擇評分</option>
+                                <option value="5">⭐⭐⭐⭐⭐ 5 分 - 非常好</option>
+                                <option value="4">⭐⭐⭐⭐ 4 分 - 很好</option>
+                                <option value="3">⭐⭐⭐ 3 分 - 普通</option>
+                                <option value="2">⭐⭐ 2 分 - 不好</option>
+                                <option value="1">⭐ 1 分 - 非常不好</option>
+                            </select>
+                        </div>
+                        
+                        <!-- 評論內容 -->
+                        <div class="mb-3">
+                            <label for="commentContent" class="form-label">評論內容 <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="commentContent" name="commentContent" 
+                                      rows="4" placeholder="請分享您的遊玩體驗..." required></textarea>
+                        </div>
+                        
+                        <!-- 送出按鈕 -->
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-send-fill"></i> 送出評論
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== JavaScript 區域 ========== -->
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- 自訂 JavaScript -->
+    <script>
+        // 初始化輪播（自動播放）
+        document.addEventListener('DOMContentLoaded', function() {
+            var carousel = new bootstrap.Carousel(document.getElementById('attrCarousel'), {
+                interval: 3000,  // 3 秒自動切換
+                wrap: true       // 循環播放
+            });
+        });
+     // ==========================================
+        // 加入收藏的 Ajax 功能 (補上這裡！)
+        // ==========================================
+        function addToFavorite(attrId) {
+            if(!attrId) return;
+            // 發送 POST 請求到你的 Controller
+            fetch('/front/favorite/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'attrId=' + attrId
+            })
+            .then(response => {
+                if(response.ok) {
+                    alert('成功加入收藏！');
+                } else {
+                    alert('加入收藏失敗，請稍後再試。');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+</body>
+</html>

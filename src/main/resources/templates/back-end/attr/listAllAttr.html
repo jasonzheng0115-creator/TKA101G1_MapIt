@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="zh-TW" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>景點管理 - MapIt 後台</title>
+    <!-- 引用 backend.html 的 head fragment -->
+    <th:block th:replace="~{layouts/backend :: head}"></th:block>
+</head>
+<body>
+    <!-- 引用 backend.html 的 navbar fragment -->
+    <nav th:replace="~{layouts/backend :: navbar}"></nav>
+
+    <!-- ========== 主要內容區 ========== -->
+    <section class="py-5">
+        <div class="container px-4 px-lg-5">
+            <!-- 頁面標題 -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h2 class="fw-bolder">景點管理</h2>
+                    <p class="text-muted">管理所有旅遊景點資料</p>
+                </div>
+            </div>
+
+            <!-- 成功/錯誤訊息顯示區 -->
+            <div class="row mb-3" th:if="${successMessage}">
+                <div class="col-12">
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span th:text="${successMessage}">操作成功！</span>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mb-3" th:if="${errorMessage}">
+                <div class="col-12">
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                        <span th:text="${errorMessage}">操作失敗！</span>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 操作按鈕區 -->
+            <div class="row mb-3">
+                <div class="col-12">
+                    <a href="/attr/add" class="btn btn-primary">
+                        <i class="bi bi-plus-circle"></i> 新增景點
+                    </a>
+                    <a href="/attr/listAll" class="btn btn-secondary">
+                        <i class="bi bi-arrow-clockwise"></i> 重新整理
+                    </a>
+                    <a href="/attr/import-opendata" class="btn btn-info" 
+                       onclick="return confirm('確定要從網路匯入測試資料嗎？這可能需要幾秒鐘的時間。')">
+                        <i class="bi bi-cloud-download"></i> ☁️ 匯入 Open Data (測試)
+                    </a>
+                </div>
+            </div>
+
+            <!-- 篩選面板區 -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0"><i class="bi bi-funnel"></i> 篩選與搜尋</h5>
+                        </div>
+                        <div class="card-body">
+                            <!-- 關鍵字搜尋框 -->
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">
+                                    <i class="bi bi-search"></i> 關鍵字搜尋：
+                                </label>
+                                <form th:action="@{/attr/listAll}" method="get" class="d-flex">
+                                    <input type="text" name="keyword" th:value="${keyword}" 
+                                           class="form-control me-2" 
+                                           placeholder="輸入景點名稱搜尋...">
+                                    <input type="hidden" name="regionId" th:value="${selectedRegionId}">
+                                    <input type="hidden" name="categoryId" th:value="${selectedCategoryId}">
+                                    <button type="submit" class="btn btn-outline-secondary">
+                                        <i class="bi bi-search"></i> 搜尋
+                                    </button>
+                                    <a th:href="@{/attr/listAll}" class="btn btn-outline-danger ms-2" th:if="${keyword != null && !keyword.isEmpty()}">
+                                        <i class="bi bi-x-circle"></i> 清除
+                                    </a>
+                                </form>
+                            </div>
+                            
+                            <hr>
+                            
+                            <!-- 地區篩選 -->
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">
+                                    <i class="bi bi-geo-alt"></i> 地區：
+                                </label>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <a th:href="@{/attr/listAll(keyword=${keyword})}" 
+                                       class="btn btn-sm"
+                                       th:classappend="${selectedRegionId == null && selectedCategoryId == null} ? 'btn-primary' : 'btn-outline-primary'">
+                                        全部地區
+                                    </a>
+                                    <a th:each="region : ${regionList}"
+                                       th:href="@{/attr/listAll(keyword=${keyword}, regionId=${region.regionId}, categoryId=${selectedCategoryId})}"
+                                       class="btn btn-sm"
+                                       th:classappend="${selectedRegionId == region.regionId} ? 'btn-primary' : 'btn-outline-primary'"
+                                       th:text="${region.regionName}">
+                                        台北市
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <!-- 類別篩選 -->
+                            <div class="mb-0">
+                                <label class="form-label fw-bold">
+                                    <i class="bi bi-tag"></i> 類別：
+                                </label>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <a th:href="@{/attr/listAll(keyword=${keyword}, regionId=${selectedRegionId})}" 
+                                       class="btn btn-sm"
+                                       th:classappend="${selectedCategoryId == null} ? 'btn-success' : 'btn-outline-success'">
+                                        全部類別
+                                    </a>
+                                    <a th:each="category : ${categoryList}"
+                                       th:href="@{/attr/listAll(keyword=${keyword}, regionId=${selectedRegionId}, categoryId=${category.categoryId})}"
+                                       class="btn btn-sm"
+                                       th:classappend="${selectedCategoryId == category.categoryId} ? 'btn-success' : 'btn-outline-success'"
+                                       th:text="${category.categoryName}">
+                                        觀光景點
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 景點列表表格 -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover table-bordered">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th scope="col" class="text-center" style="width: 80px;">景點 ID</th>
+                                    <th scope="col">景點名稱</th>
+                                    <th scope="col" class="text-center" style="width: 100px;">地區</th>
+                                    <th scope="col" class="text-center" style="width: 120px;">類別</th>
+                                    <th scope="col">地址</th>
+                                    <th scope="col" class="text-center" style="width: 100px;">營業狀態</th>
+                                    <th scope="col" class="text-center" style="width: 100px;">平均評分</th>
+                                    <th scope="col" class="text-center" style="width: 180px;">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- 使用 Thymeleaf th:each 迴圈渲染景點資料（支援分頁） -->
+                                <tr th:each="attr : ${attrPage.content}">
+                                    <td class="text-center" th:text="${attr.attrId}">1</td>
+                                    <td th:text="${attr.attrName}">台北101</td>
+                                    <td class="text-center" th:text="${attr.regionVO?.regionName}">台北市</td>
+                                    <td class="text-center" th:text="${attr.categoryVO?.categoryName}">觀光景點</td>
+                                    <td th:text="${attr.attrAddress}">台北市信義區信義路五段7號</td>
+                                    <td class="text-center">
+                                        <span th:if="${attr.isOpen == '營業中'}" class="badge bg-success" th:text="${attr.isOpen}">營業中</span>
+                                        <span th:if="${attr.isOpen == '休息中'}" class="badge bg-warning text-dark" th:text="${attr.isOpen}">休息中</span>
+                                        <span th:if="${attr.isOpen == '已歇業'}" class="badge bg-danger" th:text="${attr.isOpen}">已歇業</span>
+                                        <span th:if="${attr.isOpen != '營業中' && attr.isOpen != '休息中' && attr.isOpen != '已歇業'}" class="badge bg-secondary" th:text="${attr.isOpen}">未知</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span th:if="${attr.avgStars != null}" class="text-warning">
+                                            <i class="bi bi-star-fill"></i>
+                                            <span th:text="${#numbers.formatDecimal(attr.avgStars, 1, 1)}">4.5</span>
+                                        </span>
+                                        <span th:if="${attr.avgStars == null}" class="text-muted">尚無評分</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <a th:href="@{/attr/edit/{id}(id=${attr.attrId})}" class="btn btn-sm btn-warning me-1">
+                                            <i class="bi bi-pencil-square"></i> 編輯
+                                        </a>
+                                        <a th:href="@{/attr/image/list/{id}(id=${attr.attrId})}" class="btn btn-sm btn-info me-1">
+                                            <i class="bi bi-images"></i> 管理圖片
+                                        </a>
+                                        <a th:href="@{/attr/delete/{id}(id=${attr.attrId})}" 
+                                           class="btn btn-sm btn-danger"
+                                           onclick="return confirm('確定要刪除此景點嗎？');">
+                                            <i class="bi bi-trash"></i> 刪除
+                                        </a>
+                                    </td>
+                                </tr>
+                                
+                                <!-- 若無資料時顯示提示訊息 -->
+                                <tr th:if="${attrPage.content.isEmpty()}">
+                                    <td colspan="8" class="text-center text-muted py-4">
+                                        <i class="bi bi-inbox" style="font-size: 2rem;"></i>
+                                        <p class="mt-2">目前尚無景點資料，請點擊「新增景點」按鈕開始建立。</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 分頁導航列 -->
+            <div class="row mt-3" th:if="${attrPage.totalPages > 1}">
+                <div class="col-12">
+                    <nav aria-label="景點分頁導航">
+                        <ul class="pagination justify-content-center">
+                            <!-- 上一頁按鈕 -->
+                            <li class="page-item" th:classappend="${attrPage.first} ? 'disabled'">
+                                <a class="page-link" 
+                                   th:href="@{/attr/listAll(page=${attrPage.number - 1}, keyword=${keyword}, regionId=${selectedRegionId}, categoryId=${selectedCategoryId})}" 
+                                   aria-label="上一頁">
+                                    <span aria-hidden="true">&laquo; 上一頁</span>
+                                </a>
+                            </li>
+                            
+                            <!-- 頁碼按鈕 -->
+                            <li class="page-item" 
+                                th:each="pageNum : ${#numbers.sequence(0, attrPage.totalPages - 1)}"
+                                th:classappend="${pageNum == attrPage.number} ? 'active'">
+                                <a class="page-link" 
+                                   th:href="@{/attr/listAll(page=${pageNum}, keyword=${keyword}, regionId=${selectedRegionId}, categoryId=${selectedCategoryId})}" 
+                                   th:text="${pageNum + 1}">1</a>
+                            </li>
+                            
+                            <!-- 下一頁按鈕 -->
+                            <li class="page-item" th:classappend="${attrPage.last} ? 'disabled'">
+                                <a class="page-link" 
+                                   th:href="@{/attr/listAll(page=${attrPage.number + 1}, keyword=${keyword}, regionId=${selectedRegionId}, categoryId=${selectedCategoryId})}" 
+                                   aria-label="下一頁">
+                                    <span aria-hidden="true">下一頁 &raquo;</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- 統計資訊 -->
+            <div class="row mt-3">
+                <div class="col-12">
+                    <p class="text-muted text-center">
+                        <i class="bi bi-info-circle"></i> 
+                        第 <strong th:text="${attrPage.number + 1}">1</strong> 頁 / 共 <strong th:text="${attrPage.totalPages}">1</strong> 頁
+                        | 共有 <strong th:text="${attrPage.totalElements}">0</strong> 筆景點資料
+                        | 每頁顯示 <strong th:text="${attrPage.size}">10</strong> 筆
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 引用 backend.html 的 footer fragment -->
+    <footer th:replace="~{layouts/backend :: footer}"></footer>
+
+    <!-- 引用 backend.html 的 scripts fragment -->
+    <th:block th:replace="~{layouts/backend :: scripts}"></th:block>
+</body>
+</html>

@@ -5,13 +5,13 @@ USE test1;
 -- =======================================================
 -- ⚠️ 刪除舊表 (順序：先刪子表，再刪父表)
 -- =======================================================
-DROP TABLE IF EXISTS REPORTS;
-DROP TABLE IF EXISTS ATTR_COLLECT;
-DROP TABLE IF EXISTS COMMENT;
-DROP TABLE IF EXISTS ATTR_IMAGE; -- 新增的圖片子表
-DROP TABLE IF EXISTS ATTR;
-DROP TABLE IF EXISTS CATEGORY;
-DROP TABLE IF EXISTS REGION;
+--DROP TABLE IF EXISTS REPORTS;
+--DROP TABLE IF EXISTS ATTR_COLLECT;
+--DROP TABLE IF EXISTS COMMENT;
+--DROP TABLE IF EXISTS ATTR_IMAGE; -- 新增的圖片子表
+--DROP TABLE IF EXISTS ATTR;
+--DROP TABLE IF EXISTS CATEGORY;
+--DROP TABLE IF EXISTS REGION;
 
 -- =======================================================
 -- 1. 建立地區表 (REGION)
@@ -31,29 +31,30 @@ CREATE TABLE CATEGORY (
 
 -- =======================================================
 -- 3. 建立景點表 (ATTR)
--- ⚠️ 已移除原有的 ATTR_IMG，改交由獨立圖片表管理
+
 -- =======================================================
 CREATE TABLE ATTR(
-    ATTR_ID INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
+     ATTR_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     ATTR_NAME VARCHAR(100) NOT NULL,
     REGION_ID INT NOT NULL,
     CATEGORY_ID INT NOT NULL,
     ATTR_ADDRESS VARCHAR(255) NOT NULL,
     LAT DECIMAL(10, 8) NOT NULL,
     LNG DECIMAL(11, 8) NOT NULL,
-    ATTR_TEL VARCHAR(30),
-    OPEN_TIME VARCHAR(30),
+    ATTR_TEL VARCHAR(255),
+    OPEN_TIME VARCHAR(255),
+    ATTR_IMG VARCHAR(255),
     IS_OPEN VARCHAR(30) NOT NULL DEFAULT '正常營業',
-    ATTR_VOTES INT,
-    ATTR_STARS INT,
-    AVG_STARS DECIMAL(2, 1),
+    ATTR_VOTES INT DEFAULT 0,
+    ATTR_STARS INT DEFAULT 0,
+    AVG_STARS DECIMAL(2, 1) DEFAULT 0.0,
     
     FOREIGN KEY (REGION_ID) REFERENCES REGION(REGION_ID),
     FOREIGN KEY (CATEGORY_ID) REFERENCES CATEGORY(CATEGORY_ID)
 );
 
 -- =======================================================
--- 4. 建立景點圖片表 (ATTRACTION_IMAGE) - 輪播圖專用
+-- 4. 建立景點圖片表 (ATTR_IMAGE) - 輪播圖專用
 -- =======================================================
 CREATE TABLE ATTR_IMAGE (
     IMG_ID INT AUTO_INCREMENT NOT NULL PRIMARY KEY,

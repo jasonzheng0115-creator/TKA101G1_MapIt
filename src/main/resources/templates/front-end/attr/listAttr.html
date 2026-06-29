@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="zh-TW" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>景點地圖 - MapIt 旅遊平台</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    
+    <!-- 自訂樣式 -->
+    <style>
+        body {
+            font-family: 'Microsoft JhengHei', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        /* 地圖容器樣式 */
+        #map {
+            height: 600px;
+            width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* 頁面標題區 */
+        .page-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+        }
+        
+        /* 景點資訊卡片 */
+        .info-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        
+        /* 統計數字 */
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        /* 載入動畫 */
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .loading-spinner.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- ========== 頁面標題區 ========== -->
+    <div class="page-header">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <h1 class="display-4 fw-bold">
+                        <i class="bi bi-map"></i> 景點地圖瀏覽
+                    </h1>
+                    <p class="lead">探索台灣各地精彩景點，規劃您的完美旅程</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== 主要內容區 ========== -->
+    <div class="container mb-5">
+        <!-- 統計資訊卡片 -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="info-card text-center">
+                    <i class="bi bi-geo-alt-fill text-primary" style="font-size: 2rem;"></i>
+                    <div class="stat-number" th:text="${#lists.size(attrList)}">0</div>
+                    <p class="text-muted mb-0">景點總數</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="info-card text-center">
+                    <i class="bi bi-pin-map-fill text-success" style="font-size: 2rem;"></i>
+                    <div class="stat-number" id="markerCount">0</div>
+                    <p class="text-muted mb-0">地圖標記</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="info-card text-center">
+                    <i class="bi bi-star-fill text-warning" style="font-size: 2rem;"></i>
+                    <div class="stat-number">4.5</div>
+                    <p class="text-muted mb-0">平均評分</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 操作按鈕區 -->
+        <div class="row mb-3">
+            <div class="col-12">
+                <a href="/front/attr/search" class="btn btn-outline-primary">
+                    <i class="bi bi-list-ul"></i> 切換到列表模式
+                </a>
+                <button id="resetMapBtn" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-clockwise"></i> 重置地圖視角
+                </button>
+                <button id="toggleMarkersBtn" class="btn btn-outline-info">
+                    <i class="bi bi-eye-slash"></i> 隱藏所有標記
+                </button>
+            </div>
+        </div>
+
+        <!-- 載入動畫 -->
+        <div class="loading-spinner active" id="loadingSpinner">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">載入中...</span>
+            </div>
+            <p class="mt-2 text-muted">正在載入地圖...</p>
+        </div>
+
+        <!-- Google Map 容器 -->
+        <div class="row">
+            <div class="col-12">
+                <div id="map"></div>
+            </div>
+        </div>
+
+        <!-- 使用說明 -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="alert alert-info">
+                    <h5 class="alert-heading">
+                        <i class="bi bi-info-circle-fill"></i> 使用說明
+                    </h5>
+                    <ul class="mb-0">
+                        <li>點擊地圖上的標記可查看景點名稱和基本資訊</li>
+                        <li>使用滑鼠滾輪可縮放地圖</li>
+                        <li>拖曳地圖可移動視角</li>
+                        <li>點擊「重置地圖視角」可回到台灣中心位置</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== JavaScript 區域 ========== -->
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- 將後端景點資料轉為 JavaScript 陣列 -->
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        
+        // 使用 Thymeleaf 內聯語法接收後端傳來的 JSON 字串
+        // 後端已使用 Jackson 將 List<Map> 序列化為 JSON 字串
+        var attrListJsonString = /*[[${attrListJson}]]*/ '[]';
+        
+        // 使用 JSON.parse() 將 JSON 字串解析為 JavaScript 陣列
+        var attractions = [];
+        
+        try {
+            attractions = JSON.parse(attrListJsonString);
+            console.log('✅ JSON 解析成功');
+            console.log('📊 載入景點數量:', attractions.length);
+            console.log('📍 景點資料:', attractions);
+            
+            // 檢查前 3 筆資料的座標
+            if (attractions.length > 0) {
+                console.log('🔍 檢查前 3 筆景點座標：');
+                attractions.slice(0, 3).forEach((attr, index) => {
+                    console.log(`景點 ${index + 1}: ${attr.name}`);
+                    console.log(`  - lat: ${attr.lat} (type: ${typeof attr.lat})`);
+                    console.log(`  - lng: ${attr.lng} (type: ${typeof attr.lng})`);
+                });
+            } else {
+                console.warn('⚠️ 警告：景點陣列為空，請檢查後端資料');
+            }
+        } catch (e) {
+            console.error('❌ JSON 解析失敗:', e);
+            console.error('原始 JSON 字串:', attrListJsonString);
+        }
+        
+        /*]]>*/
+    </script>
+    
+    <!-- Google Maps API 載入區 -->
+    <!-- ⚠️ 重要提醒：請將 YOUR_API_KEY 替換為您的 Google Maps API Key -->
+    <!-- 申請方式：https://developers.google.com/maps/documentation/javascript/get-api-key -->
+    <script>
+        // 全域變數
+        let map;
+        let markers = [];
+        let infoWindow;
+        let markersVisible = true;
+        
+        /**
+         * 初始化 Google Map
+         * 此函數會在 Google Maps API 載入完成後自動執行
+         */
+        function initMap() {
+            console.log('🗺️ 開始初始化 Google Map...');
+            
+            // 隱藏載入動畫
+            document.getElementById('loadingSpinner').classList.remove('active');
+            
+            // 設定預設地圖中心點（台灣中心位置）
+            let mapCenter = { lat: 23.5, lng: 121.0 };
+            let initialZoom = 8;
+            
+            // 如果有景點資料，使用第一個景點作為中心點
+            if (attractions.length > 0 && attractions[0].lat && attractions[0].lng) {
+                mapCenter = {
+                    lat: parseFloat(attractions[0].lat),
+                    lng: parseFloat(attractions[0].lng)
+                };
+                initialZoom = 12;  // 有景點時放大一些
+                console.log('📍 使用第一個景點作為地圖中心:', mapCenter);
+            } else {
+                console.log('📍 使用預設台灣中心位置');
+            }
+            
+            // 建立地圖實例
+            map = new google.maps.Map(document.getElementById('map'), {
+                zoom: initialZoom,
+                center: mapCenter,
+                mapTypeId: 'roadmap',
+                // 地圖控制選項
+                mapTypeControl: true,
+                streetViewControl: true,
+                fullscreenControl: true,
+                zoomControl: true,
+                // 禁用滾輪縮放的提示訊息
+                gestureHandling: 'greedy'
+            });
+            
+            console.log('✅ 地圖實例建立完成');
+            
+            // 建立共用的 InfoWindow（避免多個 InfoWindow 同時開啟）
+            infoWindow = new google.maps.InfoWindow();
+            
+            // 遍歷景點陣列，建立地圖標記
+            let validMarkerCount = 0;
+            let invalidMarkerCount = 0;
+            
+            console.log('🔄 開始建立景點標記...');
+            
+            attractions.forEach(function(attraction, index) {
+                // 除錯：輸出每個景點的資訊
+                console.log(`處理景點 ${index + 1}/${attractions.length}: ${attraction.name}`);
+                console.log(`  座標: lat=${attraction.lat}, lng=${attraction.lng}`);
+                
+                // 檢查經緯度是否有效
+                if (attraction.lat && attraction.lng && 
+                    attraction.lat !== 0 && attraction.lng !== 0 &&
+                    !isNaN(attraction.lat) && !isNaN(attraction.lng)) {
+                    
+                    // 確保轉換為數字型態
+                    const lat = parseFloat(attraction.lat);
+                    const lng = parseFloat(attraction.lng);
+                    
+                    // 再次驗證轉換後的數值
+                    if (isNaN(lat) || isNaN(lng)) {
+                        console.warn(`  ⚠️ 座標轉換失敗: lat=${lat}, lng=${lng}`);
+                        invalidMarkerCount++;
+                        return;
+                    }
+                    
+                    // 建立標記位置
+                    const position = { lat: lat, lng: lng };
+                    
+                    console.log(`  ✅ 建立標記於: ${lat}, ${lng}`);
+                    
+                    // 建立標記
+                    const marker = new google.maps.Marker({
+                        position: position,
+                        map: map,
+                        title: attraction.name,
+                        animation: google.maps.Animation.DROP,
+                        // 可以根據類別設定不同的圖示
+                        // icon: 'http://maps.google.com/mapfiles/ms/icons/red-dot.png'
+                    });
+                    
+                    // 建立 InfoWindow 內容（HTML 格式）
+                    const contentString = `
+                        <div style="max-width: 300px; padding: 10px;">
+                            <h5 style="margin-bottom: 10px; color: #667eea;">
+                                <i class="bi bi-geo-alt-fill"></i> ${attraction.name}
+                            </h5>
+                            <p style="margin-bottom: 5px;">
+                                <strong>地區：</strong>${attraction.region || '未分類'}
+                            </p>
+                            <p style="margin-bottom: 5px;">
+                                <strong>類別：</strong>${attraction.category || '未分類'}
+                            </p>
+                            <p style="margin-bottom: 5px;">
+                                <strong>地址：</strong>${attraction.address || '無地址資訊'}
+                            </p>
+                            ${attraction.tel ? `<p style="margin-bottom: 5px;"><strong>電話：</strong>${attraction.tel}</p>` : ''}
+                            ${attraction.openTime ? `<p style="margin-bottom: 5px;"><strong>營業時間：</strong>${attraction.openTime}</p>` : ''}
+                            <p style="margin-bottom: 5px;">
+                                <strong>狀態：</strong>
+                                <span class="badge ${attraction.isOpen === '營業中' ? 'bg-success' : 'bg-secondary'}">
+                                    ${attraction.isOpen || '未知'}
+                                </span>
+                            </p>
+                            ${attraction.avgStars ? `
+                                <p style="margin-bottom: 0;">
+                                    <strong>評分：</strong>
+                                    <span style="color: #ffc107;">★</span> ${attraction.avgStars}
+                                </p>
+                            ` : ''}
+                        </div>
+                    `;
+                    
+                    // 為標記添加點擊事件監聽器
+                    marker.addListener('click', function() {
+                        infoWindow.setContent(contentString);
+                        infoWindow.open(map, marker);
+                    });
+                    
+                    // 將標記加入陣列以便後續管理
+                    markers.push(marker);
+                    validMarkerCount++;
+                } else {
+                    console.warn(`  ❌ 座標無效，跳過此景點`);
+                    invalidMarkerCount++;
+                }
+            });
+            
+            // 更新標記數量顯示
+            document.getElementById('markerCount').textContent = validMarkerCount;
+            
+            // 輸出統計資訊
+            console.log('📊 標記建立統計：');
+            console.log(`  ✅ 成功建立: ${validMarkerCount} 個標記`);
+            console.log(`  ❌ 座標無效: ${invalidMarkerCount} 個景點`);
+            
+            // 如果有標記，自動調整地圖視角以顯示所有標記
+            if (markers.length > 0) {
+                console.log('🔍 調整地圖視角以顯示所有標記...');
+                const bounds = new google.maps.LatLngBounds();
+                markers.forEach(marker => bounds.extend(marker.getPosition()));
+                map.fitBounds(bounds);
+                console.log('✅ 地圖視角調整完成');
+            } else {
+                console.warn('⚠️ 警告：沒有建立任何標記，請檢查景點資料的座標欄位');
+            }
+            
+            console.log('🎉 地圖初始化完成！');
+        }
+        
+        /**
+         * 重置地圖視角
+         */
+        function resetMapView() {
+            if (!map) {
+                console.warn('⚠️ 地圖未初始化，無法重置視角');
+                return;
+            }
+            if (markers.length > 0) {
+                const bounds = new google.maps.LatLngBounds();
+                markers.forEach(marker => bounds.extend(marker.getPosition()));
+                map.fitBounds(bounds);
+            } else {
+                map.setCenter({ lat: 23.5, lng: 121.0 });
+                map.setZoom(8);
+            }
+        }
+        
+        /**
+         * 切換標記顯示/隱藏
+         */
+        function toggleMarkers() {
+            if (!map) {
+                console.warn('⚠️ 地圖未初始化，無法切換標記');
+                return;
+            }
+            markersVisible = !markersVisible;
+            markers.forEach(marker => {
+                marker.setVisible(markersVisible);
+            });
+            
+            const btn = document.getElementById('toggleMarkersBtn');
+            if (markersVisible) {
+                btn.innerHTML = '<i class="bi bi-eye-slash"></i> 隱藏所有標記';
+                btn.classList.remove('btn-success');
+                btn.classList.add('btn-outline-info');
+            } else {
+                btn.innerHTML = '<i class="bi bi-eye"></i> 顯示所有標記';
+                btn.classList.remove('btn-outline-info');
+                btn.classList.add('btn-success');
+            }
+        }
+        
+        // 綁定按鈕事件 - 移到 DOMContentLoaded 中，確保即使地圖未初始化也能綁定
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('📄 頁面 DOM 已載入完成');
+            
+            // 綁定按鈕事件
+            const resetBtn = document.getElementById('resetMapBtn');
+            const toggleBtn = document.getElementById('toggleMarkersBtn');
+            
+            if (resetBtn) {
+                resetBtn.addEventListener('click', resetMapView);
+            }
+            
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', toggleMarkers);
+            }
+            
+            console.log('✅ 按鈕事件綁定完成');
+        });
+    </script>
+    
+    <!-- 載入 Google Maps API -->
+    <!-- API Key 從後端動態傳入，透過環境變數 GOOGLE_MAPS_API_KEY 設定 -->
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        var googleMapsApiKey = /*[[${googleMapsApiKey}]]*/ '';
+        
+        // 動態載入 Google Maps API
+        if (googleMapsApiKey) {
+            var script = document.createElement('script');
+            script.src = 'https://maps.googleapis.com/maps/api/js?key=' + googleMapsApiKey + '&callback=initMap&language=zh-TW';
+            script.async = true;
+            script.defer = true;
+            document.head.appendChild(script);
+        } else {
+            console.error('❌ Google Maps API Key 未設定！請在環境變數中設定 GOOGLE_MAPS_API_KEY');
+            document.getElementById('loadingSpinner').innerHTML = 
+                '<div class="alert alert-danger" role="alert">' +
+                '<h5 class="alert-heading"><i class="bi bi-exclamation-triangle-fill"></i> Google Maps API Key 未設定</h5>' +
+                '<p>請在系統環境變數中設定 <code>GOOGLE_MAPS_API_KEY</code></p>' +
+                '<hr>' +
+                '<p class="mb-0">設定方式請參考專案的 README.md 文件</p>' +
+                '</div>';
+        }
+        /*]]>*/
+    </script>
+</body>
+</html>

@@ -1,262 +1,332 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="zh-TW" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <meta charset="UTF-8">
-    <title>旅遊行程規劃網站 - 首頁</title>
-    <!-- 引入 Google Font：Noto Sans TC（思源黑體），讓中文更精緻 -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap"
-        rel="stylesheet">
-    <style>
-        /* ===== 全域設定 ===== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Noto Sans TC', sans-serif;
-            background: linear-gradient(160deg, #E8ECF1 0%, #F5F3F0 50%, #EAE8E4 100%);
-            min-height: 100vh;
-            color: #3D4F5F;
-        }
-
-        /* ===== 頂部導覽列 ===== */
-        .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 18px 40px;
-            background: rgba(255, 255, 255, 0.72);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(123, 143, 161, 0.15);
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-
-        .navbar .logo {
-            font-size: 18px;
-            font-weight: 500;
-            color: #5A7A8A;
-            letter-spacing: 1px;
-        }
-
-        .navbar-right {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-
-        .user-info {
-            font-size: 13px;
-            font-weight: 300;
-            color: #7B8FA1;
-        }
-
-        /* ===== 按鈕共用 ===== */
-        .btn {
-            display: inline-block;
-            padding: 9px 22px;
-            font-size: 13px;
-            font-family: 'Noto Sans TC', sans-serif;
-            font-weight: 400;
-            text-decoration: none;
-            border-radius: 20px;
-            border: 1.5px solid transparent;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            letter-spacing: 0.5px;
-        }
-
-        .btn-login {
-            background: #7B8FA1;
-            color: #FFFFFF;
-            border-color: #7B8FA1;
-        }
-
-        .btn-login:hover {
-            background: transparent;
-            color: #7B8FA1;
-        }
-
-        .btn-logout {
-            background: transparent;
-            color: #A08B8B;
-            border-color: #C4B5B5;
-        }
-
-        .btn-logout:hover {
-            background: #A08B8B;
-            color: #FFFFFF;
-        }
-
-        /* ===== 主視覺區 ===== */
-        .hero {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 120px 20px 80px;
-            position: relative;
-        }
-
-        /* 裝飾圓圈 — 增加層次感，不會無聊 */
-        .hero::before {
-            content: '';
-            position: absolute;
-            width: 320px;
-            height: 320px;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(123, 143, 161, 0.10) 0%, transparent 70%);
-            top: 40px;
-            left: 10%;
-            animation: float 8s ease-in-out infinite;
-        }
-
-        .hero::after {
-            content: '';
-            position: absolute;
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(155, 181, 201, 0.12) 0%, transparent 70%);
-            bottom: 20px;
-            right: 15%;
-            animation: float 6s ease-in-out infinite reverse;
-        }
-
-        @keyframes float {
-
-            0%,
-            100% {
-                transform: translateY(0px);
-            }
-
-            50% {
-                transform: translateY(-20px);
-            }
-        }
-
-        .hero h1 {
-            font-size: 38px;
-            font-weight: 700;
-            color: #4A6274;
-            margin-bottom: 16px;
-            position: relative;
-        }
-
-        .hero p {
-            font-size: 16px;
-            font-weight: 300;
-            color: #8C9DAA;
-            margin-bottom: 50px;
-            line-height: 1.8;
-        }
-
-        /* ===== 功能卡片 ===== */
-        .card-container {
-            display: flex;
-            gap: 24px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .card {
-            background: rgba(255, 255, 255, 0.65);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            border: 1px solid rgba(123, 143, 161, 0.12);
-            border-radius: 16px;
-            padding: 36px 32px;
-            width: 220px;
-            text-decoration: none;
-            color: inherit;
-            transition: all 0.35s ease;
-            text-align: center;
-        }
-
-        .card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 12px 36px rgba(90, 122, 138, 0.12);
-            background: rgba(255, 255, 255, 0.9);
-        }
-
-        .card-icon {
-            font-size: 36px;
-            margin-bottom: 16px;
-            display: block;
-        }
-
-        .card-title {
-            font-size: 16px;
-            font-weight: 500;
-            color: #4A6274;
-            margin-bottom: 8px;
-        }
-
-        .card-desc {
-            font-size: 13px;
-            font-weight: 300;
-            color: #8C9DAA;
-            line-height: 1.6;
-        }
-
-        /* ===== 頁尾 ===== */
-        .footer {
-            text-align: center;
-            padding: 40px;
-            font-size: 12px;
-            font-weight: 300;
-            color: #B4BCC3;
-            letter-spacing: 0.5px;
-        }
-    </style>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="MapIt 旅遊平台" />
+    <meta name="author" content="TKA101G1" />
+    <title>MapIt - 旅遊景點平台</title>
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+    <link href="/css/styles.css" rel="stylesheet" />
 </head>
 
 <body>
+    <!-- 組合式固定導覽列 (整合主選單與次選單) -->
+    <header class="fixed-top bg-white shadow-sm" style="z-index: 1030;">
+        <!-- 主選單 (Top Bar) -->
+        <nav class="navbar navbar-expand-lg navbar-light border-bottom py-2">
+            <div class="container px-4 px-lg-5">
+                <a class="navbar-brand fw-bold fs-3" href="/" style="color: #ff5722;">MapIt</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center" style="font-size: 0.9rem;">
 
-    <!-- ====== 導覽列 ====== -->
-    <nav class="navbar">
-        <div class="logo">✦ 旅行規劃</div>
+                        <!-- 1. 會員中心：已登入才顯示，並點擊進入修改個人資料 -->
+                        <li class="nav-item" th:if="${userName}">
+                            <a class="nav-link text-secondary px-3" th:href="@{/customer/updateProfile}">
+                                <i class="bi bi-person-circle"></i> <span th:text="${userName} + ' 你好'">會員中心</span>
+                            </a>
+                        </li>
 
-        <div class="navbar-right">
-            <span class="user-info" th:if="${userName}" th:text="${userName} + ' 你好'">使用者 你好</span>
-            <a th:href="@{/customer/logout}" class="btn btn-logout" th:if="${userName}">登出</a>
-            <a th:href="@{/customer/login}" class="btn btn-login" th:unless="${userName}">登入</a>
+                        <li class="nav-item">
+                            <a class="nav-link text-secondary px-3" th:href="@{/cart/show}">
+                                <i class="bi bi-cart3"></i> 購物車
+                            </a>
+                        </li>
+
+                        <!-- 3. 登出按鈕：已登入時顯示 -->
+                        <li class="nav-item ms-lg-2" th:if="${userName}">
+                            <a class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-bold shadow-sm"
+                                th:href="@{/customer/logout}">登出</a>
+                        </li>
+
+                        <!-- 4. 註冊 / 登入按鈕：未登入時才顯示 -->
+                        <li class="nav-item ms-lg-2" th:unless="${userName}">
+                            <a class="btn btn-warning btn-sm rounded-pill px-3 fw-bold shadow-sm"
+                                th:href="@{/customer/login}">註冊 / 登入</a>
+                        </li>
+
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!-- 次選單 (Sub-Navbar) -->
+        <nav class="sub-navbar bg-white py-1">
+            <div class="container px-4 px-lg-5">
+                <ul class="nav justify-content-center fw-bold">
+                    <li class="nav-item"><a class="nav-link text-dark px-4" href="/">首頁</a></li>
+                    <li class="nav-item"><a class="nav-link text-dark px-4" href="#!">關於我們</a></li>
+                    <li class="nav-item"><a class="nav-link text-dark px-4"
+                            th:href="@{/frontend/product/listAll}">商城</a></li>
+                    <li class="nav-item"><a class="nav-link text-dark px-4" href="/fron/attr/list">景點探索</a></li>
+                    <li class="nav-item"><a class="nav-link text-dark px-4" href="#!">主題推薦</a></li>
+                    <li class="nav-item"><a class="nav-link text-dark px-4" th:href="@{/trip/my-trips}">我的行程</a></li>
+                    <li class="nav-item"><a class="nav-link text-dark px-4" href="/front/favorite/list">我的收藏</a></li>
+                    <li class="nav-item"><a class="nav-link text-dark px-4" href="#!">客服中心</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <!-- 首頁大圖與搜尋區塊 -->
+    <section class="hero-section" style="padding-top: 120px; margin-top: 0;">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <div class="container px-4 px-lg-5 text-center">
+                <h1 class="display-4 fw-bolder text-white mb-4">探索台灣美景</h1>
+                <form class="hero-search-bar" action="/front/attr/search" method="get">
+                    <input type="search" name="keyword" placeholder="搜尋景點或地區" aria-label="Search" required>
+                    <button class="btn btn-primary" type="submit" style="background-color: #ffb300; color: #212529;">
+                        <i class="bi bi-search"></i> 搜尋
+                    </button>
+                </form>
+            </div>
         </div>
-    </nav>
-
-    <!-- ====== 主視覺區 ====== -->
-    <section class="hero">
-        <h1>規劃你的夢想旅程</h1>
-        <p>從靈感到出發，每一步都由你掌握<br>簡單、直覺、屬於你的旅行藍圖</p>
-
-        <div class="card-container">
-            <!-- 我的行程卡片 -->
-            <a th:href="@{/trip/my-trips}" class="card">
-                <span class="card-icon">🗺️</span>
-                <div class="card-title">我的行程</div>
-                <div class="card-desc">查看與管理你的專屬旅程計畫</div>
-            </a>
-
-            <!-- 探索景點卡片（預留未來功能） -->
-            <a href="#" class="card">
-                <span class="card-icon">📍</span>
-                <div class="card-title">探索景點</div>
-                <div class="card-desc">瀏覽熱門景點，尋找旅途靈感</div>
-            </a>
+    </section>
+    <!-- 城市探索 (照片輪播) -->
+    <section class="py-5">
+        <div class="container-fluid px-4 px-lg-5 mt-4">
+            <h3 class="fw-bold mb-4">熱門縣市探索</h3>
+            <div class="position-relative">
+                <div class="city-swimlane-container" id="citySwimlane">
+                    <!-- 臺北市 -->
+                    <a href="/front/attr/search?keyword=臺北市" class="city-card">
+                        <img src="https://picsum.photos/seed/taipei/400/400" alt="臺北市">
+                        <div class="city-name">臺北市</div>
+                    </a>
+                    <!-- 新北市 -->
+                    <a href="/front/attr/search?keyword=新北市" class="city-card">
+                        <img src="https://picsum.photos/seed/newtaipei/400/400" alt="新北市">
+                        <div class="city-name">新北市</div>
+                    </a>
+                    <!-- 基隆市 -->
+                    <a href="/front/attr/search?keyword=基隆市" class="city-card">
+                        <img src="https://picsum.photos/seed/keelung/400/400" alt="基隆市">
+                        <div class="city-name">基隆市</div>
+                    </a>
+                    <!-- 宜蘭縣 -->
+                    <a href="/front/attr/search?keyword=宜蘭縣" class="city-card">
+                        <img src="https://picsum.photos/seed/yilan/400/400" alt="宜蘭縣">
+                        <div class="city-name">宜蘭縣</div>
+                    </a>
+                    <!-- 桃園市 -->
+                    <a href="/front/attr/search?keyword=桃園市" class="city-card">
+                        <img src="https://picsum.photos/seed/taoyuan/400/400" alt="桃園市">
+                        <div class="city-name">桃園市</div>
+                    </a>
+                    <!-- 新竹縣 -->
+                    <a href="/front/attr/search?keyword=新竹縣" class="city-card">
+                        <img src="https://picsum.photos/seed/hsinchu/400/400" alt="新竹縣">
+                        <div class="city-name">新竹縣</div>
+                    </a>
+                </div>
+                <!-- 輪播右滑箭頭 -->
+                <button class="scroll-arrow right-arrow shadow-sm" onclick="scrollSwimlane('citySwimlane', 1)">
+                    <i class="bi bi-chevron-right"></i>
+                </button>
+                <!-- 輪播左滑箭頭 -->
+                <button class="scroll-arrow left-arrow shadow-sm" onclick="scrollSwimlane('citySwimlane', -1)">
+                    <i class="bi bi-chevron-left"></i>
+                </button>
+            </div>
         </div>
     </section>
 
-    <!-- ====== 頁尾 ====== -->
-    <footer class="footer">
-        © 2026 TKA101 旅遊行程規劃網站 · 期末專題
-    </footer>
+    <!-- 遊程快搜 (照片輪播) -->
+    <section class="py-5 pb-0">
+        <div class="container-fluid px-4 px-lg-5">
+            <h3 class="fw-bold mb-4">遊程快搜</h3>
+            <div class="position-relative">
+                <div class="city-swimlane-container pb-4" id="itinerarySwimlane">
+                    <a href="#" class="city-card">
+                        <img src="https://picsum.photos/seed/family/400/400" alt="親子共遊">
+                        <div class="city-name">親子共遊</div>
+                    </a>
+                    <a href="#" class="city-card">
+                        <img src="https://picsum.photos/seed/couple/400/400" alt="情侶約會">
+                        <div class="city-name">情侶約會</div>
+                    </a>
+                    <a href="#" class="city-card">
+                        <img src="https://picsum.photos/seed/history/400/400" alt="歷史古蹟">
+                        <div class="city-name">歷史古蹟</div>
+                    </a>
+                    <a href="#" class="city-card">
+                        <img src="https://picsum.photos/seed/nature/400/400" alt="秘境探險">
+                        <div class="city-name">秘境探險</div>
+                    </a>
+                    <a href="#" class="city-card">
+                        <img src="https://picsum.photos/seed/food/400/400" alt="美食之旅">
+                        <div class="city-name">美食之旅</div>
+                    </a>
+                    <a href="#" class="city-card">
+                        <img src="https://picsum.photos/seed/bike/400/400" alt="單車漫遊">
+                        <div class="city-name">單車漫遊</div>
+                    </a>
+                </div>
+                <!-- 輪播右滑箭頭 -->
+                <button class="scroll-arrow right-arrow shadow-sm" onclick="scrollSwimlane('itinerarySwimlane', 1)">
+                    <i class="bi bi-chevron-right"></i>
+                </button>
+                <!-- 輪播左滑箭頭 -->
+                <button class="scroll-arrow left-arrow shadow-sm" onclick="scrollSwimlane('itinerarySwimlane', -1)">
+                    <i class="bi bi-chevron-left"></i>
+                </button>
+            </div>
+        </div>
+    </section>
 
+    <section class="py-5 bg-light">
+        <div class="container px-4 px-lg-5">
+            <h3 class="fw-bold mb-4">熱門景點推薦</h3>
+
+            <!-- 區域分類標籤 -->
+            <ul class="nav nav-pills region-pills flex-nowrap overflow-auto">
+                <li class="nav-item"><a class="nav-link active" href="#">全部</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">北部地區</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">中部地區</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">南部地區</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">東部地區</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">離島地區</a></li>
+            </ul>
+
+            <!-- 景點網格排版 -->
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mt-3" id="attrGrid">
+                <div class="col" th:each="item : ${attrWithImages}">
+                    <a class="attraction-card-v2 text-decoration-none d-block h-100"
+                        th:href="${item['attr']?.attrId != null} ? '/front/attr/detail/' + ${item['attr']?.attrId} : '#'">
+
+                        <div class="img-wrapper position-relative">
+                            <!-- 圖片 -->
+                            <img class="rounded-4 w-100 object-fit-cover" th:src="${item['imageUrl'] != null && !#strings.isEmpty(item['imageUrl'])} 
+                                         ? ${item['imageUrl']} 
+                                         : (${item['imagePath'] != null && !#strings.isEmpty(item['imagePath'])} 
+                                            ? '/attraction_images/' + ${item['imagePath']} 
+                                            : 'https://dummyimage.com/450x300/dee2e6/6c757d.jpg')"
+                                th:alt="${item['attr']?.attrName != null ? item['attr']?.attrName : '景點圖片'}"
+                                style="height: 220px;"
+                                onerror="this.onerror=null; this.src='https://dummyimage.com/450x300/dee2e6/6c757d.jpg';" />
+
+                            <!-- 觀看次數 (右上角黑底) -->
+                            <div
+                                class="view-count position-absolute top-0 end-0 m-2 px-2 py-1 bg-dark bg-opacity-75 text-white rounded-2 small d-flex align-items-center">
+                                <span class="me-1">534955</span>
+                                <i class="bi bi-eye-fill"></i>
+                            </div>
+
+                            <!-- 收藏愛心 (左上角) -->
+                            <button
+                                class="favorite-btn position-absolute top-0 start-0 m-2 btn btn-light rounded-circle p-0 d-flex align-items-center justify-content-center shadow-sm"
+                                th:attr="data-attr-id=${item['attr']?.attrId}"
+                                onclick="event.preventDefault(); addToFavorite(this.getAttribute('data-attr-id'))"
+                                title="加入收藏"
+                                style="width: 32px; height: 32px; border: none; background: rgba(255, 255, 255, 0.9);">
+                                <i class="bi bi-heart" style="color: #dc3545; font-size: 1rem;"></i>
+                            </button>
+                        </div>
+
+                        <!-- 資訊區塊 -->
+                        <div class="info-wrapper pt-3">
+                            <h5 class="fw-bold text-dark text-truncate mb-2"
+                                th:text="${item['attr']?.attrName != null ? item['attr']?.attrName : '未命名景點'}">景點名稱</h5>
+
+                            <!-- Hashtag 標籤 -->
+                            <div class="d-flex flex-wrap gap-2">
+                                <span
+                                    class="badge text-secondary bg-secondary bg-opacity-10 rounded-1 px-2 py-1 fw-normal"
+                                    th:text="'#' + ${item['attr']?.regionVO != null ? item['attr']?.regionVO?.regionName : '未分類'}">#地區</span>
+                                <span
+                                    class="badge text-secondary bg-secondary bg-opacity-10 rounded-1 px-2 py-1 fw-normal"
+                                    th:text="'#' + ${item['attr']?.categoryVO != null ? item['attr']?.categoryVO?.categoryName : '未分類'}">#類別</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 分頁導航列 -->
+            <div class="row mt-5" th:if="${attrPage != null && attrPage.totalPages > 1}">
+                <div class="col-12">
+                    <nav aria-label="景點分頁導航">
+                        <ul class="pagination justify-content-center">
+                            <!-- 上一頁按鈕 -->
+                            <li class="page-item" th:classappend="${attrPage.first} ? 'disabled'">
+                                <a class="page-link text-dark" th:href="@{/(page=${attrPage.number - 1})}"
+                                    aria-label="上一頁">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+
+                            <!-- 頁碼按鈕 -->
+                            <li class="page-item" th:each="pageNum : ${#numbers.sequence(0, attrPage.totalPages - 1)}">
+                                <a class="page-link"
+                                    th:classappend="${pageNum == attrPage.number} ? 'bg-dark text-white border-dark' : 'text-dark'"
+                                    th:href="@{/(page=${pageNum})}" th:text="${pageNum + 1}">1</a>
+                            </li>
+
+                            <!-- 下一頁按鈕 -->
+                            <li class="page-item" th:classappend="${attrPage.last} ? 'disabled'">
+                                <a class="page-link text-dark" th:href="@{/(page=${attrPage.number + 1})}"
+                                    aria-label="下一頁">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer class="py-5 bg-dark">
+        <div class="container">
+            <p class="m-0 text-center text-white">Copyright &copy; MapIt 2026 - TKA101G1</p>
+        </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="/js/scripts.js"></script>
+
+    <script>
+        function scrollSwimlane(containerId, direction) {
+            const container = document.getElementById(containerId);
+            if (container) {
+                // 每次點擊滾動大約一個卡片的寬度加上間距
+                const scrollAmount = 300;
+                container.scrollBy({
+                    left: direction * scrollAmount,
+                    behavior: 'smooth'
+                });
+            }
+        }
+
+        function addToFavorite(attrId) {
+            if (!attrId) return;
+            fetch('/front/favorite/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'attrId=' + attrId
+            })
+                .then(response => {
+                    if (response.ok) {
+                        alert('成功加入收藏！');
+                    } else {
+                        alert('加入收藏失敗，請稍後再試。');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+    </script>
 </body>
 
 </html>
