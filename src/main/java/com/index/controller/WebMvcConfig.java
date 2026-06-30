@@ -25,11 +25,11 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
 	        // 映射景點圖片路徑：/attraction_images/** -> file:<user.home>/upload/attraction_images/
 	        registry.addResourceHandler("/attraction_images/**")
-	                        .addResourceLocations("file:" + userHome + "/upload/attraction_images/");
+	                        .addResourceLocations("file:" + userHome.replace("\\", "/") + "/upload/attraction_images/");
 
 	        // 映射 /uploads/** 到本地硬碟路徑（整合自 com.attr.config.WebMvcConfig）
 	        registry.addResourceHandler("/uploads/**")
-	                        .addResourceLocations("file:" + userHome + "/upload/attraction_images/");
+	                        .addResourceLocations("file:" + userHome.replace("\\", "/") + "/upload/attraction_images/");
 
 	        // 保留預設的靜態資源路徑（/static/, /public/, /resources/）
 	        registry.addResourceHandler("/static/**")

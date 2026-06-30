@@ -8,6 +8,7 @@ USE testdb;
 -- =======================================================
 SET FOREIGN_KEY_CHECKS = 0;
 
+DROP TABLE IF EXISTS COMMENT;
 DROP TABLE IF EXISTS CUSTOMER;
 DROP TABLE IF EXISTS SUPPLIER;
 DROP TABLE IF EXISTS PRODUCT;
@@ -26,6 +27,7 @@ DROP TABLE IF EXISTS TRIP;
 DROP TABLE IF EXISTS TRIP_ITEM;
 DROP TABLE IF EXISTS COLLAB_ITEM;
 DROP TABLE IF EXISTS MESSAGE;
+
 
 -- DROP TABLE IF EXISTS;
 
@@ -19277,6 +19279,22 @@ INSERT INTO attraction (ATTR_NAME, REGION_ID, CATEGORY_ID, ATTR_ADDRESS, LAT, LN
 ('鐵堡', 22, 2, '連江縣南竿鄉仁愛村', 26.1512, 119.9156, '0836-25630', '24小時', NULL, '正常營業');
 
 
+-- =======================================================
+-- 5. 建立評論表 (COMMENT)
+-- =======================================================
+CREATE TABLE COMMENT (
+    COMMENT_ID INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    ATTR_ID INT NOT NULL,  
+    CUST_ID INT NOT NULL,
+    COMMENT_CONTENT VARCHAR(1000),
+    COMMENT_SCORE TINYINT NOT NULL,
+    COMMENT_TIME DATETIME,
+    COMMENT_STATUS VARCHAR(10),
+    
+    FOREIGN KEY (ATTR_ID) REFERENCES ATTRACTION(ATTR_ID) ON DELETE CASCADE
+    -- ⚠️ 等組員把 CUSTOMER 表建好後再解開下一行
+    -- , FOREIGN KEY (CUST_ID) REFERENCES CUSTOMER(CUST_ID)
+);
 
 
 -- =======================================================
@@ -19741,6 +19759,7 @@ SELECT ti.CUST_ID, '票券已發放', CONCAT('您購買的「', p.PRODUCT_NAME, 
 FROM ticket_item ti 
 JOIN ticket t ON ti.TKT_ID = t.TKT_ID 
 JOIN product p ON t.PRODUCT_ID = p.PRODUCT_ID;
+
 
 
 SET FOREIGN_KEY_CHECKS = 1;

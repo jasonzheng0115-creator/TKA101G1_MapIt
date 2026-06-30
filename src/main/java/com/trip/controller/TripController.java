@@ -47,11 +47,6 @@ public class TripController {
     @GetMapping("/create")
     public String showCreateTripForm(HttpSession session, Model model) {
         CustVO loginCust = (CustVO) session.getAttribute("loginCust");
-<<<<<<< HEAD
-=======
-        if (loginCust == null)
-            return "redirect:/login";
->>>>>>> branch 'jasonzheng0115-creator' of https://github.com/jasonzheng0115-creator/TKA101G1_MapIt.git
 
         model.addAttribute("userName", loginCust.getCustName());
         model.addAttribute("trip", new TripVO());
@@ -82,11 +77,8 @@ public class TripController {
             return "redirect:/trip/my-trips";
         }
 
-<<<<<<< HEAD
         model.addAttribute("googleMapsApiKey", googleMapsApiKey);
 
-=======
->>>>>>> branch 'jasonzheng0115-creator' of https://github.com/jasonzheng0115-creator/TKA101G1_MapIt.git
         model.addAttribute("userName", loginCust.getCustName());
         model.addAttribute("trip", trip);
         // 新增這行：將目前登入的會員 ID 傳給編輯頁，用來判定是否顯示管理協作者的權限

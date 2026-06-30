@@ -263,7 +263,7 @@
 	                	</a>
 	                </li>
 	                
-	                <li class="nav-item"><a class="nav-link text-dark px-4" href="/fron/attr/list">景點探索</a></li>
+	                <li class="nav-item"><a class="nav-link text-dark px-4" href="/front/attr/search">景點探索</a></li>
 	                <li class="nav-item"><a class="nav-link text-dark px-4" href="#!">主題推薦</a></li>
 	                <li class="nav-item"><a class="nav-link text-dark px-4" th:href="@{/trip/my-trips}">我的行程</a></li>
 	                <li class="nav-item"><a class="nav-link text-dark px-4" href="/front/favorite/list">我的收藏</a></li>
@@ -312,13 +312,26 @@
 	</div>
 	
 	<div class="checkout-form-box">
+     			
+			    <div style="margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+					<input type="checkbox" id="syncMemberBtn" style="width: 18px; height: 18px; cursor: pointer;">
+					<label for="syncMemberBtn" style="font-size: 15px; font-weight: bold; color: darkorange; cursor: pointer; margin: 0;">
+						同會員基本資料
+					</label>
+				</div>
+	
+
 		<div class="form-group">
 			<label>👤 聯絡人姓名：</label>
 			<input type="text" id="receiverName" placeholder="請輸入真實姓名" value="" required />
 		</div>
 		<div class="form-group">
 			<label>📞 聯絡電話：</label>
-			<input type="tel" id="receiverPhone" placeholder="請輸入手機號碼" value="" required>
+			<input type="tel" id="receiverTel" placeholder="請輸入手機號碼" value="" required>
+		</div>
+		<div class="form-group">
+		    <label>✉️ 聯絡人 Email：</label>
+		    <input type="email" id="receiverEmail" placeholder="請輸入電子信箱" value="" required>
 		</div>
 		<div class="form-group">
 			<label style="font-weight: bold; color: darkorange;">💳 線上刷卡結帳：</label>
@@ -349,21 +362,53 @@
 		</button>
 	</div>
 	
-	<script>
+	<script th:inline="javascript">
+		// th:inline="javascript" 讓js可以讀取spring boot的loginCust 變數
+		
+		// 讓 JS 接收後端的會員資料物件
+		const currentMember = /*[[${loginCust}]]*/ {};
+		
+		// 如有預設卡號帶入信用卡欄位
+		if (currentMember && currentMember.custCard) {
+		    document.getElementById('creditCardNumber').value = currentMember.custCard;
+		}
+		
+		// 監聽 Checkbox 狀態改變
+		document.getElementById('syncMemberBtn').addEventListener('change', function() {
+		    const nameInput = document.getElementById('receiverName');
+		    const telInput = document.getElementById('receiverTel');
+		    const emailInput = document.getElementById('receiverEmail');
+		    
+		    if (this.checked) {
+		        // 如果打勾，自動帶入真實會員資料（欄位名稱請對齊你的 CustVO）
+		        nameInput.value = currentMember.custName || '';
+		        telInput.value = currentMember.custTel || '';
+		        emailInput.value = currentMember.custEmail || '';
+		    } else {
+		        // 取消打勾，自動清空
+		        nameInput.value = '';
+		        telInput.value = '';
+		        emailInput.value = '';
+		    }
+		});
+		
 		document.getElementById('submit-payment-btn').addEventListener('click', function() {
 			
-			// 1. 抓取聯絡人資料
+			// 抓取聯絡人資料
 			const receiverName = document.getElementById('receiverName').value.trim();
-			const receiverPhone = document.getElementById('receiverPhone').value.trim();
+			const receiverTel = document.getElementById('receiverTel').value.trim();
 			
-			// 2. 抓取信用卡資料
+			// 抓取信用卡資料
 			const cardNum = document.getElementById('creditCardNumber').value.trim();
 			const cardExpiry = document.getElementById('cardExpiry').value.trim();
 			const cardCVC = document.getElementById('cardCVC').value.trim();
 			
+			// 抓取 Email 數值
+			const receiverEmail = document.getElementById('receiverEmail').value.trim();
+			
 			// 聯絡人防呆
-			if(!receiverName || !receiverPhone) {
-				alert('請填寫完整的聯絡人姓名與電話！');
+			if(!receiverName || !receiverTel || !receiverEmail) {
+				alert('請填寫完整的聯絡人姓名與電話與Email！');
 				return;
 			}
 			
@@ -386,7 +431,7 @@
 				return;
 			}
 			
-			// 3. 驗證都無誤後，動態搜刮畫面上的隱形貼紙
+			// 驗證都無誤後，動態搜刮畫面上的隱形貼紙
 			const itemsArray = [];
 			const rowElements = document.querySelectorAll('.item-row-data');
 			
@@ -411,12 +456,13 @@
 			const orderData = {
 				// 主訂單 CustVO custVO
 				custVO: {
-					custId: 1 // 先寫死 1 號顧客，對齊原本的展示
+					custId: currentMember.custId
 				},
 				orderStatus: "1",             // 訂單狀態: 字串 "1"
 				paymentMethod: "1",           // 付款方式: 字串 "1" 
 				paymentStatus: true,          // 付款狀態: Boolean true
 				orderPrice: totalAmountNum,   // 訂單總金額
+				receiverEmail: receiverEmail,
 				
 				// 放入明細清單
 				orderItems: itemsArray 
@@ -424,7 +470,7 @@
 			
 			console.log("JPA 複合主鍵對齊！發送精準 JSON 資料：", orderData);
 			
-			// 4. 發動 Fetch API 送去給 OrdersController
+			// 發動 Fetch API 送去給 OrdersController
 			fetch('/orders/checkout', {
 				method: 'POST',
 				headers: {
@@ -443,7 +489,7 @@
 				// 付款成功！
 				alert('🎉 付款成功！訂單已成立！');
 				// **我卡住的點** 帶去「訂單成功頁面」印明細
-// 				console.log('後端回傳的成功訂單資料：', data);
+  				// console.log('後端回傳的成功訂單資料：', data);
 				
 				// 跨頁 跳轉到成功頁面
 				// data.orderId 是OrdersService 分兩階段儲存成功後回傳的新流水號

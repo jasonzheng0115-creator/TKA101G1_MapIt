@@ -76,6 +76,12 @@ public class IndexController {
 
                     // 查詢該景點的主圖
                     AttrImageVO mainImage = attrImageRepository.findMainImageByAttrId(attr.getAttrId());
+                    if (mainImage == null) {
+                        List<AttrImageVO> images = attrImageRepository.findByAttrId(attr.getAttrId());
+                        if (images != null && !images.isEmpty()) {
+                            mainImage = images.get(0);
+                        }
+                    }
                     map.put("mainImage", mainImage);
 
                     // 【重要】確保 imageUrl 也被傳遞到前端（用於 fallback 機制）
@@ -101,5 +107,16 @@ public class IndexController {
         // ==================================================
 
         return "front-end/index"; // Thymeleaf 會自動找到 templates/index.html
+    }
+    /**
+     * 客服中心 / 聯絡我們路由
+     */
+    @GetMapping("/contact")
+    public String contact(ModelMap model, HttpSession session) {
+        com.cust.model.CustVO loginCust = (com.cust.model.CustVO) session.getAttribute("loginCust");
+        if (loginCust != null) {
+            model.addAttribute("userName", loginCust.getCustName());
+        }
+        return "front-end/contact";
     }
 }

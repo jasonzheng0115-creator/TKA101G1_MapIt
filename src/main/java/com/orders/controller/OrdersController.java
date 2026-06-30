@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.cust.model.CustVO;
 import com.orders.model.OrdersRepository;
 import com.orders.model.OrdersService;
 import com.orders.model.OrdersVO;
@@ -54,23 +55,37 @@ public class OrdersController {
 	@PostMapping("/checkout")
 	@ResponseBody  //確保方法可以吐出JSON資料
 	public ResponseEntity<?> checkout(
-			@Valid @RequestBody OrdersVO ordersVO) {
+			@Valid @RequestBody OrdersVO ordersVO,
+			HttpSession session) {
 		
 		try {
 			
-			// 1. 將前端打包好的訂單與明細，直接送進 Service 大腦執行（扣庫存、增銷量、級聯存檔）
+			// 將前端打包好的訂單與明細，直接送進 Service 大腦執行（扣庫存、增銷量、級聯存檔）
 			OrdersVO savedOrder = ordersSvc.insertOrder(ordersVO);
-			// 2. 結帳成功：回傳 HTTP 200 狀態碼，並把存完檔、帶有最新 ORDER_ID 的訂單物件當成 JSON 吐回前端
+			
+			// 結帳成功，清除 Redis 購物車
+	        com.cust.model.CustVO loginCust = (com.cust.model.CustVO) session.getAttribute("loginCust");
+	        if (loginCust != null) {
+	            String key = "cart:member:" + loginCust.getCustId();
+	            
+	            // 刪除這個會員的 Redis 購物車
+	            redisTemplate.delete(key);
+	            
+	            // 保留：如果以後有做「勾選部分商品結帳」，就要用指定的 field 刪除：
+	            // redisTemplate.opsForHash().delete(key, 商品ID);
+	        }
+			
+			// 結帳成功：回傳 HTTP 200 狀態碼，並把存完檔、帶有最新 ORDER_ID 的訂單物件當成 JSON 吐回前端
 			return ResponseEntity.ok(savedOrder);
 			
 		} catch (IllegalArgumentException | IllegalStateException e) {
 			
-			// 3. 商業邏輯失敗（例如：庫存不足、購物車空了）：回傳 HTTP 400 錯誤，並附上失敗原因
+			// 失敗（例如：庫存不足、購物車空了）：回傳 HTTP 400 錯誤，並附上失敗原因
 			return ResponseEntity.badRequest().body(e.getMessage());
 			
 		} catch (Exception e) {
 			
-			// 4. 系統崩潰（例如：資料庫斷線）：回傳 HTTP 500 伺服器錯誤
+			// 系統崩潰（例如：資料庫斷線）：回傳 HTTP 500 伺服器錯誤
 			return ResponseEntity.status(500).body("系統結帳異常，請稍後再試！錯誤資訊：" + e.getMessage());
 		}
 	}
@@ -127,7 +142,7 @@ public class OrdersController {
 	public String showCheckout(ModelMap model, HttpSession session) {
 		
 		// 從 Session 拿出登入成功的會員物件
-	    com.cust.model.CustVO loginCust = (com.cust.model.CustVO) session.getAttribute("loginCust");
+	    CustVO loginCust = (CustVO) session.getAttribute("loginCust");
 	    
 	    // 如果發現根本沒登入，強迫導向登入頁面
 	    if (loginCust == null) {
@@ -155,6 +170,12 @@ public class OrdersController {
 		int totalAmount = cartList.stream()
 				.mapToInt(com.prod.model.CartVO::getSubtotal)
 				.sum();
+		
+		// 讓 checkout.html 的導覽列抓到名字
+	    model.addAttribute("userName", loginCust.getCustName());
+	    
+	    // 把整筆會員資料傳給前端，讓 JavaScript 可以動態讀取姓名與電話
+	    model.addAttribute("loginCust", loginCust);
 		
 		// 把資料裝進箱子，送去網頁
 		model.addAttribute("cartList", cartList);

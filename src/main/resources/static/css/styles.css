@@ -11118,3 +11118,141 @@ textarea.form-control-lg {
     color: #fff;
     border-color: #212529;
 }
+
+/* ==== Sasha 新增：導覽列與 Megamenu 共用樣式 ==== */
+/* ==========================================================
+          手動控制下拉選單 (Disk)
+          ========================================================== */
+       .nav-item.dropdown .dropdown-menu {
+           display: none;
+           margin-top: 8px;
+       }
+       /* 當 JS 加上 .show 類別時展開選單 */
+       .nav-item.dropdown .dropdown-menu.show {
+           display: block;
+       }
+       /* 替下拉選單的選項加上 MapIt 專屬的 Hover 效果 */
+       .dropdown-item {
+           transition: background-color 0.2s, color 0.2s;
+       }
+       .dropdown-item:hover {
+           background-color: #fff5f2 !important;
+           color: #ff5722 !important;
+       }
+       .dropdown-item:hover i {
+           color: #ff5722 !important;
+       }
+
+       /* ==========================================================
+          巨型選單 (Megamenu) 樣式
+          ========================================================== */
+       /* 設定次選單為相對定位，做為下拉選單的錨點 */
+       .sub-navbar {
+           position: relative;
+       }
+
+       /* 觸發選單的導覽項目 */
+       .megamenu-nav-item {
+           position: static; /* 靜態定位可讓下拉選單滿寬 */
+       }
+       
+       /* 若選單項有指定 position-relative，則下拉選單改為相對於該項目定位 */
+       .megamenu-nav-item.position-relative {
+           position: relative;
+       }
+
+       /* 巨型下拉選單本體 */
+       .megamenu-dropdown {
+           width: 100%;
+           left: 0;
+           right: 0;
+           top: 100%;
+           display: none;
+           position: absolute;
+           background: white;
+           box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+           border-top: 1px solid #f0f0f0;
+           border-bottom: 4px solid #ff5722;
+           padding: 20px 0;
+           z-index: 1050;
+       }
+
+       /* 滑鼠移入時顯示選單並套用平滑動畫 */
+       .megamenu-nav-item:hover .megamenu-dropdown {
+           display: block;
+           animation: megamenuFade 0.25s ease-out;
+       }
+
+       @keyframes megamenuFade {
+           from { opacity: 0; transform: translateY(10px); }
+           to { opacity: 1; transform: translateY(0); }
+       }
+
+       /* 7 個主題的網格布局 */
+       .megamenu-grid {
+           display: grid;
+           grid-template-columns: repeat(7, 1fr);
+           gap: 15px;
+       }
+
+       /* 主題卡片樣式 */
+       .megamenu-card {
+           display: block;
+           border-radius: 8px;
+           overflow: hidden;
+           background: #fafafa;
+           border: 1px solid #eef0f2;
+           transition: all 0.3s ease;
+           text-align: center;
+       }
+
+       .megamenu-card:hover {
+           transform: translateY(-5px);
+           box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+           border-color: #ff5722;
+       }
+
+       /* 圖片容器 */
+       .megamenu-img-wrapper {
+           width: 100%;
+           height: 90px;
+           overflow: hidden;
+       }
+
+       .megamenu-img {
+           width: 100%;
+           height: 100%;
+           object-fit: cover;
+           transition: transform 0.5s ease;
+       }
+
+       .megamenu-card:hover .megamenu-img {
+           transform: scale(1.08);
+       }
+
+       /* 標題字體 */
+       .megamenu-title {
+           padding: 8px 5px;
+           font-size: 0.9rem;
+           font-weight: bold;
+           color: #333;
+           transition: color 0.3s ease;
+       }
+
+       .megamenu-card:hover .megamenu-title {
+           color: #ff5722;
+       }
+
+       /* ==========================================================
+          地區選單連結動畫
+          ========================================================== */
+       .region-link {
+           transition: all 0.2s ease;
+           font-size: 0.95rem;
+           display: inline-block;
+       }
+       .region-link:hover {
+           color: #ff5722 !important;
+           transform: translateX(6px);
+       }
+/* ============================================== */

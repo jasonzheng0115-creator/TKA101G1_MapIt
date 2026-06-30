@@ -11,8 +11,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.cust.model.CustVO;
 import com.prod.model.ProdService;
 import com.prod.model.ProdVO;
+
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/frontend/product")
@@ -50,11 +53,18 @@ public class FrontProdController {
 	public String listAll(
 			@RequestParam(value = "page", defaultValue = "1") int page, 
 			@RequestParam(value = "keyword", required = false) String keyword,
+			HttpSession session,
 			ModelMap model) {
 
 		int pageSize = 12;
 		Pageable pageable = PageRequest.of(page - 1, pageSize);
 		Page<ProdVO> pageData;
+		
+		// Session 拿出登入的會員，並把真實姓名傳給前端導覽列
+	    CustVO loginCust = (CustVO) session.getAttribute("loginCust");
+	    if (loginCust != null) {
+	        model.addAttribute("userName", loginCust.getCustName());
+	    }
 		
 		// 邏輯判斷 是否有關鍵字
 		if (keyword != null && !keyword.trim().isEmpty()) {
