@@ -108,16 +108,18 @@ public class ReportService {
      * 2. 調用 CommentService 將被檢舉的評論強制下架 (狀態改為 2)
      * 
      * @param reportId 檢舉 ID
+     * @param empId 處理員工 ID
      * @return 是否審核成功
      */
-    public boolean approveReport(Integer reportId) {
+    public boolean approveReport(Integer reportId, Integer empId) {
         ReportVO report = getOneReport(reportId);
         if (report == null) {
             return false;
         }
         
-        // 1. 更新檢舉狀態為已處理 (1)
+        // 1. 更新檢舉狀態為已處理 (1) 並寫入審查員工 ID
         report.setReportStatus("1");
+        report.setEmpId(empId);
         reportRepository.save(report);
         
         // 2. 調用 CommentService 將被檢舉的評論強制下架 (狀態改為 2)
@@ -133,16 +135,18 @@ public class ReportService {
      * 更新檢舉狀態為已駁回 (2)
      * 
      * @param reportId 檢舉 ID
+     * @param empId 處理員工 ID
      * @return 是否駁回成功
      */
-    public boolean rejectReport(Integer reportId) {
+    public boolean rejectReport(Integer reportId, Integer empId) {
         ReportVO report = getOneReport(reportId);
         if (report == null) {
             return false;
         }
         
-        // 更新檢舉狀態為已駁回 (2)
+        // 更新檢舉狀態為已駁回 (2) 並寫入審查員工 ID
         report.setReportStatus("2");
+        report.setEmpId(empId);
         reportRepository.save(report);
         
         return true;

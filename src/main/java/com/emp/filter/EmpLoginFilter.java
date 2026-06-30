@@ -25,7 +25,11 @@ public class EmpLoginFilter extends OncePerRequestFilter { // ⚙️ 繼承 Spri
                 uri.equals("/emp/logout") ||
                 uri.startsWith("/css/") ||
                 uri.startsWith("/js/") ||
-                uri.startsWith("/images/")) {
+                uri.startsWith("/images/") ||
+                uri.startsWith("/attraction_images/") || // 放行景點圖片
+                uri.startsWith("/uploads/") ||           // 放行上傳的圖片
+                uri.startsWith("/attr/detail/") ||       // 放行前台景點詳情頁
+                uri.equals("/attr/addComment")) {         // 放行前台新增評論
             return true; // 🚀 回傳 true 代表「跳過此過濾器，直接放行」
         }
 
@@ -39,7 +43,11 @@ public class EmpLoginFilter extends OncePerRequestFilter { // ⚙️ 繼承 Spri
                 uri.equals("/ap") ||
                 uri.startsWith("/orders/backend-") ||
                 uri.startsWith("/customer/emp") ||
-                uri.startsWith("/customer/api")) {
+                uri.startsWith("/customer/api") ||
+                uri.startsWith("/attr") ||
+                uri.startsWith("/category") ||
+                uri.startsWith("/comment") ||
+                uri.startsWith("/report")) {
             return false; // 回傳 false 代表必須進行過濾（檢查 Session）
         }
 

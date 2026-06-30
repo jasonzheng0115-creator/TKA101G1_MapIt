@@ -72,8 +72,7 @@ public class ReportVO implements Serializable {
         this.custId = custId;
     }
     
-    @NotNull(message = "處理員工編號: 請勿空白")
-    @Column(name = "EMP_ID", nullable = false)
+    @Column(name = "EMP_ID", nullable = true)
     public Integer getEmpId() {
         return empId;
     }
