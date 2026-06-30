@@ -1,6 +1,7 @@
 package com.cust.controller;
 
 import java.io.File;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -94,6 +95,9 @@ public class CustController {
 				// 累加數量到會員的 Redis Hash 中
 				redisTemplate.opsForHash().increment(memberKey, productId, quantity);
 			}
+			// 購物車過期指令 30天未登入會清空
+		    redisTemplate.expire(memberKey, Duration.ofDays(30));
+			
 			// 合併完成後，刪除遊客購物車，避免留給下一位遊客
 			redisTemplate.delete(guestKey);
 		}
@@ -122,16 +126,6 @@ public class CustController {
 
 	@GetMapping("/logout") // 登出功能，指向前端的登入html
 	public String logout(HttpSession session) {
-		
-		// 登出後清除購物車
-		CustVO loginCust = (CustVO) session.getAttribute("loginCust");
-		
-		if (loginCust != null) {
-	        String key = "cart:member:" + loginCust.getCustId();
-	        redisTemplate.delete(key); 
-	    }
-		
-		
 		session.invalidate();
 		return "redirect:/";
 	}

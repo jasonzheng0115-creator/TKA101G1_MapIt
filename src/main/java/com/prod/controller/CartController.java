@@ -1,5 +1,6 @@
 package com.prod.controller;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -65,6 +66,9 @@ public class CartController {
 		// 官方標準寫法：去這個 key 的 Hash 結構裡，把這個商品欄位數量累加
 		// 舉例:("cart:member:1", "101", quantity) -> 括號內參數解釋為:(1號會員的購物車,商品編號101,數量增加)
 		redisTemplate.opsForHash().increment(key, field, quantity);
+		
+		// 購物車過期指令 30天未登入會清空
+		redisTemplate.expire(key, Duration.ofDays(30));
 		
 		return "redirect:/cart/show";
 	}
@@ -148,6 +152,8 @@ public class CartController {
 		} else {
 			// 直接用新數量覆蓋
 			redisTemplate.opsForHash().put(key, field, String.valueOf(quantity));
+			// 購物車過期指令 30天未登入會清空
+		    redisTemplate.expire(key, Duration.ofDays(30));
 		}
 		return "redirect:/cart/show";
 	}
