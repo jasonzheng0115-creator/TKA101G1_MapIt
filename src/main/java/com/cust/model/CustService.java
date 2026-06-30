@@ -47,5 +47,10 @@ public class CustService {
 		return repository.findByCustId(custId);
 	}
 	
+	// 透過帳號尋找會員(信箱驗證用到)
+	public CustVO findByAccount(String account) {
+		return repository.findByAccount(account);
+	}
+	
 	
 }

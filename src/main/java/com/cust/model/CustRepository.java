@@ -14,7 +14,7 @@ public interface CustRepository extends JpaRepository<CustVO, Integer> {
     (value = "select * from customer where CUST_ACCOUNT = ?1", nativeQuery = true)
     CustVO findByAccount(String account);
 
-    @Query //
+    @Query
     (value = "select * from customer where CUST_ID = ?1", nativeQuery = true)
     CustVO findByCustId(Integer id);
 

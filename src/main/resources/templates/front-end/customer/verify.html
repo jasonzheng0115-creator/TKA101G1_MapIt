@@ -3,14 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>會員登入</title>
-    <!-- 同首頁的導覽列 -->
-	<link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
-	<link href="/css/styles.css" rel="stylesheet" />
-	<!-- ========== -->
+    <title>信箱驗證</title>
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+    <link href="/css/styles.css" rel="stylesheet" />
     <style>
-        
         :root {
             --primary-color: #ff5722;
             --primary-hover: #e64a19;
@@ -26,6 +23,7 @@
             min-height: 100vh;
             background: var(--bg-gradient);
             box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
         .login-card {
             background: var(--card-bg);
@@ -41,33 +39,33 @@
             margin-top: 0;
             color: #1f2937;
             font-size: 2.2rem;
-            margin-bottom: 2rem;
+            margin-bottom: 1rem;
             font-weight: 700;
         }
-        .form-group {
-            margin-bottom: 1.25rem;
-            text-align: left;
+        .subtitle {
+            color: #6b7280;
+            margin-bottom: 2rem;
+            line-height: 1.5;
         }
-        .form-group label {
-            display: block;
-            margin-bottom: 0.6rem;
-            color: #4b5563;
-            font-size: 1.1rem;
-            font-weight: 600;
+        .form-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
         }
         .form-group input {
             width: 100%;
             padding: 1rem;
-            border: 1px solid #d1d5db;
-            border-radius: 10px;
-            font-size: 1.1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 2rem;
             box-sizing: border-box;
-            transition: border-color 0.3s, box-shadow 0.3s;
+            transition: all 0.3s ease;
+            text-align: center;
+            letter-spacing: 0.8rem;
         }
         .form-group input:focus {
             outline: none;
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+            box-shadow: 0 0 0 4px rgba(255, 87, 34, 0.1);
         }
         .submit-btn {
             width: 100%;
@@ -75,65 +73,32 @@
             background-color: var(--primary-color);
             color: white;
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             font-size: 1.2rem;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
-            transition: background-color 0.3s, transform 0.1s;
-            margin-top: 1.5rem;
-            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
         }
         .submit-btn:hover {
             background-color: var(--primary-hover);
-        }
-        .submit-btn:active {
-            transform: scale(0.98);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(255, 87, 34, 0.2);
         }
         .error-message {
             color: #ef4444;
             background-color: #fef2f2;
             padding: 1rem;
-            border-radius: 10px;
+            border-radius: 12px;
             margin-bottom: 1.5rem;
-            font-size: 1.1rem;
-            /* 預設讓他顯示，寫好 Thymeleaf 判斷後，沒有錯誤時就會隱藏 */
-        }
-        .register-link { /* 註冊連結容器的樣式 */
-            text-align: center;
-            margin-top: 2rem;
-            font-size: 1.1rem;
-        }
-        .register-link a { /* 容器內的超連結樣式 */
-            color: var(--primary-color);
-            text-decoration: none;
+            font-size: 1rem;
             font-weight: 600;
-        }
-        .register-link a:hover { /* 滑鼠懸停在超連結上的效果 */
-            text-decoration: underline;
-        }
-        .password-wrapper {
-            position: relative;
-        }
-        .password-wrapper input {
-            padding-right: 40px;
-        }
-        .eye-icon {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            cursor: pointer;
-            user-select: none;
-            color: #64748b;
-            font-size: 1.2rem;
-            transition: color 0.2s;
-        }
-        .eye-icon:hover {
-            color: var(--primary-color);
+            border: 1px solid #fee2e2;
         }
     </style>
 </head>
 <body>
+
 	<!-- 首頁非會員狀態導覽列 -->
 	<header class="fixed-top bg-white shadow-sm" style="z-index: 1030;">
 	    <nav class="navbar navbar-expand-lg navbar-light border-bottom py-2">
@@ -177,54 +142,29 @@
 	        </div>
 	    </nav>
 	</header>
-	
+
     <div class="login-card">
-        <h2>會員登入</h2>
+        <h2>信箱驗證</h2>
+        <p class="subtitle">我們已經將 6 位數驗證碼寄到您的信箱：<br>
+            <strong style="color: var(--primary-color);" th:text="${session.verifyEmail}"></strong><br>
+            請在下方輸入驗證碼以啟用帳號
+        </p>
         
-        <!--在這裡加上 Thymeleaf 的 th:action 對齊 Controller -->
-        <form action="#" method="post" th:action="@{/customer/loginCheck}">
-            
-            <!--在這裡加上 Thymeleaf 判斷 model 裡的 "error" 字串是否存在，並印出內容 -->
-            <div class="error-message" th:if="${errorMsg != null}" th:text="${errorMsg}">
-                
+        <!-- 表單送出時，用POST傳/customer/verify -->
+        <form method="post" th:action="@{/customer/verify}">
+            <!-- 用來顯示錯誤訊息 -->
+            <div class="error-message" 
+            	 th:if="${errorMsg != null}" th:text="${errorMsg}">
             </div>
 
             <div class="form-group">
-                <label for="custAccount">帳號</label>
-                <!-- 注意：name 屬性必須跟 Controller 裡的 @RequestParam 完全一致 -->
-                <input type="text" id="custAccount" name="custAccount" placeholder="請輸入帳號">
+                <!-- name="code"，是Controller接收的變數名稱 -->
+                <input type="text" id="code" name="code" placeholder="000000" maxlength="6" required autocomplete="off">
             </div>
-
-            <div class="form-group">
-                <label for="custPassword">密碼</label>
-                <div class="password-wrapper">
-                    <input type="password" id="custPassword" name="custPassword" placeholder="請輸入密碼">
-                    <i id="togglePassword" class="bi bi-eye eye-icon"></i>
-                </div>
-            </div>
-
-            <button type="submit" class="submit-btn">會員登入</button>
-            <!-- 待完成的功能 -->
-           <!--  <button type="submit" class="submit-btn">第三方登入-待完成</button> -->
-            
-            <div
-            style="text-align: center; margin-top: 2rem; font-size: 1.1rem;">
-   			 還沒有帳號？ <a th:href="@{/customer/register}" style="color: var(--primary-color); text-decoration: none; font-weight: 600; hover: underline;">立即註冊</a>
-			</div>
-			
+            <button type="submit" class="submit-btn">送出驗證碼</button>
         </form>
     </div>
-    <script>
-        const togglePassword = document.getElementById('togglePassword');
-        const passwordInput = document.getElementById('custPassword');
 
-        togglePassword.addEventListener('click', function () {
-            const type = passwordInput.type === 'password' ? 'text' : 'password';
-            passwordInput.type = type;
-            this.classList.toggle('bi-eye');
-            this.classList.toggle('bi-eye-slash');
-        });
-    </script>
     <!-- Bootstrap core JS-->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
