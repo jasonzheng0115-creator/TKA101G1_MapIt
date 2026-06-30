@@ -94,3 +94,12 @@ uploads/
 /docker-compose.yml
 /Dockerfile
 /.dockerignore
+/extract_css.py
+/fix_expression.py
+/fix_logged_in_nav.py
+/generate_messages.py
+/generate_messages.sql
+/style_empCustomerList.py
+/style_ticketlist.py
+/update_headers.py
+/update_nav.py

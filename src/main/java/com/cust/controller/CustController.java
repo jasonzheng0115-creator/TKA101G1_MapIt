@@ -266,8 +266,6 @@ public class CustController {
 	  List<TicketItemVO> ticketList = ticketItemRepository.findTicketsByCustId(loginCust.getCustId());
 	  model.addAttribute("ticketList", ticketList);
 	  return "front-end/ticket/ticket";
-	 }
-
 
 	@GetMapping("/orderHistory") // 歷史訂單功能
 	public String orderHistory() {

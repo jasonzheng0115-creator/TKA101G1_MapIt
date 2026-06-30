@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-TW" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>通知中心發送 - MapIt 後台</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+    <style>
+        :root {
+            --primary-orange: #ff5722;
+            --dark-blue: #0f172a;
+            --bg-color: whitesmoke;
+            --text-main: dimgray;
+        }
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding-top: 140px;
+            padding-bottom: 40px;
+        }
+        .navbar-backend {
+            background-color: white;
+            border-bottom: 1px solid lightgray;
+        }
+        .sub-navbar-backend {
+            background-color: white;
+            border-bottom: 2px solid lightgray;
+        }
+        .sub-navbar-backend .nav-link {
+            color: slategray;
+            transition: color 0.2s;
+            font-size: 0.95rem;
+        }
+        .sub-navbar-backend .nav-link:hover {
+            color: var(--primary-orange);
+        }
+        .form-card {
+            max-width: 800px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .form-card h3 {
+            margin-bottom: 20px;
+            color: black;
+            border-left: 4px solid var(--primary-orange);
+            padding-left: 10px;
+        }
+        .btn-submit {
+            background-color: var(--primary-orange);
+            color: white;
+            padding: 10px 24px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .btn-submit:hover {
+            background-color: royalblue;
+        }
+        .alert-success {
+            background-color: #d1fae5;
+            color: #065f46;
+            border: none;
+        }
+        .alert-danger {
+            background-color: #fee2e2;
+            color: #991b1b;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 組合式固定導覽列 -->
+<header class="fixed-top shadow-sm" style="z-index: 1030;">
+    <!-- 主選單 (Top Bar) -->
+    <nav class="navbar navbar-expand-lg navbar-light navbar-backend py-2">
+        <div class="container-fluid px-4 px-lg-5">
+            <a class="navbar-brand fw-bold fs-3" href="/manage" style="color: var(--primary-orange);">MapIt <span
+                    class="fs-5 text-secondary">後台管理系統</span></a>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center" style="font-size: 0.9rem;">
+                    <li class="nav-item" th:if="${session.loginEmp}">
+                        <span class="nav-link text-secondary px-3">
+                            <i class="bi bi-person-badge-fill text-dark"></i>
+                            <span th:text="${session.loginEmp.empName} + ' 您好'">管理員 您好</span>
+                        </span>
+                    </li>
+                    <li class="nav-item ms-lg-2">
+                        <a class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-bold shadow-sm"
+                            th:href="@{/emp/logout}">登出</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <!-- 次選單 (功能導覽) -->
+    <nav class="sub-navbar-backend py-1">
+        <div class="container-fluid px-4 px-lg-5">
+            <ul class="nav justify-content-center fw-bold">
+                <li class="nav-item"><a class="nav-link px-4" th:href="@{/product/select_page}">商品管理</a></li>
+                <li class="nav-item"><a class="nav-link px-4" th:href="@{/orders/backend-list}">訂單管理</a></li>
+                <li class="nav-item"><a class="nav-link px-4" th:href="@{/customer/empCustomerList}">會員管理</a></li>
+                <li class="nav-item"><a class="nav-link px-4" th:href="@{/supplier/select_page}">廠商管理</a></li>
+                <li class="nav-item"><a class="nav-link px-4" th:href="@{/ap/select_page}">應付帳款</a></li>
+                <li class="nav-item"><a class="nav-link px-4" th:href="@{/emp/select_page}">員工管理</a></li>
+                <li class="nav-item"><a class="nav-link px-4" th:href="@{/dept/listAllDept}">部門管理</a></li>
+                <li class="nav-item">
+                    <a class="nav-link active px-4" 
+                       style="color: #ff5722 !important; font-weight: bold; border-bottom: 3px solid #ff5722; padding-bottom: 8px; margin-bottom: -1px;"
+                       th:href="@{/emp/message/send}">通知發送</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</header>
+
+<div class="container">
+    <div class="form-card">
+        <h3>📢 發送系統通知</h3>
+        
+        <div th:if="${successMsg}" class="alert alert-success mt-3" th:text="${successMsg}"></div>
+        <div th:if="${errorMsg}" class="alert alert-danger mt-3" th:text="${errorMsg}"></div>
+
+        <form th:action="@{/emp/message/send}" method="post" enctype="multipart/form-data" id="messageForm">
+            <div class="mb-4">
+                <label for="msgHeadline" class="form-label fw-bold text-dark">通知標題 (必填)</label>
+                <input type="text" class="form-control" id="msgHeadline" name="msgHeadline" placeholder="請輸入吸睛的標題..." required>
+            </div>
+            
+            <div class="mb-4">
+                <label for="msgContent" class="form-label fw-bold text-dark">通知內容 (必填)</label>
+                <textarea class="form-control" id="msgContent" name="msgContent" rows="5" placeholder="請填寫詳細內容..." required></textarea>
+            </div>
+
+            <div class="mb-4">
+                <label for="msgPic" class="form-label fw-bold text-dark">宣傳照片 (選填)</label>
+                <input class="form-control" type="file" id="msgPic" name="msgPic" accept="image/*">
+            </div>
+
+            <div class="mb-4 form-check">
+                <input type="checkbox" class="form-check-input" id="sendToAll" name="sendToAll" value="true">
+                <label class="form-check-label fw-bold text-danger" for="sendToAll">
+                    ⚠️ 確定要發送給「全體會員」嗎？此操作無法撤回，請謹慎勾選。
+                </label>
+            </div>
+
+            <div class="text-end mt-4">
+                <button type="button" class="btn-submit" onclick="confirmSend()">🚀 確認並發送</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function confirmSend() {
+        const sendToAll = document.getElementById("sendToAll").checked;
+        const headline = document.getElementById("msgHeadline").value;
+        const content = document.getElementById("msgContent").value;
+        
+        if(!headline || !content) {
+            alert("請填寫標題與內容！");
+            return;
+        }
+
+        if(!sendToAll) {
+            alert("目前系統僅開放「發送給全體會員」功能，請勾選確認框！");
+            return;
+        }
+
+        if(confirm("即將把這則通知推播給本站【所有註冊會員】！請確認內容無誤後，點選「確定」送出。")) {
+            document.getElementById("messageForm").submit();
+        }
+    }
+</script>
+</body>
+</html>
