@@ -8,9 +8,11 @@
     <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
     <link href="/css/styles.css" rel="stylesheet" />
-    
+
     <!-- 引入 Google Fonts (Outfit & Noto Sans TC) -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
 
     <!-- 引入 SortableJS -->
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
@@ -20,7 +22,8 @@
             font-family: 'Outfit', 'Noto Sans TC', sans-serif;
             background: radial-gradient(circle at 10% 20%, rgba(255, 245, 240, 0.8) 0%, rgba(243, 244, 246, 0.6) 90%);
             color: #334155;
-            padding-top: 140px; /* 預留頂部雙導覽列的高度 */
+            padding-top: 140px;
+            /* 預留頂部雙導覽列的高度 */
             min-height: 100vh;
             position: relative;
             overflow-x: hidden;
@@ -54,8 +57,13 @@
         }
 
         @keyframes pulse {
-            0% { transform: scale(1) translate(0px, 0px); }
-            100% { transform: scale(1.15) translate(40px, 30px); }
+            0% {
+                transform: scale(1) translate(0px, 0px);
+            }
+
+            100% {
+                transform: scale(1.15) translate(40px, 30px);
+            }
         }
 
         /* 手動控制下拉選單 */
@@ -63,16 +71,20 @@
             display: none;
             margin-top: 8px;
         }
+
         .nav-item.dropdown .dropdown-menu.show {
             display: block;
         }
+
         .dropdown-item {
             transition: all 0.2s;
         }
+
         .dropdown-item:hover {
             background-color: #fff5f2 !important;
             color: #ff5722 !important;
         }
+
         .dropdown-item:hover i {
             color: #ff5722 !important;
         }
@@ -146,7 +158,8 @@
         .main-container {
             display: flex;
             gap: 24px;
-            height: calc(100vh - 250px); /* 扣除導覽列與操作區的動態高度 */
+            height: calc(100vh - 250px);
+            /* 扣除導覽列與操作區的動態高度 */
             min-height: 550px;
         }
 
@@ -166,13 +179,16 @@
         .left-panel::-webkit-scrollbar {
             width: 6px;
         }
+
         .left-panel::-webkit-scrollbar-track {
             background: transparent;
         }
+
         .left-panel::-webkit-scrollbar-thumb {
             background: #cbd5e1;
             border-radius: 10px;
         }
+
         .left-panel::-webkit-scrollbar-thumb:hover {
             background: #94a3b8;
         }
@@ -297,6 +313,7 @@
         .search-results::-webkit-scrollbar {
             width: 6px;
         }
+
         .search-results::-webkit-scrollbar-thumb {
             background: #cbd5e1;
             border-radius: 10px;
@@ -307,6 +324,115 @@
             opacity: 0.4;
             background-color: #f1f5f9 !important;
             border: 2px dashed #ff5722 !important;
+        }
+
+        /* ==========================================================
+          巨型選單 (Megamenu) 樣式
+          ========================================================== */
+        .sub-navbar {
+            position: relative;
+        }
+
+        .megamenu-nav-item {
+            position: static;
+        }
+
+        .megamenu-nav-item.position-relative {
+            position: relative;
+        }
+
+        .megamenu-dropdown {
+            width: 100%;
+            left: 0;
+            right: 0;
+            top: 100%;
+            display: none;
+            position: absolute;
+            background: white;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+            border-top: 1px solid #f0f0f0;
+            border-bottom: 4px solid #ff5722;
+            padding: 20px 0;
+            z-index: 1050;
+        }
+
+        .megamenu-nav-item:hover .megamenu-dropdown {
+            display: block;
+            animation: megamenuFade 0.25s ease-out;
+        }
+
+        @keyframes megamenuFade {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .megamenu-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 15px;
+        }
+
+        .megamenu-card {
+            display: block;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #fafafa;
+            border: 1px solid #eef0f2;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .megamenu-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            border-color: #ff5722;
+        }
+
+        .megamenu-img-wrapper {
+            width: 100%;
+            height: 90px;
+            overflow: hidden;
+        }
+
+        .megamenu-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .megamenu-card:hover .megamenu-img {
+            transform: scale(1.08);
+        }
+
+        .megamenu-title {
+            padding: 8px 5px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #333;
+            transition: color 0.3s ease;
+        }
+
+        .megamenu-card:hover .megamenu-title {
+            color: #ff5722;
+        }
+
+        .region-link {
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
+            display: inline-block;
+        }
+
+        .region-link:hover {
+            color: #ff5722 !important;
+            transform: translateX(6px);
         }
     </style>
 </head>
@@ -322,7 +448,8 @@
         <!-- 主選單 (Top Bar) -->
         <nav class="navbar navbar-expand-lg navbar-light border-bottom py-2">
             <div class="container px-4 px-lg-5">
-                <a class="navbar-brand fw-bold fs-3" href="/" style="color: #ff5722; font-family: 'Outfit', sans-serif;">旅圖 | MapIt</a>
+                <a class="navbar-brand fw-bold fs-3" href="/"
+                    style="color: #ff5722; font-family: 'Outfit', sans-serif;">旅圖 | MapIt</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
@@ -333,10 +460,12 @@
 
                         <!-- 會員中心 -->
                         <li class="nav-item dropdown" th:if="${userName}">
-                            <a class="nav-link text-secondary px-3 dropdown-toggle" href="#" id="memberDropdown" role="button">
+                            <a class="nav-link text-secondary px-3 dropdown-toggle" href="#" id="memberDropdown"
+                                role="button">
                                 <i class="bi bi-person-circle"></i> <span th:text="${userName} + ' 你好'">會員中心</span>
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2" aria-labelledby="memberDropdown" style="border-radius: 10px;">
+                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2"
+                                aria-labelledby="memberDropdown" style="border-radius: 10px;">
                                 <li>
                                     <a class="dropdown-item py-2" th:href="@{/customer/updateProfile}">
                                         <i class="bi bi-person-lines-fill me-2 text-secondary"></i>修改個人資料
@@ -388,10 +517,12 @@
                 <ul class="nav justify-content-center fw-bold">
                     <li class="nav-item"><a class="nav-link text-dark px-4" href="/">首頁</a></li>
                     <li class="nav-item"><a class="nav-link text-dark px-4" href="#!">關於我們</a></li>
-                    <li class="nav-item"><a class="nav-link text-dark px-4" th:href="@{/frontend/product/listAll}">商城</a></li>
+                    <li class="nav-item"><a class="nav-link text-dark px-4"
+                            th:href="@{/frontend/product/listAll}">商城</a></li>
                     <li class="nav-item"><a class="nav-link text-dark px-4" href="/front/attr/list">景點探索</a></li>
                     <li class="nav-item"><a class="nav-link text-dark px-4" href="#!">主題推薦</a></li>
-                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/trip/my-trips}" style="color: #ff5722; border-bottom: 2px solid #ff5722;">我的行程</a></li>
+                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/trip/my-trips}"
+                            style="color: #ff5722; border-bottom: 2px solid #ff5722;">我的行程</a></li>
                     <li class="nav-item"><a class="nav-link text-dark px-4" href="/front/favorite/list">我的收藏</a></li>
                     <li class="nav-item"><a class="nav-link text-dark px-4" href="#!">客服中心</a></li>
                 </ul>
@@ -409,13 +540,18 @@
                 <div class="d-flex align-items-center gap-3 flex-wrap">
                     <div class="d-flex align-items-center gap-2">
                         <span class="fw-bold text-secondary small" style="min-width: 65px;">行程名稱 :</span>
-                        <input type="text" id="tripNameInput" th:value="${trip.tripName}" class="form-control form-control-sm border" style="width: 250px; font-weight: 600; outline: none; border-radius: 8px;">
+                        <input type="text" id="tripNameInput" th:value="${trip.tripName}"
+                            class="form-control form-control-sm border"
+                            style="width: 250px; font-weight: 600; outline: none; border-radius: 8px;">
                     </div>
                     <div class="d-flex align-items-center gap-2">
                         <span class="fw-bold text-secondary small" style="min-width: 65px;">出發日期 :</span>
-                        <input type="date" id="tripDateInput" th:value="${trip.tripDate}" class="form-control form-control-sm border" style="width: 155px; outline: none; border-radius: 8px;">
+                        <input type="date" id="tripDateInput" th:value="${trip.tripDate}"
+                            class="form-control form-control-sm border"
+                            style="width: 155px; outline: none; border-radius: 8px;">
                     </div>
-                    <button class="btn btn-gradient btn-sm rounded-pill px-3 fw-bold d-flex align-items-center gap-1" onclick="updateTripBasicInfo()">
+                    <button class="btn btn-gradient btn-sm rounded-pill px-3 fw-bold d-flex align-items-center gap-1"
+                        onclick="updateTripBasicInfo()">
                         <i class="bi bi-save2-fill"></i> 儲存資訊
                     </button>
                 </div>
@@ -425,10 +561,12 @@
                     <button class="btn btn-outline-orange btn-sm rounded-pill px-3 fw-bold" onclick="openCollabModal()">
                         <i class="bi bi-people-fill"></i> 旅群管理
                     </button>
-                    <button class="btn btn-gradient btn-sm rounded-pill px-3 fw-bold d-flex align-items-center gap-1" onclick="openModal()">
+                    <button class="btn btn-gradient btn-sm rounded-pill px-3 fw-bold d-flex align-items-center gap-1"
+                        onclick="openModal()">
                         <i class="bi bi-plus-circle-fill"></i> 加入景點
                     </button>
-                    <a th:href="@{/trip/my-trips}" class="btn btn-outline-secondary-custom btn-sm rounded-pill px-3 fw-bold">
+                    <a th:href="@{/trip/my-trips}"
+                        class="btn btn-outline-secondary-custom btn-sm rounded-pill px-3 fw-bold">
                         <i class="bi bi-arrow-left-circle"></i> 返回清單
                     </a>
                 </div>
@@ -479,12 +617,15 @@
 
             <!-- 新增協作者區塊 -->
             <div id="addCollabSection" style="margin-bottom: 20px; display: none;">
-                <label style="font-size: 13px; color: #64748b; display: block; margin-bottom: 8px; font-weight: 600;">邀請好友加入協作</label>
+                <label
+                    style="font-size: 13px; color: #64748b; display: block; margin-bottom: 8px; font-weight: 600;">邀請好友加入協作</label>
                 <div class="search-box">
                     <div style="position: relative; flex: 1;">
-                        <input type="text" id="collabAccountInput" placeholder="輸入好友的帳號 (Account)" autocomplete="off" style="width: 100%;">
+                        <input type="text" id="collabAccountInput" placeholder="輸入好友的帳號 (Account)" autocomplete="off"
+                            style="width: 100%;">
                         <!-- 自動完成建議選單 -->
-                        <div id="collabSuggestions" style="display: none; position: absolute; top: 100%; left: 0; width: 100%; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 1010; max-height: 200px; overflow-y: auto; margin-top: 4px;">
+                        <div id="collabSuggestions"
+                            style="display: none; position: absolute; top: 100%; left: 0; width: 100%; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 1010; max-height: 200px; overflow-y: auto; margin-top: 4px;">
                         </div>
                     </div>
                     <button class="btn-search rounded-3" onclick="addCollaborator()">新增</button>
@@ -495,7 +636,8 @@
             <div style="border-top: 1px solid #e2e8f0; padding-top: 15px;">
                 <h4 style="font-size: 14px; color: #334155; margin-bottom: 12px; font-weight: 700;">群組成員列表</h4>
                 <div id="collabList">
-                    <p style="color: #94a3b8; text-align: center; font-weight: 300;"><i class="bi bi-hourglass-split"></i> 載入中，請稍候...</p>
+                    <p style="color: #94a3b8; text-align: center; font-weight: 300;"><i
+                            class="bi bi-hourglass-split"></i> 載入中，請稍候...</p>
                 </div>
             </div>
         </div>
@@ -538,7 +680,7 @@
             document.getElementById('searchResults').innerHTML = '<p style="color: #94a3b8; text-align: center; font-weight: 300;">請輸入關鍵字開始搜尋...</p>';
         }
 
-        const isOwner = [[${ trip.custVO.custId == loginCustId }]];
+        const isOwner = /*[[${trip.custVO.custId == loginCustId}]]*/ false;
         const collabModal = document.getElementById('collabModal');
 
         function openCollabModal() {
@@ -1247,18 +1389,18 @@
             }
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const memberDropdownToggle = document.getElementById('memberDropdown');
             if (memberDropdownToggle) {
                 const dropdownMenu = memberDropdownToggle.nextElementSibling;
-                
-                memberDropdownToggle.addEventListener('click', function(e) {
+
+                memberDropdownToggle.addEventListener('click', function (e) {
                     e.preventDefault();
                     e.stopPropagation();
                     dropdownMenu.classList.toggle('show');
                 });
-                
-                document.addEventListener('click', function(e) {
+
+                document.addEventListener('click', function (e) {
                     if (dropdownMenu.classList.contains('show')) {
                         if (!dropdownMenu.contains(e.target) && e.target !== memberDropdownToggle && !memberDropdownToggle.contains(e.target)) {
                             dropdownMenu.classList.remove('show');
@@ -1270,7 +1412,23 @@
     </script>
 
     <!-- Google Maps API -->
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCE4YKL8rdzbBLQnVS1st55-QOEhXM0juE&callback=initMap" async defer></script>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        var googleMapsApiKey = /*[[${googleMapsApiKey}]]*/ '';
+
+        // 動態載入 Google Maps API
+        if (googleMapsApiKey) {
+            var script = document.createElement('script');
+            script.src = 'https://maps.googleapis.com/maps/api/js?key=' + googleMapsApiKey + '&callback=initMap&language=zh-TW';
+            script.async = true;
+            script.defer = true;
+            document.head.appendChild(script);
+        } else {
+            console.error('Google Maps API Key 未設定');
+        }
+        /*]]>*/
+    </script>
+
 </body>
 
 </html>
