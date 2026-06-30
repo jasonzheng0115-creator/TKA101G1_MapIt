@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.fav.model.FavoriteVO;
 import com.fav.service.FavService;
+import com.cust.model.CustVO;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -39,17 +40,13 @@ public class FavController {
         Map<String, Object> response = new HashMap<>();
         
         try {
-            // TODO: 從 Session 取得登入會員的 ID
-            // 目前暫時使用測試用的會員 ID = 1
-            // 等會員登入功能完成後，改為：
-            // Integer memberId = (Integer) session.getAttribute("memberId");
-            Integer memberId = 1;
-            
-            if (memberId == null) {
+            CustVO loginCust = (CustVO) session.getAttribute("loginCust");
+            if (loginCust == null) {
                 response.put("success", false);
                 response.put("message", "請先登入會員");
                 return response;
             }
+            Integer memberId = loginCust.getCustId();
             
             // 呼叫 Service 新增收藏
             FavoriteVO favorite = favService.addFavorite(memberId, attrId);
@@ -83,14 +80,13 @@ public class FavController {
         Map<String, Object> response = new HashMap<>();
         
         try {
-            // TODO: 從 Session 取得登入會員的 ID
-            Integer memberId = 1; // 測試用
-            
-            if (memberId == null) {
+            CustVO loginCust = (CustVO) session.getAttribute("loginCust");
+            if (loginCust == null) {
                 response.put("success", false);
                 response.put("message", "請先登入會員");
                 return response;
             }
+            Integer memberId = loginCust.getCustId();
             
             // 呼叫 Service 移除收藏
             favService.removeFavorite(memberId, attrId);
@@ -118,13 +114,13 @@ public class FavController {
     public String listFavorites(ModelMap model, HttpSession session) {
         
         try {
-            // TODO: 從 Session 取得登入會員的 ID
-            Integer memberId = 1; // 測試用
-            
-            if (memberId == null) {
+            CustVO loginCust = (CustVO) session.getAttribute("loginCust");
+            if (loginCust == null) {
                 // 如果未登入，導向登入頁面
-                return "redirect:/login";
+                return "redirect:/customer/login";
             }
+            Integer memberId = loginCust.getCustId();
+            model.addAttribute("userName", loginCust.getCustName());
             
             // 呼叫 Service 查詢收藏清單
             List<FavoriteVO> favoriteList = favService.getFavoritesByMemberId(memberId);
