@@ -25,6 +25,7 @@ DROP TABLE IF EXISTS EMPLOYEE;
 DROP TABLE IF EXISTS TRIP;
 DROP TABLE IF EXISTS TRIP_ITEM;
 DROP TABLE IF EXISTS COLLAB_ITEM;
+DROP TABLE IF EXISTS MESSAGE;
 
 -- DROP TABLE IF EXISTS;
 
@@ -19708,8 +19709,35 @@ INSERT INTO EMPLOYEE (EMP_NAME, EMP_SEX, EMP_TEL, EMP_EMAIL, DEPT_ID, EMP_ACC, E
 ('侯賽雷', 'M', '0978901234', 'hou@example.com', 5, 'csuser01', 'test1234', TRUE),
 ('吳法度', 'M', '0989012345', 'wu@example.com', 5, 'csuser02', 'test1234', FALSE); -- 測試停權狀態
 
+-- =======================================================
+-- 18. 建立通知中心資料表 (MESSAGE)
+-- 從1001開始編號
+-- =======================================================
+CREATE TABLE `message` (
+  `MSG_ID` INT NOT NULL AUTO_INCREMENT COMMENT '訊息編號',
+  `CUST_ID` INT NOT NULL COMMENT '會員編號',
+  `MSG_HEADLINE` VARCHAR(50) NOT NULL COMMENT '訊息標題',
+  `MSG_CONTENT` VARCHAR(255) DEFAULT '' COMMENT '訊息內文',
+  `MSG_PIC` VARCHAR(100) DEFAULT '' COMMENT '訊息照片',
+  `MSG_DATETIME` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '收到時間',
+  `MSG_STATUS` TINYINT DEFAULT 0 COMMENT '讀取狀態 0:未讀 1:已讀',
+  PRIMARY KEY (`MSG_ID`),
+  CONSTRAINT `fk_message_cust` FOREIGN KEY (`CUST_ID`) REFERENCES `customer`(`CUST_ID`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-
+INSERT INTO message (CUST_ID, MSG_HEADLINE, MSG_CONTENT, MSG_PIC, MSG_DATETIME, MSG_STATUS)
+SELECT CUST_ID, '系統公告', '歡迎加入 MapIt 旅圖！感謝您的註冊，祝您有一趟美好的旅程。', '/Users/e0/upload/messagePic/welcome.jpg', '2026-06-25 10:00:00', 1 FROM customer;
+INSERT INTO message (CUST_ID, MSG_HEADLINE, MSG_CONTENT, MSG_PIC, MSG_DATETIME, MSG_STATUS)
+SELECT CUST_ID, '夏季促銷活動開跑！', '全館景點票券限時 8 折起，趕快前往商城搶購！', '/Users/e0/upload/messagePic/sale.jpg', '2026-06-29 09:15:00', 0 FROM customer;
+-- 3. 根據【每一筆真實訂單】，自動產生對應的訂單編號發送付款成功通知
+INSERT INTO message (CUST_ID, MSG_HEADLINE, MSG_CONTENT, MSG_PIC, MSG_DATETIME, MSG_STATUS)
+SELECT CUST_ID, '訂單付款成功', CONCAT('您的訂單 #', ORDER_ID, ' 已經成功付款！您可以前往「我的訂單紀錄」查看詳情。'), '/Users/e0/upload/messagePic/order.jpg', '2026-06-28 14:30:00', 0 FROM orders;
+-- 4. 根據【每一張真實票券】，自動把購買的商品名稱抓出來發送票券通知
+INSERT INTO message (CUST_ID, MSG_HEADLINE, MSG_CONTENT, MSG_PIC, MSG_DATETIME, MSG_STATUS)
+SELECT ti.CUST_ID, '票券已發放', CONCAT('您購買的「', p.PRODUCT_NAME, '」已發送至您的票券匣，請點擊查看。'), '/Users/e0/upload/messagePic/ticket.jpg', '2026-06-28 14:31:00', 0
+FROM ticket_item ti 
+JOIN ticket t ON ti.TKT_ID = t.TKT_ID 
+JOIN product p ON t.PRODUCT_ID = p.PRODUCT_ID;
 
 
 SET FOREIGN_KEY_CHECKS = 1;
