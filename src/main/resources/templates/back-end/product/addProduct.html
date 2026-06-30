@@ -129,8 +129,8 @@
 	}
 	
 	.btn-submit:hover {
-		background-color: royalblue;
-		border-color: royalblue;
+		background-color: chocolate;
+		border-color: chocolate;
 	}
 	
 	/* 取消返回按鈕 */
@@ -254,8 +254,9 @@
 				</div>
 				
 				<div class="form-group">
-					<label class="form-label">⏳ 票券使用期限：</label>
-					<input type="text" class="form-control" id="desc_expiry" placeholder="例如：購買後6個月內有效" />
+				    <label class="form-label">⏳ 票券使用期限：</label>
+				    <input type="text" class="form-control" id="desc_expiry" placeholder="供前台顯示，下方使用期限欄位輸入月數後將自動生成..." 
+				           readonly style="background-color: whitesmoke; color: gray;" />
 				</div>
 				
 				<div class="form-group">
@@ -283,7 +284,7 @@
 	
 	            <div class="form-group">
 	                <label class="form-label">使用期限 (單位: 月數)：</label>
-	                <input type="number" class="form-control" th:field="*{usePeriod}" min="0" placeholder="請輸入商品使用期限..." />
+	                <input type="number" class="form-control" id="backend_use_period" th:field="*{usePeriod}" min="0" placeholder="請輸入商品使用期限..." />
 	                <span th:if="${#fields.hasErrors('usePeriod')}" th:errors="*{usePeriod}" class="error"></span>
 	            </div>
 	
@@ -331,6 +332,21 @@
 			// 將物件轉換成標準的 JSON 字串，並塞進被隱藏的真實欄位裡
 			document.getElementById('real_productDesc').value = JSON.stringify(descObj);
 		});
+		
+		
+		// 監聽「使用期限 (單位: 月數)」的輸入事件
+		document.getElementById('backend_use_period').addEventListener('input', function() {
+		    const months = this.value;
+		    const descExpiryInput = document.getElementById('desc_expiry');
+		    
+		    if (months && months > 0) {
+		        // 自動帶入格式
+		        descExpiryInput.value = '購買後' + months + '個月內有效';
+		    } else {
+		        descExpiryInput.value = '';
+		    }
+		});
+		
 	</script>
 	
 </body>
