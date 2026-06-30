@@ -174,6 +174,128 @@
         .hover-orange:hover {
             color: #ff5722 !important;
         }
+
+        /* ==========================================================
+          巨型選單 (Megamenu) 樣式
+          ========================================================== */
+        .sub-navbar {
+            position: relative;
+        }
+
+        .megamenu-nav-item {
+            position: static;
+        }
+
+        .megamenu-nav-item.position-relative {
+            position: relative;
+        }
+
+        .megamenu-dropdown {
+            width: 100%;
+            left: 0;
+            right: 0;
+            top: 100%;
+            margin-top: -10px;
+            display: none;
+            position: absolute;
+            background: white;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+            border-top: 1px solid #f0f0f0;
+            border-bottom: 4px solid #ff5722;
+            padding: 20px 0;
+            z-index: 1050;
+        }
+
+        /* 滑鼠移入時顯示選單並套用平滑動畫 */
+        .megamenu-nav-item:hover .megamenu-dropdown {
+            display: block;
+            animation: megamenuFade 0.25s ease-out;
+        }
+
+        @keyframes megamenuFade {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .megamenu-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 15px;
+        }
+
+        .megamenu-card {
+            display: block;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #fafafa;
+            border: 1px solid #eef0f2;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .megamenu-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            border-color: #ff5722;
+        }
+
+        .megamenu-img-wrapper {
+            width: 100%;
+            height: 90px;
+            overflow: hidden;
+        }
+
+        .megamenu-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .megamenu-card:hover .megamenu-img {
+            transform: scale(1.08);
+        }
+
+        .megamenu-title {
+            padding: 8px 5px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #333;
+            transition: color 0.3s ease;
+        }
+
+        .megamenu-card:hover .megamenu-title {
+            color: #ff5722;
+        }
+
+        .region-link {
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
+            display: inline-block;
+        }
+
+        .region-link:hover {
+            color: #ff5722 !important;
+            transform: translateX(6px);
+        }
+
+        /* 游標移到上面時文字變成橘色 */
+        .sub-navbar .nav-link {
+            color: #475569;
+            transition: color 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .sub-navbar .nav-link:hover {
+            color: #ff5722 !important;
+        }
     </style>
 </head>
 
@@ -255,12 +377,18 @@
         <nav class="sub-navbar bg-white py-1">
             <div class="container px-4 px-lg-5">
                 <ul class="nav justify-content-center fw-bold">
-                    <li class="nav-item"><a class="nav-link text-dark px-4" href="/">首頁</a></li>
-                    <li class="nav-item"><a class="nav-link text-dark px-4" href="/front/attr/about">關於我們</a></li>
-                    <li class="nav-item"><a class="nav-link text-dark px-4"
-                            th:href="@{/frontend/product/listAll}">商城</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark px-4" href="/">首頁</a>
+                    </li>
 
-                    <!-- 景點探索 (地區下拉選單) -->
+                    <li class="nav-item">
+                        <a class="nav-link text-dark px-4" href="/front/attr/about">關於我們</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link text-dark px-4" th:href="@{/frontend/product/listAll}">商城</a>
+                    </li>
+
                     <li class="nav-item megamenu-nav-item position-relative">
                         <a class="nav-link text-dark px-4" href="/front/attr/search">景點探索</a>
 
@@ -285,9 +413,9 @@
                         </div>
                     </li>
 
-                    <!-- 整合後的主題推薦 (帶有 Megamenu 功能) -->
                     <li class="nav-item megamenu-nav-item">
                         <a class="nav-link text-dark px-4" href="#!">主題推薦</a>
+
                         <div class="megamenu-dropdown">
                             <div class="container px-4 px-lg-5">
                                 <div class="megamenu-grid">
@@ -351,9 +479,17 @@
                             </div>
                         </div>
                     </li>
-                    <li class="nav-item"><a class="nav-link text-dark px-4" th:href="@{/trip/my-trips}">我的行程</a></li>
-                    <li class="nav-item"><a class="nav-link text-dark px-4" href="/front/favorite/list">我的收藏</a></li>
-                    <li class="nav-item"><a class="nav-link text-dark px-4" href="/contact">客服中心</a></li>
+
+                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/trip/my-trips}"
+                            style="color: #ff5722; border-bottom: 2px solid #ff5722;">我的行程</a></li>
+
+                    <li class="nav-item">
+                        <a class="nav-link text-dark px-4" href="/front/favorite/list">我的收藏</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link text-dark px-4" href="/contact">客服中心</a>
+                    </li>
                 </ul>
             </div>
         </nav>
