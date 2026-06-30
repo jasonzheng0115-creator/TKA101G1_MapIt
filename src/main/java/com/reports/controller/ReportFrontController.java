@@ -71,7 +71,6 @@ public class ReportFrontController {
             ReportVO report = new ReportVO();
             report.setCommentVO(comment);
             report.setCustId(custId);
-            report.setEmpId(1); // 預設處理員工 ID 為 1
             report.setReportContent(reportContent);
             report.setReportStatus("0"); // 0 代表待審核 (未處理)
             report.setReportTime(LocalDateTime.now());

@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.reports.model.ReportService;
 import com.reports.model.ReportVO;
+import com.emp.model.EmpVO;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
 /**
@@ -161,9 +163,13 @@ public class ReportController {
      * 2. 調用 CommentService 將被檢舉的評論強制下架 (狀態改為 2)
      */
     @GetMapping("/approve")
-    public String approve(@RequestParam("reportId") Integer reportId) {
+    public String approve(@RequestParam("reportId") Integer reportId, HttpSession session) {
+        // 從 session 中取出當前登入的員工物件
+        EmpVO loginEmp = (EmpVO) session.getAttribute("loginEmp");
+        Integer empId = (loginEmp != null) ? loginEmp.getEmpId() : 1001; // 防呆預設值為 1001
+        
         // 呼叫 Service 層的審核通過方法
-        reportService.approveReport(reportId);
+        reportService.approveReport(reportId, empId);
         
         // 重導向到列表頁
         return "redirect:/report/listAll";
@@ -177,9 +183,13 @@ public class ReportController {
      * 1. 更新檢舉狀態為已駁回 (2)
      */
     @GetMapping("/reject")
-    public String reject(@RequestParam("reportId") Integer reportId) {
+    public String reject(@RequestParam("reportId") Integer reportId, HttpSession session) {
+        // 從 session 中取出當前登入的員工物件
+        EmpVO loginEmp = (EmpVO) session.getAttribute("loginEmp");
+        Integer empId = (loginEmp != null) ? loginEmp.getEmpId() : 1001; // 防呆預設值為 1001
+        
         // 呼叫 Service 層的駁回方法
-        reportService.rejectReport(reportId);
+        reportService.rejectReport(reportId, empId);
         
         // 重導向到列表頁
         return "redirect:/report/listAll";
