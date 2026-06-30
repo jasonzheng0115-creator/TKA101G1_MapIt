@@ -90,7 +90,7 @@
         <h2>登入成功！</h2>
         
         <p>歡迎回來，<br>
-           <!-- 把model裡的custVO.cust_name印在這裡取代"測試員" -->
+           <!-- 把model裡的custVO.cust_name取代"測試員" -->
            <span class="user-name" th:text="${loginCust.custName}"></span> 
         </p>
         
@@ -103,5 +103,7 @@
         <a th:href="@{/customer/login}" class="logout-btn">登出 / 返回登入頁</a>
     </div>
 
+    <!-- Bootstrap core JS-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
