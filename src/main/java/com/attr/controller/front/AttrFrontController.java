@@ -29,8 +29,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.region.model.RegionVO;
 import com.comment.model.CommentService;
 import com.comment.model.CommentVO;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpSession;
 
 /**
  * AttrFrontController - 前台景點瀏覽控制層
@@ -81,7 +81,11 @@ public class AttrFrontController {
      * 4. 前端使用 JSON.parse() 解析資料並在地圖上標記景點
      */
     @GetMapping("/list")
-    public String list(ModelMap model) {
+    public String list(ModelMap model, HttpSession session) {
+        com.cust.model.CustVO loginCust = (com.cust.model.CustVO) session.getAttribute("loginCust");
+        if (loginCust != null) {
+            model.addAttribute("userName", loginCust.getCustName());
+        }
         // 取得所有景點資料
         List<AttrVO> attrList = attrService.findAll();
         
@@ -147,7 +151,11 @@ public class AttrFrontController {
      * @return 視圖名稱
      */
     @GetMapping("/detail/{attrId}")
-    public String getDetail(@PathVariable Integer attrId, ModelMap model) {
+    public String getDetail(@PathVariable Integer attrId, ModelMap model, HttpSession session) {
+        com.cust.model.CustVO loginCust = (com.cust.model.CustVO) session.getAttribute("loginCust");
+        if (loginCust != null) {
+            model.addAttribute("userName", loginCust.getCustName());
+        }
         // 1. 查詢景點資料
         AttrVO attr = attrService.findById(attrId);
         
@@ -181,7 +189,11 @@ public class AttrFrontController {
      * 視圖：templates/front-end/about.html
      */
     @GetMapping("/about")
-    public String about() {
+    public String about(ModelMap model, HttpSession session) {
+        com.cust.model.CustVO loginCust = (com.cust.model.CustVO) session.getAttribute("loginCust");
+        if (loginCust != null) {
+            model.addAttribute("userName", loginCust.getCustName());
+        }
         return "front-end/about"; 
     }
     
@@ -214,7 +226,13 @@ public class AttrFrontController {
             @RequestParam(required = false) Integer categoryId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "12") int size,
-            ModelMap model) {
+            ModelMap model,
+            HttpSession session) {
+        
+        com.cust.model.CustVO loginCust = (com.cust.model.CustVO) session.getAttribute("loginCust");
+        if (loginCust != null) {
+            model.addAttribute("userName", loginCust.getCustName());
+        }
         
         // 1. 建立分頁參數（依景點名稱排序）
         Pageable pageable = PageRequest.of(page, size, Sort.by("attrName").ascending());

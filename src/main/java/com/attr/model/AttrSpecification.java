@@ -43,11 +43,22 @@ public class AttrSpecification {
                 // 建立條件列表
                 List<Predicate> predicates = new ArrayList<>();
                 
-                // 1. 關鍵字條件（模糊搜尋景點名稱）
+                // 1. 關鍵字條件（同時模糊搜尋：景點名稱、景點地址、地區名稱或類別名稱）
                 if (keyword != null && !keyword.trim().isEmpty()) {
-                    Predicate keywordPredicate = criteriaBuilder.like(
-                        root.get("attrName"), 
-                        "%" + keyword.trim() + "%"
+                    // 🟢 方案 B：統一將「臺」替換為資料庫使用的「台」，解決繁簡/俗寫不一致問題
+                    String cleanKeyword = keyword.trim().replace("臺", "台");
+                    String pattern = "%" + cleanKeyword + "%";
+                    
+                    Predicate namePredicate = criteriaBuilder.like(root.get("attrName"), pattern);
+                    Predicate addressPredicate = criteriaBuilder.like(root.get("attrAddress"), pattern);
+                    Predicate regionNamePredicate = criteriaBuilder.like(root.get("regionVO").get("regionName"), pattern);
+                    Predicate categoryNamePredicate = criteriaBuilder.like(root.get("categoryVO").get("categoryName"), pattern);
+                    
+                    Predicate keywordPredicate = criteriaBuilder.or(
+                        namePredicate, 
+                        addressPredicate, 
+                        regionNamePredicate, 
+                        categoryNamePredicate
                     );
                     predicates.add(keywordPredicate);
                 }

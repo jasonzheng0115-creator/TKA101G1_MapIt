@@ -1,4 +1,5 @@
 @charset "UTF-8";
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Noto+Sans+TC:wght@300;400;700;900&display=swap');
 
 /*!
 * Start Bootstrap - Shop Homepage v5.0.6 (https://startbootstrap.com/template/shop-homepage)
@@ -13054,6 +13055,117 @@ fieldset:disabled .btn {
 /* ==========================================================
           地區選單連結動畫
           ========================================================== */
+       .region-link {
+           transition: all 0.2s ease;
+           font-size: 0.95rem;
+           display: inline-block;
+       }
+       .region-link:hover {
+           color: #ff5722 !important;
+           transform: translateX(6px);
+       }
+/* ============================================== */
+
+/* 統一次導覽列 (Sub-Navbar) 字體樣式 (字體大小、字重、粗細、顏色與字型) */
+.sub-navbar {
+    font-family: 'Outfit', 'Noto Sans TC', sans-serif !important;
+}
+
+.sub-navbar .nav-link {
+    font-size: 1.05rem !important; /* 統一字體大小 */
+    font-weight: bold !important; /* 統一為粗體 */
+    color: #495057 !important; /* 統一非選中字體顏色 (中深灰色) */
+    transition: color 0.2s ease-in-out;
+}
+
+.sub-navbar .nav-link:hover {
+    color: #ff5722 !important; /* Hover 時呈現亮橘色 */
+}
+
+/* 統一次導覽列的選中/選取狀態樣式 (商城同款橘色粗體與底線效果) */
+.sub-navbar .nav-link.active {
+    color: #ff5722 !important;
+    font-weight: bold !important;
+    border-bottom: 3px solid #ff5722 !important;
+    padding-bottom: 8px !important;
+    margin-bottom: -1px !important;
+}
+
+/* ==========================================================
+   統一分頁外層容器 (Pagination) 全站樣式
+   ========================================================== */
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0;
+    margin: 40px 0 20px 0;
+    font-family: 'Outfit', 'Noto Sans TC', sans-serif !important;
+}
+
+/* 左側的「頁面 1 / 12」文字樣式 */
+.pagination-container .page-info {
+    font-size: 14px !important;
+    color: #666 !important;
+    margin-right: 15px !important; /* 與後續按鈕拉開呼吸距離 */
+}
+
+/* 頁碼按鈕的平常狀態 */
+.pagination-container .page-item {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 34px !important;
+    padding: 0 14px !important;
+    border: 1px solid #ddd !important;
+    background-color: white !important;
+    color: dimgray !important;
+    text-decoration: none !important;
+    font-size: 14px !important;
+    cursor: pointer !important;
+    margin-left: -1px !important; /* 消除連續雙邊框，讓按鈕完美相連 */
+    transition: all 0.15s ease-in-out !important;
+    font-weight: bold !important;
+}
+
+/* 第一個按鈕與最後一個按鈕的圓角 */
+.pagination-container .page-item:first-of-type,
+.pagination-container .page-buttons .page-item:first-child {
+    border-top-left-radius: 4px !important;
+    border-bottom-left-radius: 4px !important;
+}
+.pagination-container .page-item:last-of-type,
+.pagination-container .page-buttons .page-item:last-child {
+    border-top-right-radius: 4px !important;
+    border-bottom-right-radius: 4px !important;
+}
+
+/* 當滑鼠懸停 (:hover) 時變色 */
+.pagination-container .page-item:hover:not(.active):not(.disabled) {
+    background-color: #eee !important;
+    border-color: #ddd !important;
+    color: orange !important; /* 採用經典橘色 */
+    z-index: 2 !important; /* 確保懸停時的邊框能亮在最上面 */
+}
+
+/* 當前所在頁數（Active）變色 */
+.pagination-container .page-item.active {
+    background-color: orange !important; /* 統一採用橘色 */
+    border-color: orange !important;
+    color: white !important;
+    cursor: default !important;
+    z-index: 3 !important;
+}
+
+/* 停用狀態（Disabled，例如第一頁的上一頁） */
+.pagination-container .page-item.disabled {
+    background-color: white !important;
+    color: #bbb !important;
+    border-color: #ddd !important;
+    pointer-events: none !important; /* 取消所有點擊與滑鼠事件 */
+    cursor: not-allowed !important;
+}
+
 .region-link {
   transition: all 0.2s ease;
   font-size: 0.95rem;

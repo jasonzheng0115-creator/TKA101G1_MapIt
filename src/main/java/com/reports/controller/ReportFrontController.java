@@ -53,8 +53,12 @@ public class ReportFrontController {
             // 1. 從 Session 取得登入會員
             com.cust.model.CustVO loginCust = (com.cust.model.CustVO) session.getAttribute("loginCust");
             
-            // 2. 為了方便測試，如果沒有登入則預設為會員編號 1，實際生產環境可限制必須登入
-            Integer custId = (loginCust != null) ? loginCust.getCustId() : 1;
+            // 2. 嚴格限制必須登入，不再預設為會員 1
+            if (loginCust == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(Map.of("success", false, "message", "請先登入會員"));
+            }
+            Integer custId = loginCust.getCustId();
 
             // 3. 檢查評論是否存在
             CommentVO comment = commentService.getOneComment(commentId);
