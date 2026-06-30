@@ -1,220 +1,333 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="zh-TW" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <meta charset="UTF-8">
-    <title>建立新行程</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap"
-        rel="stylesheet">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="MapIt 新增行程" />
+    <meta name="author" content="TKA101G1" />
+    <title>規劃新旅程 - MapIt</title>
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+    <link href="/css/styles.css" rel="stylesheet" />
+    
+    <!-- 引入 Google Fonts (Outfit & Noto Sans TC) -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
-            font-family: 'Noto Sans TC', sans-serif;
-            background: linear-gradient(160deg, #E8ECF1 0%, #F5F3F0 50%, #EAE8E4 100%);
+            font-family: 'Outfit', 'Noto Sans TC', sans-serif;
+            background: radial-gradient(circle at 10% 20%, rgba(255, 245, 240, 0.8) 0%, rgba(243, 244, 246, 0.6) 90%);
+            color: #1e293b;
+            padding-top: 140px; /* 預留頂部雙導覽列的高度 */
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #3D4F5F;
             position: relative;
-            overflow: hidden;
+            overflow-x: hidden;
         }
 
-        /* 背景裝飾圓圈 */
-        body::before {
-            content: '';
+        /* 夢幻氣泡背景裝飾 */
+        .bg-blob {
             position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: -1;
+            opacity: 0.6;
+            animation: pulse 12s infinite alternate ease-in-out;
+        }
+
+        .blob-1 {
+            width: 400px;
+            height: 400px;
+            background: rgba(255, 87, 34, 0.15);
+            top: 10%;
+            left: -100px;
+        }
+
+        .blob-2 {
             width: 350px;
             height: 350px;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(123, 143, 161, 0.08) 0%, transparent 70%);
-            top: -80px;
-            left: -60px;
-            animation: float 8s ease-in-out infinite;
+            background: rgba(255, 179, 0, 0.12);
+            bottom: 10%;
+            right: -100px;
+            animation-delay: -3s;
         }
 
-        body::after {
-            content: '';
-            position: absolute;
-            width: 220px;
-            height: 220px;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(155, 181, 201, 0.10) 0%, transparent 70%);
-            bottom: -40px;
-            right: -30px;
-            animation: float 6s ease-in-out infinite reverse;
+        @keyframes pulse {
+            0% { transform: scale(1) translate(0px, 0px); }
+            100% { transform: scale(1.15) translate(30px, 20px); }
         }
 
-        @keyframes float {
-
-            0%,
-            100% {
-                transform: translateY(0px);
-            }
-
-            50% {
-                transform: translateY(-20px);
-            }
-        }
-
-        /* ===== 表單卡片 ===== */
-        .form-card {
-            background: rgba(255, 255, 255, 0.72);
-            backdrop-filter: blur(14px);
-            -webkit-backdrop-filter: blur(14px);
-            border: 1px solid rgba(123, 143, 161, 0.12);
-            border-radius: 20px;
-            padding: 48px 40px;
-            width: 420px;
-            position: relative;
-            z-index: 1;
-            box-shadow: 0 8px 32px rgba(90, 122, 138, 0.08);
-        }
-
-        .form-card h2 {
-            text-align: center;
-            font-size: 22px;
-            font-weight: 500;
-            color: #4A6274;
-            margin-bottom: 6px;
-        }
-
-        .form-subtitle {
-            text-align: center;
-            font-size: 13px;
-            font-weight: 300;
-            color: #8C9DAA;
-            margin-bottom: 32px;
-        }
-
-        /* ===== 表單欄位 ===== */
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 12px;
-            font-weight: 400;
-            color: #7B8FA1;
-            margin-bottom: 6px;
-            letter-spacing: 0.5px;
-        }
-
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            padding: 12px 16px;
-            font-size: 14px;
-            font-family: 'Noto Sans TC', sans-serif;
-            color: #3D4F5F;
-            background: rgba(255, 255, 255, 0.6);
-            border: 1.5px solid rgba(123, 143, 161, 0.2);
-            border-radius: 10px;
-            outline: none;
-            transition: all 0.3s ease;
-            appearance: none;
-            -webkit-appearance: none;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus {
-            border-color: #7B8FA1;
-            background: rgba(255, 255, 255, 0.9);
-            box-shadow: 0 0 0 3px rgba(123, 143, 161, 0.1);
-        }
-
-        .form-group input::placeholder {
-            color: #B4BCC3;
-            font-weight: 300;
-        }
-
-        /* 下拉選單的箭頭 */
-        .select-wrapper {
-            position: relative;
-        }
-
-        .select-wrapper::after {
-            content: '▾';
-            position: absolute;
-            right: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #8C9DAA;
-            pointer-events: none;
-            font-size: 14px;
-        }
-
-        /* ===== 按鈕 ===== */
-        .btn-submit {
-            width: 100%;
-            padding: 13px;
-            font-size: 14px;
-            font-family: 'Noto Sans TC', sans-serif;
-            font-weight: 500;
-            color: #FFFFFF;
-            background: #7B8FA1;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            letter-spacing: 1px;
+        /* 手動控制下拉選單 */
+        .nav-item.dropdown .dropdown-menu {
+            display: none;
             margin-top: 8px;
         }
-
-        .btn-submit:hover {
-            background: #6A7F91;
-            box-shadow: 0 4px 16px rgba(123, 143, 161, 0.25);
-            transform: translateY(-1px);
+        .nav-item.dropdown .dropdown-menu.show {
+            display: block;
+        }
+        .dropdown-item {
+            transition: all 0.2s;
+        }
+        .dropdown-item:hover {
+            background-color: #fff5f2 !important;
+            color: #ff5722 !important;
+        }
+        .dropdown-item:hover i {
+            color: #ff5722 !important;
         }
 
-        .btn-cancel {
-            display: block;
-            text-align: center;
-            margin-top: 20px;
-            font-size: 13px;
-            font-weight: 300;
-            color: #8C9DAA;
-            text-decoration: none;
-            transition: color 0.3s ease;
+        /* 莫蘭迪玻璃卡片樣式 */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 24px;
+            box-shadow: 0 20px 25px -5px rgba(255, 87, 34, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.03);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .glass-card:hover {
+            box-shadow: 0 25px 30px -5px rgba(255, 87, 34, 0.08), 0 12px 15px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        /* 標題與漸層字 */
+        .text-gradient {
+            background: linear-gradient(135deg, #ff7e5f 0%, #ff5722 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+        }
+
+        /* 自訂輸入框 */
+        .form-label {
+            font-weight: 600;
+            color: #475569;
+            font-size: 0.85rem;
             letter-spacing: 0.5px;
         }
 
-        .btn-cancel:hover {
-            color: #5A7A8A;
+        .custom-input {
+            border: 1.5px solid #cbd5e1;
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: 0.95rem;
+            transition: all 0.25s ease;
+            background-color: rgba(255, 255, 255, 0.7);
+        }
+
+        .custom-input:focus {
+            border-color: #ff5722;
+            background-color: #ffffff;
+            box-shadow: 0 0 0 4px rgba(255, 87, 34, 0.15);
+        }
+
+        /* 漸層按鈕 */
+        .btn-gradient {
+            background: linear-gradient(135deg, #ff7e5f 0%, #ff5722 100%);
+            color: #ffffff;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 14px rgba(255, 87, 34, 0.3);
+        }
+
+        .btn-gradient:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 87, 34, 0.4);
+            color: #ffffff;
+        }
+
+        .btn-gradient:active {
+            transform: translateY(0);
+        }
+
+        .icon-box-gradient {
+            background: linear-gradient(135deg, rgba(255, 126, 95, 0.1) 0%, rgba(255, 87, 34, 0.1) 100%);
+            color: #ff5722;
+            width: 76px;
+            height: 76px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 20px;
+        }
+
+        .hover-orange {
+            transition: color 0.2s;
+        }
+
+        .hover-orange:hover {
+            color: #ff5722 !important;
         }
     </style>
 </head>
 
 <body>
 
-    <div class="form-card">
-        <h2>規劃新旅程</h2>
-        <p class="form-subtitle">填寫基本資訊，開始你的冒險</p>
+    <!-- 夢幻背景氣泡 -->
+    <div class="bg-blob blob-1"></div>
+    <div class="bg-blob blob-2"></div>
 
-        <form th:action="@{/trip/create}" th:object="${trip}" method="post">
+    <!-- 組合式固定導覽列 (與首頁結構完全一致) -->
+    <header class="fixed-top bg-white shadow-sm" style="z-index: 1030;">
+        <!-- 主選單 (Top Bar) -->
+        <nav class="navbar navbar-expand-lg navbar-light border-bottom py-2">
+            <div class="container px-4 px-lg-5">
+                <a class="navbar-brand fw-bold fs-3" href="/" style="color: #ff5722; font-family: 'Outfit', sans-serif;">旅圖 | MapIt</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center" style="font-size: 0.9rem;">
 
-            <div class="form-group">
-                <label for="tripName">行程名稱</label>
-                <input type="text" id="tripName" th:field="*{tripName}" placeholder="例如：東京五天四夜櫻花祭" required>
+                        <!-- 會員中心 -->
+                        <li class="nav-item dropdown" th:if="${userName}">
+                            <a class="nav-link text-secondary px-3 dropdown-toggle" href="#" id="memberDropdown" role="button">
+                                <i class="bi bi-person-circle"></i> <span th:text="${userName} + ' 你好'">會員中心</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2" aria-labelledby="memberDropdown" style="border-radius: 10px;">
+                                <li>
+                                    <a class="dropdown-item py-2" th:href="@{/customer/updateProfile}">
+                                        <i class="bi bi-person-lines-fill me-2 text-secondary"></i>修改個人資料
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item py-2" th:href="@{/customer/ticket}">
+                                        <i class="bi bi-tags me-2 text-secondary"></i>我的票券夾
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item py-2" th:href="@{/orders/my-orders}">
+                                        <i class="bi bi-file-earmark-text me-2 text-secondary"></i>我的訂單紀錄
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item py-2" th:href="@{/customer/message}">
+                                        <i class="bi bi-bell me-2 text-secondary"></i>我的通知
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link text-secondary px-3" th:href="@{/cart/show}">
+                                <i class="bi bi-cart3"></i> 購物車
+                            </a>
+                        </li>
+
+                        <!-- 登出按鈕 -->
+                        <li class="nav-item ms-lg-2" th:if="${userName}">
+                            <a class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-bold shadow-sm"
+                                th:href="@{/customer/logout}">登出</a>
+                        </li>
+
+                        <!-- 註冊 / 登入按鈕 -->
+                        <li class="nav-item ms-lg-2" th:unless="${userName}">
+                            <a class="btn btn-warning btn-sm rounded-pill px-3 fw-bold shadow-sm"
+                                th:href="@{/customer/login}">註冊 / 登入</a>
+                        </li>
+                    </ul>
+                </div>
             </div>
+        </nav>
 
-            <div class="form-group">
-                <label for="tripDate">出發日期</label>
-                <input type="date" id="tripDate" th:field="*{tripDate}" required>
+        <!-- 次選單 (Sub-Navbar) -->
+        <nav class="sub-navbar bg-white py-1">
+            <div class="container px-4 px-lg-5">
+                <ul class="nav justify-content-center fw-bold">
+                    <li class="nav-item"><a class="nav-link text-dark px-4" href="/">首頁</a></li>
+                    <li class="nav-item"><a class="nav-link text-dark px-4" href="#!">關於我們</a></li>
+                    <li class="nav-item"><a class="nav-link text-dark px-4" th:href="@{/frontend/product/listAll}">商城</a></li>
+                    <li class="nav-item"><a class="nav-link text-dark px-4" href="/front/attr/list">景點探索</a></li>
+                    <li class="nav-item"><a class="nav-link text-dark px-4" href="#!">主題推薦</a></li>
+                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/trip/my-trips}" style="color: #ff5722; border-bottom: 2px solid #ff5722;">我的行程</a></li>
+                    <li class="nav-item"><a class="nav-link text-dark px-4" href="/front/favorite/list">我的收藏</a></li>
+                    <li class="nav-item"><a class="nav-link text-dark px-4" href="#!">客服中心</a></li>
+                </ul>
             </div>
+        </nav>
+    </header>
 
-            <button type="submit" class="btn-submit">開始安排景點</button>
-        </form>
+    <!-- 主要內容區 -->
+    <main class="container px-4 px-lg-5 mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5">
+                <div class="card glass-card p-4 p-md-5 border-0">
+                    
+                    <!-- 標題設計 -->
+                    <div class="text-center mb-4">
+                        <div class="icon-box-gradient mb-3 shadow-sm">
+                            <i class="bi bi-compass-fill" style="font-size: 2.2rem;"></i>
+                        </div>
+                        <h2 class="fw-bold text-gradient">規劃新旅程</h2>
+                        <p class="text-secondary small mt-1">填寫您的目的地，開啟專屬您的精彩假期</p>
+                    </div>
 
-        <a th:href="@{/trip/my-trips}" class="btn-cancel">← 取消，回我的行程</a>
-    </div>
+                    <!-- 行程建立表單 -->
+                    <form th:action="@{/trip/create}" th:object="${trip}" method="post">
+                        <!-- 行程名稱 -->
+                        <div class="mb-4">
+                            <label for="tripName" class="form-label mb-2 d-flex align-items-center gap-1">
+                                <i class="bi bi-tag-fill text-orange"></i> 行程名稱
+                            </label>
+                            <input type="text" id="tripName" th:field="*{tripName}" class="form-control custom-input border" placeholder="例如：澎湖3天兩夜花火節" required>
+                        </div>
 
+                        <!-- 出發日期 -->
+                        <div class="mb-4">
+                            <label for="tripDate" class="form-label mb-2 d-flex align-items-center gap-1">
+                                <i class="bi bi-calendar2-week-fill text-orange"></i> 出發日期
+                            </label>
+                            <input type="date" id="tripDate" th:field="*{tripDate}" class="form-control custom-input border" required>
+                        </div>
+
+                        <!-- 送出 -->
+                        <button type="submit" class="btn btn-gradient w-100 py-3 d-flex align-items-center justify-content-center gap-2 shadow fs-6">
+                            開始規劃景點 <i class="bi bi-arrow-right-short fs-4"></i>
+                        </button>
+                    </form>
+
+                    <!-- 取消回行程清單 -->
+                    <div class="text-center mt-4">
+                        <a th:href="@{/trip/my-trips}" class="text-secondary small text-decoration-none hover-orange fw-bold d-inline-flex align-items-center gap-1">
+                            <i class="bi bi-arrow-left-short fs-5 align-middle"></i> 取消，回我的行程
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- JavaScript：下拉選單控制 -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const memberDropdownToggle = document.getElementById('memberDropdown');
+            if (memberDropdownToggle) {
+                const dropdownMenu = memberDropdownToggle.nextElementSibling;
+                
+                // 點擊按鈕切換展開/收合
+                memberDropdownToggle.addEventListener('click', function(e) {
+                    e.preventDefault(); // 防止預設連結跳轉
+                    e.stopPropagation(); // 阻止事件往上傳遞
+                    dropdownMenu.classList.toggle('show');
+                });
+                
+                // 點擊頁面其他地方自動關閉選單
+                document.addEventListener('click', function(e) {
+                    if (dropdownMenu.classList.contains('show')) {
+                        if (!dropdownMenu.contains(e.target) && e.target !== memberDropdownToggle && !memberDropdownToggle.contains(e.target)) {
+                            dropdownMenu.classList.remove('show');
+                        }
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 
 </html>
