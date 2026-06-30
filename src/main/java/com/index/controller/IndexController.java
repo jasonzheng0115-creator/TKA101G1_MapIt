@@ -102,4 +102,15 @@ public class IndexController {
 
         return "front-end/index"; // Thymeleaf 會自動找到 templates/index.html
     }
+    /**
+     * 客服中心 / 聯絡我們路由
+     */
+    @GetMapping("/contact")
+    public String contact(ModelMap model, HttpSession session) {
+        com.cust.model.CustVO loginCust = (com.cust.model.CustVO) session.getAttribute("loginCust");
+        if (loginCust != null) {
+            model.addAttribute("userName", loginCust.getCustName());
+        }
+        return "front-end/contact";
+    }
 }
