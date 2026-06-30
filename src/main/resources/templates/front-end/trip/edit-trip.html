@@ -680,7 +680,7 @@
             document.getElementById('searchResults').innerHTML = '<p style="color: #94a3b8; text-align: center; font-weight: 300;">請輸入關鍵字開始搜尋...</p>';
         }
 
-        const isOwner = [[${ trip.custVO.custId == loginCustId }]];
+        const isOwner = /*[[${trip.custVO.custId == loginCustId}]]*/ false;
         const collabModal = document.getElementById('collabModal');
 
         function openCollabModal() {
