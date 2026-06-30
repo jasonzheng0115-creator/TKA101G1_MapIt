@@ -3,9 +3,50 @@
 <head>
 <meta charset="UTF-8">
 <title>所有廠商清單</title>
-<link th:href="@{/css/backend-common.css}" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+<link href="/css/styles.css" rel="stylesheet" />
 <style>
+	
+	:root {
+		--primary-orange: #ff5722;
+		--dark-blue: #0f172a;
+	}
+	
+	* {
+		box-sizing: border-box;
+		margin: 0;
+		padding: 0;
+	}
+	
+	body {
+		font-family: "Segoe UI", Arial, sans-serif;
+		background-color: whitesmoke;
+		color: dimgray;
+		padding-top: 140px;
+	}
+	
+	/* 導覽列 */
+    .navbar-backend {
+        background-color: white;
+        border-bottom: 1px solid lightgray;
+    }
 
+    .sub-navbar-backend {
+        background-color: white;
+        border-bottom: 2px solid lightgray;
+    }
+
+    .sub-navbar-backend .nav-link {
+        color: slategray;
+        transition: color 0.2s;
+        font-size: 0.95rem;
+    }
+
+    .sub-navbar-backend .nav-link:hover {
+        color: var(--primary-orange);
+    }
+    
+    
 	table { 
 		width: 100%;
 		border-collapse: collapse; 
@@ -66,8 +107,8 @@
 	
 	/* 修改按鈕 */
 	.btn-update:hover {
-		border-color: dodgerblue;
-		color: dodgerblue;
+		border-color: #ff5722;
+		color: #ff5722;
 		background-color: whitesmoke;
 	}
 	
@@ -109,15 +150,15 @@
 	}
 	
 	.page-item:hover {
-		border-color: dodgerblue;
-		color: dodgerblue;
+		border-color: #ff5722;
+		color: #ff5722;
 		background-color: whitesmoke;
 	}
 	
 	/* 當前所在頁面的藍色狀態 */
 	.page-item.active {
-		background-color: dodgerblue;
-		border-color: dodgerblue;
+		background-color: #ff5722;
+		border-color: #ff5722;
 		color: white;
 		font-weight: bold;
 	}
@@ -133,23 +174,74 @@
 </head>
 <body>
 	
-	<!-- 上方導覽列 -->
-	<div class="navbar">
-		<a class="navbar-brand" href="#">🏢 後台管理系統</a>
-		<!-- href="#" 連結點選後會留在原地 -->
-		<div class="navbar-nav">
-			<a class="active" th:href="@{/supplier/select_page}">供應商管理</a>
-			<a th:href="@{/product/select_page}">商品管理</a>
-			<a th:href="@{/ap/select_page}">應付帳款</a>
-			<a th:href="@{/orders/backend-list}">訂單管理</a>
-		</div>
-	</div>
+	<!-- 組合式固定導覽列 -->
+    <header class="fixed-top shadow-sm" style="z-index: 1030;">
+        <!-- 主選單 (Top Bar) -->
+        <nav class="navbar navbar-expand-lg navbar-light navbar-backend py-2">
+            <div class="container-fluid px-4 px-lg-5">
+                <a class="navbar-brand fw-bold fs-3" href="/manage" style="color: var(--primary-orange);">MapIt <span
+                        class="fs-5 text-secondary">後台管理系統</span></a>
+
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center" style="font-size: 0.9rem;">
+                        <li class="nav-item" th:if="${session.loginEmp}">
+                            <span class="nav-link text-secondary px-3">
+                                <i class="bi bi-person-badge-fill text-dark"></i>
+                                <span th:text="${session.loginEmp.empName} + ' 您好'">管理員 您好</span>
+                            </span>
+                        </li>
+                        <li class="nav-item ms-lg-2">
+                            <a class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-bold shadow-sm"
+                                th:href="@{/emp/logout}">登出</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!-- 次選單 (功能導覽) -->
+        <nav class="sub-navbar-backend py-1">
+            <div class="container-fluid px-4 px-lg-5">
+                <ul class="nav justify-content-center fw-bold">
+                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/product/select_page}">商品管理</a></li>
+                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/orders/backend-list}">訂單管理</a></li>
+                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/customer/empCustomerList}">會員管理</a></li>
+                    
+                    <li class="nav-item">
+	                	<a class="nav-link active px-4" 
+	                		style="color: #ff5722 !important; 
+	                				font-weight: bold;
+	                				border-bottom: 3px solid #ff5722;
+	                				padding-bottom: 8px;
+	                				margin-bottom: -1px;"
+	                		th:href="@{/supplier/select_page}">
+	                		廠商管理
+	                	</a>
+	                </li>   
+                    
+                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/ap/select_page}">應付帳款</a></li>
+                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/emp/select_page}">員工管理</a></li>
+                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/dept/listAllDept}">部門管理</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
 	
 	<div class="container-fluid">
 		
 		<div class="main-card">
 	
-			<h3>📋 所有廠商清單資料</h3>
+			<h3>📋 所有廠商清單資料</h3>	
+			
+			<!-- 提示框 -->
+			<div th:if="${errorMsg}" style="color: white; background-color: crimson; padding: 12px; border-radius: 6px; margin: 15px 0; font-weight: bold; font-size: 14px;">
+			    <i class="bi bi-exclamation-triangle-fill"></i> <span th:text="${errorMsg}"></span>
+			</div>
+			
+			<div th:if="${successMsg}" style="color: white; background-color: green; padding: 12px; border-radius: 6px; margin: 15px 0; font-weight: bold; font-size: 14px;">
+			    <i class="bi bi-check-circle-fill"></i> <span th:text="${successMsg}"></span>
+			</div>
+			
 			
 			<div>
 				<a th:href="@{/supplier/select_page}" class="btn-back">🔙 返回首頁</a>
@@ -164,6 +256,7 @@
 						<th>電話</th>
 						<th>Email</th>
 						<th>地址</th>
+						<th>狀態</th>
 						<th>操作功能</th>
 					</tr>
 				</thead>
@@ -175,17 +268,33 @@
 						<td th:text="${s.supplierTel}"></td>
 						<td th:text="${s.supplierEmail}"></td>
 						<td th:text="${s.supplierAddress}"></td>
+						
+						<td>
+							<span th:if="${s.supplierStatus}" style="color: green; font-weight: bold;">🟢 啟用中</span>
+							<span th:if="${!s.supplierStatus}" style="color: red; font-weight: bold;">🔴 已停用</span>
+						</td>
+						
 						<td>
 							<form th:action="@{/supplier/getOne_For_Update}" method="post" style="display: inline;">
 								<input type="hidden" name="supplierId" th:value="${s.supplierId}">
 								<button type="submit" class="btn-action btn-update">✍️ 修改</button>
 							</form>
-							<form th:action="@{/supplier/delete}" method="post" style="display: inline;">
+							
+							<form th:if="${s.supplierStatus}" th:action="@{/supplier/delete}" method="post" style="display: inline;">
 								<input type="hidden" name="supplierId" th:value="${s.supplierId}">
+								<input type="hidden" name="page" th:value="${currentPage}">
 								<button type="submit" class="btn-action btn-delete" 
-										onclick="return confirm('確定要刪除嗎？');">🗑️ 刪除</button>
+										onclick="return confirm('確定要停用此廠商嗎？');">🚫 停用</button>
+							</form>
+							
+							<form th:if="${!s.supplierStatus}" th:action="@{/supplier/resume}" method="post" style="display: inline;">
+								<input type="hidden" name="supplierId" th:value="${s.supplierId}">
+								<button type="submit" class="btn-action btn-update" 
+										style="border-color: green; color: green;"
+										onclick="return confirm('確定要重新啟用此廠商嗎？');">⚡ 啟用</button>
 							</form>
 						</td>
+						
 					</tr>
 				</tbody>
 			</table>
@@ -223,6 +332,6 @@
 		</div>
 	</div>
 	
-	
+
 </body>
 </html>

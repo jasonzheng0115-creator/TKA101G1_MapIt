@@ -3,18 +3,30 @@
 <head>
 <meta charset="UTF-8">
 <title>旅遊商品詳情</title>
+
+<!-- 同首頁的導覽列 -->
+<link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+<link href="/css/styles.css" rel="stylesheet" />
+<!-- ========== -->
+
 <style>
 	body {
 		background-color: whitesmoke;
 		font-family: sans-serif;
 		padding: 20px;
+		padding-top: 140px;
 		display: flex;
 		flex-direction: column; /* 鎖定由上到下垂直 */
 		align-items: center;    /* 返回鈕與卡片水平置中 */
 	}
-	
+
+	/* ========================================================
+   		舊導覽列css : 選擇器名稱後面加上「_OLD」
+   		如需要改回舊導覽列把「_OLD」刪除
+       ======================================================== */	
 	/* 頂部導覽列 */
-	.front-navbar {
+	.front-navbar_OLD {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
@@ -29,20 +41,20 @@
 		box-sizing: border-box;
 	}
 	
-	.front-logo {
+	.front-logo_OLD {
 		font-size: 22px;
 		font-weight: bold;
 		color: coral;
 		text-decoration: none;
 	}
 	
-	.member-status-box {
+	.member-status-box_OLD {
 		display: flex;
 		align-items: center;
 		gap: 15px;
 	}
 	
-	.member-link {
+	.member-link_OLD {
 		font-size: 14px;
 		color: #555;
 		text-decoration: none;
@@ -50,11 +62,11 @@
 		transition: color 0.2s;
 	}
 	
-	.member-link:hover {
+	.member-link_OLD:hover {
 		color: orange;
 	}
 	
-	.btn-login {
+	.btn-login_OLD {
 		background-color: orange;
 		color: white !important;
 		padding: 6px 20px;
@@ -62,18 +74,22 @@
 		font-weight: bold;
 	}
 	
-	.btn-login:hover {
+	.btn-login_OLD:hover {
 		background-color: darkorange;
 	}
+	/* ----------------------------------------------------
+      舊導覽列到這
+     ---------------------------------------------------- */
 	
 	/* 卡片上方專用工具列 */
 	.action-bar {
-		max-width: 800px;
+		max-width: 1200px;
 		width: 100%;
-		margin-bottom: 12px;
+		margin-bottom: 20px;
 		display: flex;
 		justify-content: flex-start;
 	}
+
 	
 	/* 取消返回按鈕 */
 	.btn-back {
@@ -97,38 +113,38 @@
 	
 	/* 詳情頁核心大卡片 */
 	.detail-container {
-		background-color: white;
-		border-radius: 12px;
-		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
-		max-width: 800px;
+		background-color: transparent;
+		border-radius: 0;
+		box-shadow: none;
+		max-width: 1200px;
 		width: 100%;
 		display: flex; /* 讓圖片在左、資訊在右，形成完美的現代雙欄型錄 */
+		flex-direction: column; /* 由上往下垂直排列 */
 		gap: 30px;
-		padding: 30px;
+		padding: 0;
 		box-sizing: border-box;
-		align-items: flex-start; /* 讓左右兩欄各自獨立高度，不要互相拉扯致變形！ */
 	}
 	
 	/* 左欄：商品大圖片區外殼 */
 	.detail-img-box {
-		flex: 1;
-		max-width: 50%;
-		flex-shrink: 0; /* 防止圖片被擠壓 */
+		width: 100%;
+		display: flex;
+		justify-content: center; /* 讓圖片置中 */
 	}
 	
 	.detail-img {
 		width: 100%;
-		max-width: 350px;
-		height: 350px;
+		max-width: 1200px;
+		height: 500px;
 		object-fit: cover; /* 確保不管什麼照片，絕不變形拉伸 */
-		border-radius: 8px;
-		border: 1px solid lightgray;
+		border-radius: 12px;
+		border: none;
 		display: block;
 	}
 	
 	/* 右欄：商品文字與功能資訊區 */
 	.detail-info-box {
-		flex: 1;
+		width: 100%;
 		display: flex;
 		flex-direction: column;
 	}
@@ -153,20 +169,90 @@
 </head>
 <body>
 
-	<nav class="front-navbar">
-		<a th:href="@{/frontend/product/listAll}" class="front-logo">旅圖 | MapIt</a>
+	<!-- 同首頁的導覽列 -->
+	<header class="fixed-top bg-white shadow-sm" style="z-index: 1030;">
+	    <nav class="navbar navbar-expand-lg navbar-light border-bottom py-2">
+	        <div class="container px-4 px-lg-5">
+	            <a class="navbar-brand fw-bold fs-3" href="/" style="color: #ff5722; ">旅圖 | MapIt</a>
+	            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+	                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+	                aria-expanded="false" aria-label="Toggle navigation">
+	                <span class="navbar-toggler-icon"></span>
+	            </button>
+	            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+	                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center" style="font-size: 0.9rem;">
+	
+	                    <li class="nav-item" th:if="${userName}">
+	                        <a class="nav-link text-secondary px-3" th:href="@{/customer/updateProfile}">
+	                            <i class="bi bi-person-circle"></i> <span th:text="${userName} + ' 你好'">會員中心</span>
+	                        </a>
+	                    </li>
+	
+	                    <li class="nav-item">
+	                        <a class="nav-link text-secondary px-3" th:href="@{/cart/show}">
+	                            <i class="bi bi-cart3"></i> 購物車
+	                        </a>
+	                    </li>
+	
+	                    <li class="nav-item ms-lg-2" th:if="${userName}">
+	                        <a class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-bold shadow-sm"
+	                            th:href="@{/customer/logout}">登出</a>
+	                    </li>
+	
+	                    <li class="nav-item ms-lg-2" th:unless="${userName}">
+	                        <a class="btn btn-warning btn-sm rounded-pill px-3 fw-bold shadow-sm"
+	                            th:href="@{/customer/login}">註冊 / 登入</a>
+	                    </li>
+	                </ul>
+	            </div>
+	        </div>
+	    </nav>
+	
+	    <nav class="sub-navbar bg-white py-1">
+	        <div class="container px-4 px-lg-5">
+	            <ul class="nav justify-content-center fw-bold">
+	                <li class="nav-item"><a class="nav-link text-dark px-4" href="/">首頁</a></li>
+	                <li class="nav-item"><a class="nav-link text-dark px-4" href="#!">關於我們</a></li>
+	                
+	                <li class="nav-item">
+	                	<a class="nav-link active px-4" 
+	                		style="color: #ff5722 !important; 
+	                				font-weight: bold;
+	                				border-bottom: 3px solid #ff5722;
+	                				padding-bottom: 8px;
+	                				margin-bottom: -1px;"
+	                		th:href="@{/frontend/product/listAll}">
+	                		商城
+	                	</a>
+	                </li>
+	                
+	                <li class="nav-item"><a class="nav-link text-dark px-4" href="/fron/attr/list">景點探索</a></li>
+	                <li class="nav-item"><a class="nav-link text-dark px-4" href="#!">主題推薦</a></li>
+	                <li class="nav-item"><a class="nav-link text-dark px-4" th:href="@{/trip/my-trips}">我的行程</a></li>
+	                <li class="nav-item"><a class="nav-link text-dark px-4" href="/front/favorite/list">我的收藏</a></li>
+	                <li class="nav-item"><a class="nav-link text-dark px-4" href="#!">客服中心</a></li>
+	            </ul>
+	        </div>
+	    </nav>
+	</header>
+	<!-- ================= -->
+
+<!-- ======= 舊導覽列 ======= -->
+<!-- 	<nav class="front-navbar"> -->
+<!-- 		<a th:href="@{/frontend/product/listAll}" class="front-logo">旅圖 | MapIt</a> -->
 		
-		<div class="member-status-box">
-			<span style="font-size: 13px; color: gray;">歡迎光臨，旅客!</span>
-			<a href="/member/register" class="member-link">📝 註冊新會員</a>
-			<a href="/member/register" class="member-link btn-login">🔐 會員登入</a>
-			<span style="color: lightgray;">|</span>
-			<a th:href="@{/cart/show}" class="member-link" style="font-size: 16px;">🛒 購物車</a>
-		</div>
-	</nav>
+<!-- 		<div class="member-status-box"> -->
+<!-- 			<span style="font-size: 13px; color: gray;">歡迎光臨，旅客!</span> -->
+<!-- 			<a href="/member/register" class="member-link">📝 註冊新會員</a> -->
+<!-- 			<a href="/member/register" class="member-link btn-login">🔐 會員登入</a> -->
+<!-- 			<span style="color: lightgray;">|</span> -->
+<!-- 			<a th:href="@{/cart/show}" class="member-link" style="font-size: 16px;">🛒 購物車</a> -->
+<!-- 		</div> -->
+<!-- 	</nav> -->
+<!-- ========================================= -->
 
 	<div class="action-bar">
-		<a th:href="@{/frontend/product/listAll}" class="btn-back">X 取消返回</a>
+		<a th:href="@{/frontend/product/listAll}" class="btn-back"> << 返回商品列表</a>
 	</div>
 
 	<div class="detail-container" th:if="${prodVO}">
@@ -185,18 +271,22 @@
 			<form th:action="@{/cart/add}" method="POST" style="margin-top: auto; background-color: #f9f9f9; padding: 20px; border-radius: 8px; border: 1px solid lightgray;">
 				<input type="hidden" name="productId" th:value="${prodVO.productId}">
 				
-				<div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
-					<label style="font-size: 14px; font-weight: bold; color: #555;">選擇數量：</label>
-					<select name="quantity" style="padding: 6px 12px; border-radius: 4px; border: 1px solid lightgray; font-size: 14px; color: #333;">
-						<option value="1">1</option>
-						<option value="2">2</option>
-						<option value="3">3</option>
-						<option value="4">4</option>
-						<option value="5">5</option>
-					</select>
+				<div style="display: flex; flex-direction: column; gap: 5px;">
+					<div style="display: flex; align-items: center; gap: 10px;">
+						<label style="font-size: 16px; font-weight: bold; color: gray;">選擇數量：</label>
+						
+						<input type="number" name="quantity" id="prodQuantity" value="1" min="1" 
+						       th:max="${prodVO.productQty - prodVO.purchasedQty}" 
+						       oninput="validateQty()"
+						       style="width: 70px; text-align: center; padding: 8px; border: 1px solid lightgray; border-radius: 6px; font-size: 15px;">
+						
+						<span style="font-size: 13px; color: gray;" th:text="'(剩餘庫存: ' + ${prodVO.productQty - prodVO.purchasedQty} + ')'"></span>
+					</div>
+					
+					<span id="stockWarning" style="font-size: 13px; color: red; font-weight: bold; display: none;">⚠️ 抱歉，已超出目前可購買的庫存上限！</span>
 				</div>
 				
-				<button type="submit" style="width: 100%; background-color: orange; color: white; border: none; padding: 12px; border-radius: 25px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background-color 0.2s;">
+				<button type="submit" style="width: 100%; background-color: orange; color: white; border: none; padding: 12px; border-radius: 25px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 20px; transition: background-color 0.2s;">
 					🛒 立即加入購物車
 				</button>
 			</form>
@@ -228,6 +318,27 @@
 			} else {
 				// 舊文字直接相容印出
 				targetDiv.innerHTML = `<span style="font-size: 15px; color: gray;">${rawText}</span>`;
+			}
+		}
+			
+		
+		// 加入購物車前處理數量的點擊
+		function validateQty() {
+			const qtyInput = document.getElementById('prodQuantity');
+			const warningText = document.getElementById('stockWarning');
+			const maxStock = parseInt(qtyInput.getAttribute('max')) || 1;
+			let currentVal = parseInt(qtyInput.value);
+			
+			if (isNaN(currentVal)) return;
+
+			if (currentVal > maxStock) {
+				warningText.style.display = 'block'; // 顯示紅字
+				qtyInput.value = maxStock;           // 強制卡在最大庫存
+			} else if (currentVal < 1) {
+				qtyInput.value = 1;                  // 不能小於 1
+				warningText.style.display = 'none';
+			} else {
+				warningText.style.display = 'none';  // 正常時隱藏紅字
 			}
 		}
 	</script>

@@ -8,6 +8,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -20,6 +21,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.cust.model.CustService;
 import com.cust.model.CustVO;
+import com.ticket.model.TicketItemRepository;
+import com.ticket.model.TicketItemVO;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -31,6 +34,9 @@ public class CustController {
 
 	@Autowired // 自動new CustService()
 	CustService custService;
+	
+	@Autowired
+	TicketItemRepository ticketItemRepository;
 
 	@GetMapping("/login") // 登入功能，指向前端的登入html
 	public String loginPage() {
@@ -63,7 +69,16 @@ public class CustController {
 		session.setAttribute("loginCust", custVO);
 		// 查詢正確就轉向登入成功的畫面
 		model.addAttribute("loginCust", custVO);
-		return "redirect:/";
+
+		// 檢查是否有被 LoginFilter 記下的原請求路徑 (location)
+		String location = (String) session.getAttribute("location");
+		if (location != null) {
+			session.removeAttribute("location"); // 移出 session 以防後續登入重複重導向
+			return "redirect:" + location;
+		} else {
+			return "redirect:/";
+		}
+
 	}
 
 	@GetMapping("/loginSuccess") // 過濾器使用，讓使用者無法條過登入功能，直接透過網址登入
@@ -141,10 +156,10 @@ public class CustController {
 		} else {
 			// 使用者選新照片
 			try {
-				// 取得專案的絕對路徑
-				String projectPath = System.getProperty("user.dir");
-				// 合成存檔的目標資料夾
-				String uploadDirectory = projectPath + "/uploads/avatars";
+				// 取得使用者家目錄 (跨平台: Mac 會是 /Users/xxx，Windows 會是 C:\Users\xxx)
+				String userHome = System.getProperty("user.home");
+				// 合成存檔的目標資料夾，使用 File.separator 確保跨平台相容性
+				String uploadDirectory = userHome + File.separator + "upload" + File.separator + "custAvatar";
 				// 建立代表資料夾的File物件
 				File folder = new File(uploadDirectory);
 
@@ -157,12 +172,12 @@ public class CustController {
 				String fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
 				// 合成唯一的黨名
 				String newFileName = "avatar_" + custVO.getCustId() + fileExtension;
-				// 建立目的地的file物件，不能用+號，因為照片命名回黏在一起，不會存進指定的資料夾裡，也不能用"/"拼，因為不同作業系統會用\/，符號不同容易錯誤
+				// 建立目的地的file物件
 				File saveFile = new File(uploadDirectory, newFileName);
 				// 複製檔案存入硬碟
 				file.transferTo(saveFile);
-				// 將虛擬相對路徑存入資料庫
-				custVO.setCustImg("/uploads/avatars/" + newFileName);
+				// 將電腦本地端的絕對路徑存入資料庫
+				custVO.setCustImg(saveFile.getAbsolutePath());
 			} catch (Exception e) {
 				e.printStackTrace();
 				model.addAttribute("errorMsg", "照片上傳失敗:" + e.getMessage());
@@ -173,7 +188,7 @@ public class CustController {
 		custService.updateProfile(custVO);
 		// 更新新的資料給
 		session.setAttribute("loginCust", custVO);
-		return "redirect:/customer/loginSuccess";
+		return "redirect:/";
 	}
 
 	@GetMapping("/empCustomerList") // 後台查詢所有會員資料功能，進入後台頁面，預設顯示所有會員
@@ -241,7 +256,17 @@ public class CustController {
 	}
 
 	@GetMapping("/ticket") // 票券匣功能
-	public String ticket() {
+	public String ticket(HttpSession session, ModelMap model) {
+		CustVO loginCust = (CustVO) session.getAttribute("loginCust");
+		if (loginCust == null) {
+			return "redirect:/customer/login";
+		}
+		
+		model.addAttribute("loginCust", loginCust);
+		
+		List<TicketItemVO> ticketList = ticketItemRepository.findTicketsByCustId(loginCust.getCustId());
+		model.addAttribute("ticketList", ticketList);
+		
 		return "front-end/ticket/ticket";
 	}
 
@@ -255,4 +280,35 @@ public class CustController {
 		return "front-end/customer/orderHistory";
 	}
 
+	@GetMapping("/avatar")
+	public ResponseEntity<byte[]> getAvatar(HttpSession session) {
+		CustVO loginCust = (CustVO) session.getAttribute("loginCust");
+		if (loginCust == null || loginCust.getCustImg() == null || loginCust.getCustImg().trim().isEmpty()) {
+			return ResponseEntity.notFound().build();
+		}
+		
+		try {
+			File imgFile = new File(loginCust.getCustImg());
+			if (!imgFile.exists()) {
+				return ResponseEntity.notFound().build();
+			}
+			
+			byte[] imageBytes = java.nio.file.Files.readAllBytes(imgFile.toPath());
+			
+			// 簡單判斷 Content-Type
+			org.springframework.http.MediaType mediaType = org.springframework.http.MediaType.IMAGE_JPEG;
+			if (loginCust.getCustImg().toLowerCase().endsWith(".png")) {
+				mediaType = org.springframework.http.MediaType.IMAGE_PNG;
+			} else if (loginCust.getCustImg().toLowerCase().endsWith(".gif")) {
+				mediaType = org.springframework.http.MediaType.IMAGE_GIF;
+			}
+			
+			return ResponseEntity.ok()
+					.contentType(mediaType)
+					.body(imageBytes);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.internalServerError().build();
+		}
+	}
 }

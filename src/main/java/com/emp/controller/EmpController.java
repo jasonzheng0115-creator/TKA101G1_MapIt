@@ -23,7 +23,7 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
 @Controller
-@RequestMapping("/back-end/emp") // 員工管理控制器門牌
+@RequestMapping("/emp") // 員工管理控制器門牌
 public class EmpController {
 
     @Autowired
@@ -78,7 +78,7 @@ public class EmpController {
     @GetMapping("/logout")
     public String logout(HttpSession session) {
         session.invalidate(); // 清除 Session 所有內容
-        return "redirect:/back-end/emp/login"; // 重導向至登入頁
+        return "redirect:/emp/login"; // 重導向至登入頁
     }
 
     // 進入員工管理首頁 (提供複合查詢與管理入口)
@@ -170,7 +170,7 @@ public class EmpController {
 
         // 2. 執行更新
         empService.updateEmp(empVO);
-        return "redirect:/back-end/emp/listAllEmp";
+        return "redirect:/emp/listAllEmp";
     }
 
     // 員工複合查詢

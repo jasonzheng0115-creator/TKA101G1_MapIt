@@ -11,25 +11,29 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-//@Component
+@Component
 public class LoginFilter extends OncePerRequestFilter {
 
 	@Override
 	protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
 		String uri = request.getRequestURI();
-		
-		//絕對必須公開的白名單
+
+		// 絕對必須公開的白名單
 		if (uri.equals("/customer/login") ||
-			uri.equalsIgnoreCase("/customer/loginCheck") ||
-			uri.equals("/customer/register")) {
+				uri.equalsIgnoreCase("/customer/loginCheck") ||
+				uri.equals("/customer/register") ||
+				uri.equals("/customer/empCustomerList") || // 排除後台會員管理
+				uri.startsWith("/orders/backend-") // 排除後台訂單管理
+		) {
 			return true;
 		}
-		//黑名單
-		if(uri.startsWith("/customer") ||
-		   uri.startsWith("/order")) {
+		// 黑名單
+		if (uri.startsWith("/customer") ||
+				uri.startsWith("/order") ||
+				uri.startsWith("/trip")) {
 			return false;
 		}
-		//剩下的全部公開
+		// 剩下的全部公開
 		return true;
 	}
 

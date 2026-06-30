@@ -1,216 +1,295 @@
 <!DOCTYPE html>
 <html lang="zh-TW" xmlns:th="http://www.thymeleaf.org">
+
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <title>MapIt 後台 - 員工管理中心</title>
-    <!-- 引入與前台一致的 Bootstrap 5 與圖標樣式 -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
-    <link href="/css/styles.css" rel="stylesheet" />
-    <style>
-        :root {
-            --primary-orange: #ff5722;
-            --primary-orange-hover: #e64a19;
-            --dark-blue: #0f172a;
-        }
-        body {
-            background-color: #f8fafc;
-            color: #334155;
-            padding-top: 120px; /* 預留給固定頂部雙導覽列的空間 */
-        }
-        /* 後台專用 Top Bar */
-        .navbar-backend {
-            background-color: white;
-            border-bottom: 1px solid #e2e8f0;
-        }
-        /* 後台功能次選單 */
-        .sub-navbar-backend {
-            background-color: white;
-            border-bottom: 2px solid #e2e8f0;
-        }
-        .sub-navbar-backend .nav-link {
-            color: #475569;
-            transition: color 0.2s;
-            font-size: 0.95rem;
-        }
-        .sub-navbar-backend .nav-link:hover {
-            color: var(--primary-orange);
-        }
-        .sub-navbar-backend .nav-link.active {
-            color: var(--primary-orange);
-            border-bottom: 3px solid var(--primary-orange);
-            margin-bottom: -2px; /* 與底線對齊 */
-        }
-        /* 功能卡片樣式 */
-        .admin-card {
-            background-color: white;
-            border-radius: 12px;
-            border: 1px solid #e2e8f0;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-            padding: 2rem;
-            margin-bottom: 2rem;
-        }
-        .admin-card h3 {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--dark-blue);
-            border-left: 5px solid var(--primary-orange);
-            padding-left: 10px;
-            margin-bottom: 1.5rem;
-        }
-        /* 按鈕樣式對齊前台 */
-        .btn-orange {
-            background-color: var(--primary-orange);
-            color: white;
-            font-weight: 600;
-            border-radius: 6px;
-            border: none;
-            transition: background-color 0.2s;
-        }
-        .btn-orange:hover {
-            background-color: var(--primary-orange-hover);
-            color: white;
-        }
-        .btn-outline-orange {
-            border: 1.5px solid var(--primary-orange);
-            color: var(--primary-orange);
-            font-weight: 600;
-            border-radius: 6px;
-            background: transparent;
-            transition: all 0.2s;
-        }
-        .btn-outline-orange:hover {
-            background-color: var(--primary-orange);
-            color: white;
-        }
-        .form-control:focus, .form-select:focus {
-            border-color: var(--primary-orange);
-            box-shadow: 0 0 0 3px rgba(255, 87, 34, 0.15);
-        }
-    </style>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+	<title>MapIt 後台 - 員工管理中心</title>
+	<!-- 引入與前台一致的 Bootstrap 5 與圖標樣式 -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+	<link href="/css/styles.css" rel="stylesheet" />
+	<style>
+		:root {
+			--primary-orange: #ff5722;
+			--primary-orange-hover: #e64a19;
+			--dark-blue: #0f172a;
+		}
+
+		body {
+			background-color: #f8fafc;
+			color: #334155;
+			padding-top: 120px;
+			/* 預留給固定頂部雙導覽列的空間 */
+		}
+
+		/* 後台專用 Top Bar */
+		.navbar-backend {
+			background-color: white;
+			border-bottom: 1px solid #e2e8f0;
+		}
+
+		/* 後台功能次選單 */
+		.sub-navbar-backend {
+			background-color: white;
+			border-bottom: 2px solid #e2e8f0;
+		}
+
+		.sub-navbar-backend .nav-link {
+			color: #475569;
+			transition: color 0.2s;
+			font-size: 0.95rem;
+		}
+
+		.sub-navbar-backend .nav-link:hover {
+			color: var(--primary-orange);
+		}
+
+		.sub-navbar-backend .nav-link.active {
+			color: var(--primary-orange);
+			border-bottom: 3px solid var(--primary-orange);
+			margin-bottom: -2px;
+			/* 與底線對齊 */
+		}
+
+		/* 功能卡片樣式 */
+		.admin-card {
+			background-color: white;
+			border-radius: 12px;
+			border: 1px solid #e2e8f0;
+			box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+			padding: 2rem;
+			margin-bottom: 2rem;
+		}
+
+		.admin-card h3 {
+			font-size: 1.25rem;
+			font-weight: 700;
+			color: var(--dark-blue);
+			border-left: 5px solid var(--primary-orange);
+			padding-left: 10px;
+			margin-bottom: 1.5rem;
+		}
+
+		/* 按鈕樣式對齊前台 */
+		.btn-orange {
+			background-color: var(--primary-orange);
+			color: white;
+			font-weight: 600;
+			border-radius: 6px;
+			border: none;
+			transition: background-color 0.2s;
+		}
+
+		.btn-orange:hover {
+			background-color: var(--primary-orange-hover);
+			color: white;
+		}
+
+		.btn-outline-orange {
+			border: 1.5px solid var(--primary-orange);
+			color: var(--primary-orange);
+			font-weight: 600;
+			border-radius: 6px;
+			background: transparent;
+			transition: all 0.2s;
+		}
+
+		.btn-outline-orange:hover {
+			background-color: var(--primary-orange);
+			color: white;
+		}
+
+		.form-control:focus,
+		.form-select:focus {
+			border-color: var(--primary-orange);
+			box-shadow: 0 0 0 3px rgba(255, 87, 34, 0.15);
+		}
+	</style>
 </head>
+
 <body>
 
-    <!-- 組合式固定導覽列 (與前台首頁結構一致) -->
-    <header class="fixed-top shadow-sm" style="z-index: 1030;">
-        <!-- 主選單 (Top Bar) -->
-        <nav class="navbar navbar-expand-lg navbar-light navbar-backend py-2">
-            <div class="container-fluid px-4 px-lg-5">
-                <a class="navbar-brand fw-bold fs-3" href="/product/select_page" style="color: var(--primary-orange);">MapIt <span class="fs-5 text-secondary">後台管理系統</span></a>
-                
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center" style="font-size: 0.9rem;">
-                        <!-- 顯示登入的管理員姓名 -->
-                        <li class="nav-item" th:if="${session.loginEmp}">
-                            <span class="nav-link text-secondary px-3">
-                                <i class="bi bi-person-badge-fill text-dark"></i>
-                                <span th:text="${session.loginEmp.empName} + ' 您好 (管理員)'">管理員 您好</span>
-                            </span>
-                        </li>
-                        <!-- 登出按鈕 -->
-                        <li class="nav-item ms-lg-2">
-                            <a class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-bold shadow-sm" th:href="@{/back-end/emp/logout}">登出</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
+	<!-- 組合式固定導覽列 (與前台首頁結構一致) -->
+	<header class="fixed-top shadow-sm" style="z-index: 1030;">
+		<!-- 主選單 (Top Bar) -->
+		<nav class="navbar navbar-expand-lg navbar-light navbar-backend py-2">
+			<div class="container-fluid px-4 px-lg-5">
+				<a class="navbar-brand fw-bold fs-3" th:href="@{/manage}" style="color: var(--primary-orange);">MapIt
+					<span class="fs-5 text-secondary">後台管理系統</span></a>
 
-        <!-- 次選單 (後台各模組功能選單) -->
-        <nav class="sub-navbar-backend py-1">
-            <div class="container-fluid px-4 px-lg-5">
-                <ul class="nav justify-content-center fw-bold">
-                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/supplier/select_page}">供應商管理</a></li>
-                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/product/select_page}">商品管理</a></li>
-                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/ap/select_page}">應付帳款</a></li>
-                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/orders/backend-list}">訂單管理</a></li>
-                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/customer/empCustomerList}">會員管理</a></li>
-                    <li class="nav-item"><a class="nav-link active px-4" th:href="@{/back-end/emp/select_page}">員工管理</a></li>
-                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/back-end/dept/listAllDept}">部門管理</a></li>
-                </ul>
-            </div>
-        </nav>
-    </header>
+				<div class="collapse navbar-collapse" id="navbarSupportedContent">
+					<ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center" style="font-size: 0.9rem;">
+						<!-- 顯示登入的管理員姓名 -->
+						<li class="nav-item" th:if="${session.loginEmp}">
+							<span class="nav-link text-secondary px-3">
+								<i class="bi bi-person-badge-fill text-dark"></i>
+								<span th:text="${session.loginEmp.empName} + ' 您好'">管理員 您好</span>
+							</span>
+						</li>
+						<!-- 登出按鈕 -->
+						<li class="nav-item ms-lg-2">
+							<a class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-bold shadow-sm"
+								th:href="@{/emp/logout}">登出</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</nav>
 
-    <!-- 主要內容區 -->
-    <div class="container px-4 px-lg-5 mt-5">
-        <div class="row justify-content-center">
-            <div class="col-lg-10">
-                
-                <!-- 頁面頂部功能欄 -->
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2 class="fw-bold m-0"><i class="bi bi-people-fill text-dark"></i> 員工與管理員設定</h2>
-                    <div class="d-flex gap-2">
-                        <a th:href="@{/back-end/emp/addEmp}" class="btn btn-orange shadow-sm px-4">
-                            <i class="bi bi-person-plus-fill"></i> 新增員工
-                        </a>
-                        <a th:href="@{/back-end/emp/listAllEmp}" class="btn btn-outline-orange shadow-sm px-4">
-                            <i class="bi bi-list-ul"></i> 員工總覽
-                        </a>
-                    </div>
-                </div>
+		<!-- 次選單 (後台各模組功能選單) -->
+		<nav class="sub-navbar-backend py-1">
+			<div class="container-fluid px-4 px-lg-5">
+				<ul class="nav justify-content-center fw-bold">
+					<li class="nav-item"><a class="nav-link px-4" th:href="@{/product/select_page}">商品管理</a></li>
+					<li class="nav-item"><a class="nav-link px-4" th:href="@{/orders/backend-list}">訂單管理</a></li>
+					<li class="nav-item"><a class="nav-link px-4" th:href="@{/customer/empCustomerList}">會員管理</a></li>
+					<li class="nav-item"><a class="nav-link px-4" th:href="@{/supplier/select_page}">廠商管理</a></li>
+					<li class="nav-item"><a class="nav-link px-4" th:href="@{/ap/select_page}">應付帳款</a></li>
+					<li class="nav-item"><a class="nav-link active px-4" th:href="@{/emp/select_page}">員工管理</a></li>
+					<li class="nav-item"><a class="nav-link px-4" th:href="@{/dept/listAllDept}">部門管理</a></li>
+				</ul>
+			</div>
+		</nav>
+	</header>
 
-                <!-- 錯誤訊息提示區 -->
-                <div class="alert alert-danger shadow-sm" role="alert" th:if="${errorMsg}" th:text="${errorMsg}"></div>
+	<!-- 主要內容區 -->
+	<div class="container px-4 px-lg-5 mt-5">
+		<div class="row justify-content-center">
+			<div class="col-lg-12"> <!-- 擴展至 col-lg-12 以利並排展示 -->
 
-                <!-- 搜尋區塊一：單筆員工編號查詢 -->
-                <div class="admin-card">
-                    <h3>🔍 單筆員工編號查詢</h3>
-                    <form th:action="@{/back-end/emp/listEmps_ByCompositeQuery}" method="post">
-                        <div class="row align-items-end g-3">
-                            <div class="col-md-8">
-                                <label for="empId" class="form-label fw-bold">輸入員工編號 :</label>
-                                <input type="number" class="form-control py-2" id="empId" name="empId" placeholder="例如: 1001" required>
-                            </div>
-                            <div class="col-md-4">
-                                <button type="submit" class="btn btn-orange w-100 py-2">送出查詢</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
+				<!-- 頁面頂部功能欄 -->
+				<div class="d-flex justify-content-between align-items-center mb-4">
+					<h2 class="fw-bold m-0"><i class="bi bi-people-fill text-dark"></i> 員工與管理員設定</h2>
+					<div class="d-flex gap-2">
+						<a th:href="@{/emp/addEmp}" class="btn btn-orange shadow-sm px-4">
+							<i class="bi bi-person-plus-fill"></i> 新增員工
+						</a>
+						<a th:href="@{/emp/listAllEmp}" class="btn btn-outline-orange shadow-sm px-4">
+							<i class="bi bi-list-ul"></i> 員工總覽
+						</a>
+					</div>
+				</div>
 
-                <!-- 搜尋區塊二：萬用複合條件查詢 -->
-                <div class="admin-card">
-                    <h3>🎯 萬用複合條件查詢</h3>
-                    <form th:action="@{/back-end/emp/listEmps_ByCompositeQuery}" method="post">
-                        <div class="row g-3">
-                            <!-- 選擇部門 -->
-                            <div class="col-md-6">
-                                <label for="deptId" class="form-label fw-bold">所屬部門 :</label>
-                                <select class="form-select py-2" id="deptId" name="deptId">
-                                    <option value="">-- 請選擇部門 (選填) --</option>
-                                    <option th:each="dept : ${deptList}"
-                                            th:value="${dept.deptId}"
-                                            th:text="${dept.deptId} + ' - ' + ${dept.deptName}">
-                                    </option>
-                                </select>
-                            </div>
-                            
-                            <!-- 員工姓名 -->
-                            <div class="col-md-6">
-                                <label for="empName" class="form-label fw-bold">員工姓名關鍵字 :</label>
-                                <input type="text" class="form-control py-2" id="empName" name="empName" placeholder="輸入姓名關鍵字...">
-                            </div>
+				<!-- 錯誤訊息提示區 -->
+				<div class="alert alert-danger shadow-sm" role="alert" th:if="${errorMsg}" th:text="${errorMsg}"></div>
 
-                            <!-- 電話號碼 -->
-                            <div class="col-md-12">
-                                <label for="empTel" class="form-label fw-bold">聯絡電話關鍵字 :</label>
-                                <input type="text" class="form-control py-2" id="empTel" name="empTel" placeholder="輸入電話號碼關鍵字...">
-                            </div>
+				<!-- 搜尋區塊：左右並排且縮小 -->
+				<div class="row g-4 mb-4">
+					<!-- 左側：單筆員工編號查詢 (寬度比 5/12) -->
+					<div class="col-md-5">
+						<div class="admin-card h-100 p-3">
+							<h3 class="fs-6 mb-3"><i class="bi bi-search text-orange"></i> 單筆員工編號查詢</h3>
+							<form th:action="@{/emp/listEmps_ByCompositeQuery}" method="post">
+								<div class="mb-3">
+									<label for="empId" class="form-label fw-bold small">輸入員工編號 :</label>
+									<input type="number" class="form-control py-2" id="empId" name="empId"
+										placeholder="例如: 1001" required>
+								</div>
+								<button type="submit" class="btn btn-orange w-100 py-2 small">送出查詢</button>
+							</form>
+						</div>
+					</div>
 
-                            <!-- 送出按鈕 -->
-                            <div class="col-md-12 mt-4">
-                                <button type="submit" class="btn btn-orange w-100 py-2 fs-5">
-                                    <i class="bi bi-search"></i> 開始萬用複合搜尋
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
+					<!-- 右側：複合條件查詢 (寬度比 7/12) -->
+					<div class="col-md-7">
+						<div class="admin-card h-100 p-3">
+							<h3 class="fs-6 mb-3"><i class="bi bi-funnel text-orange"></i> 複合條件查詢</h3>
+							<form th:action="@{/emp/listEmps_ByCompositeQuery}" method="post">
+								<div class="row g-2">
+									<!-- 選擇部門 -->
+									<div class="col-sm-6">
+										<label for="deptId" class="form-label fw-bold small">所屬部門 :</label>
+										<select class="form-select py-1-5" id="deptId" name="deptId">
+											<option value="">-- 選擇部門 (選填) --</option>
+											<option th:each="dept : ${deptList}" th:value="${dept.deptId}"
+												th:text="${dept.deptId} + ' - ' + ${dept.deptName}">
+											</option>
+										</select>
+									</div>
+									<!-- 員工姓名 -->
+									<div class="col-sm-6">
+										<label for="empName" class="form-label fw-bold small">姓名關鍵字 :</label>
+										<input type="text" class="form-control py-1-5" id="empName" name="empName"
+											placeholder="姓名關鍵字...">
+									</div>
+									<!-- 電話號碼 -->
+									<div class="col-12">
+										<label for="empTel" class="form-label fw-bold small">聯絡電話關鍵字 :</label>
+										<input type="text" class="form-control py-1-5" id="empTel" name="empTel"
+											placeholder="輸入電話關鍵字...">
+									</div>
+									<!-- 送出按鈕 -->
+									<div class="col-12 mt-2">
+										<button type="submit" class="btn btn-orange w-100 py-2">
+											<i class="bi bi-search"></i> 開始篩選
+										</button>
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
 
-            </div>
-        </div>
-    </div>
+				<!-- 🎯 查詢結果區塊 (僅在 empList 存在時顯示) -->
+				<div class="admin-card p-3" th:if="${empList != null}">
+					<div class="d-flex justify-content-between align-items-center mb-3">
+						<h3 class="fs-6 m-0"><i class="bi bi-list-task text-orange"></i> 查詢結果清單</h3>
+						<a th:href="@{/emp/select_page}" class="btn btn-outline-secondary btn-sm px-3">
+							<i class="bi bi-arrow-counterclockwise"></i> 清空結果
+						</a>
+					</div>
+					<div class="table-responsive">
+						<table class="table table-striped table-hover align-middle" style="font-size: 0.9rem;">
+							<thead>
+								<tr class="text-center">
+									<th>員編</th>
+									<th>姓名</th>
+									<th>性別</th>
+									<th>電話</th>
+									<th>電子信箱</th>
+									<th>部門</th>
+									<th>帳號</th>
+									<th>啟用狀態</th>
+									<th>操作</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="empVO : ${empList}" class="text-center">
+									<td th:text="${empVO.empId}" class="fw-bold">1001</td>
+									<td th:text="${empVO.empName}">張三豐</td>
+									<td>
+										<span th:if="${empVO.empSex == 'M'}">男</span>
+										<span th:if="${empVO.empSex == 'F'}">女</span>
+									</td>
+									<td th:text="${empVO.empTel}">0912345678</td>
+									<td th:text="${empVO.empEmail}" class="text-start">test@example.com</td>
+									<td th:text="${empVO.deptVO.deptName}" class="fw-bold text-primary">資訊部</td>
+									<td th:text="${empVO.empAcc}" class="text-secondary">ituser01</td>
+									<td>
+										<span th:if="${empVO.empStatus}" class="badge bg-success badge-status"><i
+												class="bi bi-check-circle-fill"></i> 啟用</span>
+										<span th:unless="${empVO.empStatus}" class="badge bg-danger badge-status"><i
+												class="bi bi-slash-circle-fill"></i> 停用</span>
+									</td>
+									<td>
+										<form method="post" th:action="@{/emp/getOne_For_Update}">
+											<input type="hidden" name="empId" th:value="${empVO.empId}">
+											<button type="submit" class="btn btn-outline-orange btn-sm px-2 py-0-5">
+												<i class="bi bi-pencil-square"></i> 編輯
+											</button>
+										</form>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+
 
 </body>
+
 </html>

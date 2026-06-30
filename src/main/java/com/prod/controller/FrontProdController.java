@@ -58,12 +58,12 @@ public class FrontProdController {
 		
 		// 邏輯判斷 是否有關鍵字
 		if (keyword != null && !keyword.trim().isEmpty()) {
-			// 如果有輸入關鍵字，就走模糊查詢水管
-			pageData = prodSvc.gerProductByKeyword(keyword.trim(), pageable);
-			model.addAttribute("keyword", keyword.trim()); // 把關鍵字送回前端，讓搜尋框可以「留存字串」
+			// 只搜尋上架中且廠商啟用的商品
+			pageData = prodSvc.getFrontActiveProductsByKeyword(keyword.trim(), pageable);
+			model.addAttribute("keyword", keyword.trim());
 		} else {
-			// 如果沒輸入關鍵字，就維持原本的全商品查詢
-			pageData = prodSvc.getAll(pageable);
+			// 沒輸入關鍵字時，只撈上架中且廠商啟用的商品（不撈被停用廠商的商品）
+			pageData = prodSvc.getFrontActiveProducts(pageable);
 		}
 		
 		model.addAttribute("frontProdList", pageData.getContent());
@@ -84,6 +84,17 @@ public class FrontProdController {
 		model.addAttribute("prodVO", prodVO);
 		return "front-end/product/listOneProduct";
 		
+	}
+	
+	// 給首頁超連結使用
+	@GetMapping("/getOne_For_Display")
+	public String getOne_For_Display_Get (
+			@RequestParam("productId")Integer productId, 
+			ModelMap model) {
+		
+		ProdVO prodVO = prodSvc.getOneProd(productId);
+		model.addAttribute("prodVO", prodVO);
+		return "front-end/product/listOneProduct";
 	}
 
 }

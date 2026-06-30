@@ -50,7 +50,7 @@ public class ApController {
 			return "back-end/ap/addAp";
 		}
 		apSvc.addAp(apVO);
-		return "redirect:/ap/select_page";	
+		return "redirect:/ap/listAllAp";	
 	}
 	
 	@PostMapping("/getOne_For_Update")
@@ -68,13 +68,13 @@ public class ApController {
 			return "back-end/ap/update_ap_input";
 		}
 		apSvc.updateAp(apVO);
-		return "redirect:/ap/select_page";	
+		return "redirect:/ap/listAllAp";	
 	}
 	
 	@PostMapping("/delete")
 	public String delete(Integer apId, ModelMap model) {
 		apSvc.deleteAp(apId);
-		return "redirect:/ap/select_page";
+		return "redirect:/ap/listAllAp";
 	}
 	
 	@GetMapping("/listAllAp")
