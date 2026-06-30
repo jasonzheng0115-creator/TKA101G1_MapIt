@@ -1,215 +1,170 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="zh-TW" xmlns:th="http://www.thymeleaf.org">
+
 <head>
-<meta charset="UTF-8">
-<title>訂單成立成功</title>
-<style>
-	body {
-		background-color: whitesmoke;
-		font-family: sans-serif;
-		padding: 20px;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-	}
-	
-	/* 導覽列 */
-	.front-navbar {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		background-color: white;
-		padding: 15px 40px;
-		box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-		position: sticky;
-		top: 0;
-		z-index: 100;
-		margin: -20px -20px 25px -20px;
-		width: calc(100% + 40px);
-		box-sizing: border-box;
-	}
-	
-	.front-logo {
-		font-size: 22px;
-		font-weight: bold;
-		color: coral;
-		text-decoration: none;
-	}
-	
-	.member-link {
-		font-size: 14px;
-		color: orange;
-		text-decoration: none;
-		font-weight: bold;
-	}
-	
-	.success-container {
-		background-color: white;
-		border-radius: 16px;
-		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-		border: 1px solid lightgray;
-		max-width: 550px;
-		width: 100%;
-		padding: 35px;
-		box-sizing: border-box;
-		text-align: center;
-	}
-	
-	.success-header h1 {
-		color: darkorange;
-		font-size: 26px;
-		margin-bottom: 10px;
-	}
-	
-	.success-header p {
-		color: gray;
-		font-size: 14px;
-		margin-bottom: 30px;
-		line-height: 1.5;
-	}
-	
-	/* 電子收據與明細卡片 */
-	.receipt-card, .detail-card, .ticket-box {
-		text-align: left;
-		background-color: white;
-		border: 1px solid whitesmoke;
-		border-radius: 8px;
-		padding: 20px;
-		margin-bottom: 20px;
-	}
-	
-	.receipt-card h3, .detail-card h3, .ticket-box h3 {
-		margin: 0 0 15px 0;
-		color: black;
-		font-size: 16px;
-		border-left: 4px solid orange;
-		padding-left: 8px;
-	}
-	
-	
-	.receipt-card ul {
-		list-style: none;
-		padding: 0;
-		margin: 0;
-		font-size: 14px;
-		line-height: 2;
-	}
-	
-	/* 明細表格排版 */
-	table {
-		width: 100%;
-		border-collapse: collapse;
-		font-size: 14px;
-	}
-	
-	th, td {
-		padding: 10px;
-		text-align: left;
-		border-bottom: 1px solid whitesmoke;
-	}
-	
-	th {
-		color: gray;
-	}
-	
-	/*  QR Code 位置 */
-	.ticket-box {
-		background-color: white;
-		text-align: center;
-	}
-	
-	.ticket-box h3 {
-		text-align: left;
-	}
-	
-	.qrcode-placeholder {
-		display: inline-block;
-		margin-top: 15px;
-		padding: 20px;
-		border: 2px dashed orange;
-		border-radius: 12px;
-		background-color: white;
-		width: 180px;
-		height: 180px;
-		box-sizing: border-box;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-	}
-	
-	.qrcode-main {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-	}
-	
-</style>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>訂單成立成功 - 旅圖 MapIt</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+    <link href="/css/styles.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Outfit', 'Noto Sans TC', sans-serif;
+            background-color: #f8fafc;
+            color: #334155;
+            padding-top: 140px; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .nav-item.dropdown .dropdown-menu { display: none; margin-top: 8px; }
+        .nav-item.dropdown .dropdown-menu.show { display: block; }
+        .dropdown-item:hover { background-color: #fff5f2 !important; color: #ff5722 !important; }
+        .dropdown-item:hover i { color: #ff5722 !important; }
+
+        .success-container {
+            background-color: white; border-radius: 16px;
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.06);
+            border: 1px solid #f1f5f9; max-width: 600px; width: 100%;
+            padding: 40px; box-sizing: border-box; text-align: center; margin-bottom: 50px;
+        }
+        .success-header h1 { color: #ff5722; font-size: 28px; font-weight: bold; margin-bottom: 12px; }
+        .success-header p { color: #64748b; font-size: 15px; margin-bottom: 35px; line-height: 1.6; }
+        .receipt-card, .detail-card, .ticket-box {
+            text-align: left; background-color: #ffffff;
+            border: 1px solid #e2e8f0; border-radius: 12px; padding: 25px; margin-bottom: 25px;
+        }
+        .receipt-card h3, .detail-card h3, .ticket-box h3 {
+            margin: 0 0 20px 0; color: #1e293b; font-size: 17px; font-weight: bold;
+            border-left: 4px solid #ff5722; padding-left: 10px;
+        }
+        .receipt-card ul { list-style: none; padding: 0; margin: 0; font-size: 15px; line-height: 2.2; color: #475569; }
+        table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        th, td { padding: 12px 10px; text-align: left; border-bottom: 1px solid #f1f5f9; }
+        th { color: #64748b; font-weight: 500; }
+        .ticket-box { background-color: #fffaf8; border-color: #ffe4d6; text-align: center; }
+        .btn-custom-outline:hover { background-color: #fff5f2 !important; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(255, 87, 34, 0.15); }
+        .btn-custom-primary:hover { background-color: #e64a19 !important; border-color: #e64a19 !important; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(255, 87, 34, 0.3); }
+    </style>
 </head>
+
 <body>
+	<header class="fixed-top bg-white shadow-sm" style="z-index: 1030;">
+		<nav class="navbar navbar-expand-lg navbar-light border-bottom py-2">
+			<div class="container px-4 px-lg-5">
+				<a class="navbar-brand fw-bold fs-3" href="/" style="color: #ff5722;">旅圖 | MapIt</a>
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+					data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+					aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<div class="collapse navbar-collapse" id="navbarSupportedContent">
+					<ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center" style="font-size: 0.9rem;">
+						<li class="nav-item dropdown">
+							<a class="nav-link text-secondary px-3 dropdown-toggle" href="#" id="memberDropdown" role="button">
+								<i class="bi bi-person-circle"></i> <span th:text="${userName != null ? userName + ' 你好' : '會員中心'}">會員中心</span>
+							</a>
+							<ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2" aria-labelledby="memberDropdown" style="border-radius: 10px;">
+								<li><a class="dropdown-item py-2" th:href="@{/customer/updateProfile}"><i class="bi bi-person-lines-fill me-2 text-secondary"></i>修改個人資料</a></li>
+								<li><a class="dropdown-item py-2" th:href="@{/customer/ticket}"><i class="bi bi-tags me-2 text-secondary"></i>我的票券夾</a></li>
+								<li><a class="dropdown-item py-2" th:href="@{/orders/my-orders}"><i class="bi bi-file-earmark-text me-2 text-secondary"></i>我的訂單紀錄</a></li>
+								<li><a class="dropdown-item py-2" th:href="@{/customer/message}"><i class="bi bi-bell me-2 text-secondary"></i>我的通知</a></li>
+							</ul>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link text-secondary px-3" th:href="@{/cart/show}">
+								<i class="bi bi-cart3"></i> 購物車
+							</a>
+						</li>
+						<li class="nav-item ms-lg-2">
+							<a class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-bold shadow-sm"
+								th:href="@{/customer/logout}">登出</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+        <nav class="sub-navbar bg-white py-1">
+            <div class="container px-4 px-lg-5">
+                <ul class="nav justify-content-center fw-bold">
+                    <li class="nav-item"><a class="nav-link text-dark px-4" href="/">首頁</a></li>
+                    <li class="nav-item"><a class="nav-link text-dark px-4" href="/front/attr/about">關於我們</a></li>
+                    <li class="nav-item"><a class="nav-link text-dark px-4" th:href="@{/frontend/product/listAll}">商城</a></li>
+                    <li class="nav-item position-relative"><a class="nav-link text-dark px-4" href="/front/attr/list">景點探索</a></li>
+                    <li class="nav-item"><a class="nav-link text-dark px-4" th:href="@{/trip/my-trips}">我的行程</a></li>
+                    <li class="nav-item"><a class="nav-link text-dark px-4" href="/front/favorite/list">我的收藏</a></li>
+                    <li class="nav-item"><a class="nav-link text-dark px-4" href="/contact">客服中心</a></li>
+                </ul>
+            </div>
+        </nav>
+	</header>
 
-	<nav class="front-navbar">
-		<a th:href="@{/frontend/product/listAll}" class="front-logo">旅圖 | MapIt</a>
-		<div class="member-status-box">
-			<a th:href="@{/frontend/product/listAll}" class="member-link" style="font-size: 16px;">🌐 回商品首頁逛逛</a>
-		</div>
-	</nav>
-	
-	<div class="success-container">
-		
-		<div class="success-header">
-			<h1>🎉 感謝您的訂購！</h1>
-			<p>您的付款已扣款成功，以下為您的電子收據與入場憑證。</p>
-		</div>
-		
-		<div class="receipt-card">
-			<h3>🧾 訂單基本資訊</h3>
-			<ul>
-				<li><strong>訂單編號：</strong> <span th:text="${order.orderId}">10025</span></li>
-				<li><strong>訂單時間：</strong> <span th:text="${order.orderTimestamp}">2026-06-26 23:15:44</span></li>
-				<li><strong>實付總金額：</strong> <span style="color: coral; font-weight: bold;" th:text="'NT$ ' + ${order.orderPrice}">NT$ 999</span></li>
-				<li><strong>付款狀態：</strong> <span>🟢 刷卡成功 (已付款)</span></li>
-			</ul>
-		</div>
-		
-		<div class="detail-card">
-			<h3>📋 購買項目明細</h3>
-			<table>
-				<thead>
-					<tr>
-						<th>商品名稱</th>
-						<th>數量</th>
-						<th>購買單價</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr th:each="item : ${order.orderItems}">
-						<td>
-							<span th:text="${item.prodVO.productName}" style="font-weight: bold; color: black;">
-								台北101門票 placeholder
-							</span>
-							<br>
-							<small th:text="'(商品編號 #' + ${item.productId} + ')'" style="color: gray; font-size: 11px;">
-								(商品編號 #1)
-							</small>
-						</td>
-						<td th:text="${item.itemQty} + ' 張'">1 張</td>
-						<td th:text="'NT$ ' + ${item.itemPrice}">NT$ 999</td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
-		
-		<!-- ====Sasha修改==== -->
-		<div class="ticket-box text-center" style="padding: 30px 20px;">
-			<h3 style="text-align: center; border-left: none; margin-bottom: 20px;">🎫 票券已發送至您的票券匣</h3>
-			<p style="color: gray; font-size: 14px; margin-bottom: 20px;">感謝您的購買！請前往【我的票券匣】查看 QR Code 並進行使用</p>
-			<a th:href="@{/customer/ticket}" class="btn-custom-primary" style="background-color: #ff5722; color: white; padding: 12px 30px; border-radius: 25px; text-decoration: none; font-weight: bold; display: inline-block; transition: background-color 0.2s;">
-				➡︎ 立即前往我的票券匣
-			</a>
-		</div>
-		<!-- ================ -->
-		
-	</div>
+    <div class="success-container">
+        <div class="success-header">
+            <h1>🎉 感謝您的訂購！</h1>
+            <p>您的付款已扣款成功，以下為您的電子收據與入場憑證。</p>
+        </div>
+        
+        <div class="receipt-card">
+            <h3>🧾 訂單基本資訊</h3>
+            <ul>
+                <li><strong>訂單編號：</strong> <span th:text="${order.orderId}">10025</span></li>
+                <li><strong>訂單時間：</strong> <span th:text="${order.orderTimestamp}">2026-06-26 23:15:44</span></li>
+                <li><strong>實付總金額：</strong> <span style="color: #ff5722; font-weight: 800; font-size: 16px;" th:text="'NT$ ' + ${order.orderPrice}">NT$ 999</span></li>
+                <li><strong>付款狀態：</strong> <span style="color: #198754; font-weight: bold;">🟢 刷卡成功 (已付款)</span></li>
+            </ul>
+        </div>
+        
+        <div class="detail-card">
+            <h3>📋 購買項目明細</h3>
+            <table>
+                <thead><tr><th>商品名稱</th><th>數量</th><th>購買單價</th></tr></thead>
+                <tbody>
+                    <tr th:each="item : ${order.orderItems}">
+                        <td>
+                            <span th:text="${item.prodVO.productName}" style="font-weight: bold; color: #1e293b;">台北101門票</span><br>
+                            <small th:text="'(商品編號 #' + ${item.productId} + ')'" style="color: #94a3b8; font-size: 12px;">(商品編號 #1)</small>
+                        </td>
+                        <td th:text="${item.itemQty} + ' 張'" style="color: #475569;">1 張</td>
+                        <td th:text="'NT$ ' + ${item.itemPrice}" style="color: #475569;">NT$ 999</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="ticket-box text-center" style="padding: 30px 20px;">
+            <h3 style="text-align: center; border-left: none; margin-bottom: 20px;">🎫 票券已發送至您的票券匣</h3>
+            <p style="color: #64748b; font-size: 14px; margin-bottom: 25px;">感謝您的購買！請前往【我的票券匣】查看 QR Code 並進行使用</p>
+            <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+                <a th:href="@{/orders/my-orders}" class="btn-custom-outline" style="background-color: white; color: #ff5722; padding: 12px 25px; border-radius: 25px; text-decoration: none; font-weight: bold; border: 2px solid #ff5722; transition: all 0.2s;">
+                    🔙 返回歷史訂單
+                </a>
+                <a th:href="@{/customer/ticket}" class="btn-custom-primary" style="background-color: #ff5722; color: white; padding: 12px 25px; border-radius: 25px; text-decoration: none; font-weight: bold; border: 2px solid #ff5722; transition: all 0.2s;">
+                    ➡︎ 前往我的票券匣
+                </a>
+            </div>
+        </div>
+    </div>
 
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+	<script>
+		document.addEventListener("DOMContentLoaded", function() {
+			const memberDropdownToggle = document.getElementById('memberDropdown');
+			if (memberDropdownToggle) {
+				const dropdownMenu = memberDropdownToggle.nextElementSibling;
+				memberDropdownToggle.addEventListener('click', function(e) {
+					e.preventDefault(); e.stopPropagation();
+					dropdownMenu.classList.toggle('show');
+				});
+				document.addEventListener('click', function(e) {
+					if (!dropdownMenu.contains(e.target) && e.target !== memberDropdownToggle) {
+						dropdownMenu.classList.remove('show');
+					}
+				});
+			}
+		});
+	</script>
 </body>
 </html>

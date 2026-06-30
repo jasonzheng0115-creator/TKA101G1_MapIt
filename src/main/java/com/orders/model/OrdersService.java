@@ -36,7 +36,7 @@ public class OrdersService {
 		
 		// 在開始任何計算與存檔之前，先把下單時間設為現在，前台結帳畫面才會成立
 	    ordersVO.setOrderTimestamp(LocalDateTime.now());
-		
+	    
 		// 防禦性檢查：確認這張訂單裡面有沒有明細
 		if (ordersVO.getOrderItems() == null || ordersVO.getOrderItems().isEmpty()) {
 			throw new IllegalArgumentException("結帳失敗：訂單內必須包含至少一項商品項目！");
@@ -65,8 +65,9 @@ public class OrdersService {
 			// 安全價格防禦：強迫以資料庫真實價格為主，防止前端被惡意篡改金額
 			item.setItemPrice(prod.getProductPrice());
 			
-			// 扣庫存與累加累積銷量
-			prod.setProductQty(currentStock - buyQty); // 扣庫存
+			// 扣庫存
+			//	prod.setProductQty(currentStock - buyQty); 
+			// 後來ticket扣了庫存,因此這裡不需要,否則會重複扣除
 			
 			// 如果原本銷量是 null 就設為 0，接著把這次買的數量加上去
 			int currentPurchased = (prod.getPurchasedQty() == null) ? 0 : prod.getPurchasedQty();
@@ -129,7 +130,8 @@ public class OrdersService {
 			int refundQty = item.getItemQty(); // 當初購買的數量（即今天要退還的數量）
 		
 			// 庫存加回去，累積銷量扣掉
-			prod.setProductQty(currentStock + refundQty);
+			// prod.setProductQty(currentStock + refundQty);
+			// 後來ticket存回了庫存,因此這裡不需要,否則會重複加
 			
 			// 銷量扣除後如果小於 0，強迫歸零，防止出現負數銷量
 			int newPurchased = currentPurchased - refundQty;

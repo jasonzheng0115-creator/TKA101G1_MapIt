@@ -43,7 +43,7 @@ public class CustVO implements Serializable{
 	private String custRight="正常";
 	
 	@Column(name = "CUST_USE")
-	private String custUse="啟動";
+	private String custUse="未啟動";
 	
 	@NotEmpty(message="會員姓名，請勿空白")
 	@Pattern(regexp = "^[(\u4e00-\u9fa5)]{2,10}$",message = "請填寫正確姓名")

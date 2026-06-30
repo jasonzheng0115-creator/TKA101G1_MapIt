@@ -148,6 +148,16 @@
 			<p style="color: gray; font-size: 13px; margin-bottom: 15px;">
 				💡 提示：管理員可在此即時監控所有消費者的下單紀錄。若遇客戶要求退款，可點擊「強制取消」按鈕一鍵發動逆向退庫存流程。
 			</p>
+			
+			<!-- 關鍵字 -->
+			<div style="margin-bottom: 20px; display: flex; align-items: center; gap: 5px;">
+			    <input type="text" id="orderSearchInput" placeholder="輸入編號或商品關鍵字..." 
+			           style="width: 300px; padding: 8px 12px; border: 1px solid lightgray; border-radius: 4px; font-size: 14px;">
+			    <button type="button" id="searchBtn" 
+			            style="padding: 8px 15px; background-color: whitesmoke; border: 1px solid lightgray; border-radius: 4px; cursor: pointer; font-size: 14px; color: black;">
+			        <i class="bi bi-search"></i> 搜尋
+			    </button>
+			</div>
 
 			<div style="overflow-x: auto;">
 				<table class="order-table">
@@ -166,7 +176,7 @@
 					<tbody>
 						<tr th:each="order : ${allOrdersList}" th:id="'order-row-' + ${order.orderId}">
 							<td th:text="${order.orderId}">10025</td>
-							<td th:text="'會員 #' + ${order.custVO.custId}">會員 #1</td>
+							<td th:text="${order.custVO.custId}">1</td>
 							<td th:text="${order.orderTimestamp}">2026-06-27 00:15:00</td>
 							<td th:text="'NT$ ' + ${order.orderPrice}" style="font-weight: bold; color: black;">NT$ 999</td>
 							
@@ -246,6 +256,36 @@
 			alert('❌ 後台操作異常：' + error.message);
 		});
 	}
+	
+	
+	// 監聽「搜尋按鈕」的點擊事件
+	window.onload = function() {
+
+		document.getElementById('searchBtn').addEventListener('click', function() {
+		    const filterText = document.getElementById('orderSearchInput').value.toLowerCase().trim();
+		    const rows = document.querySelectorAll('.order-table tbody tr');
+	
+		    rows.forEach(row => {
+		        const orderId = row.cells[0].textContent.toLowerCase();
+		        const memberId = row.cells[1].textContent.toLowerCase();
+		        const items = row.cells[4].textContent.toLowerCase();
+	
+		        if (orderId.includes(filterText) || memberId.includes(filterText) || items.includes(filterText)) {
+		            row.style.display = ''; 
+		        } else {
+		            row.style.display = 'none'; 
+		        }
+		    });
+		});
+	
+		// 在輸入框按「Enter鍵」也能觸發搜尋
+		document.getElementById('orderSearchInput').addEventListener('keypress', function(e) {
+		    if (e.key === 'Enter') {
+		        document.getElementById('searchBtn').click();
+		    }
+		});
+	}
+	
 	</script>
 
 </body>

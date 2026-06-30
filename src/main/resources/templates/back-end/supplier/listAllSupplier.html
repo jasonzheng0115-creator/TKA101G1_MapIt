@@ -251,14 +251,14 @@
 			<table>
 				<thead>
 					<tr>
-						<th>廠商編號</th>
-						<th>廠商名稱</th>
-						<th>聯絡人</th>
-						<th>電話</th>
-						<th>Email</th>
-						<th>地址</th>
-						<th>狀態</th>
-						<th>操作功能</th>
+					    <th style="width: 8%;">廠商編號</th>
+					    <th style="width: 18%;">廠商名稱</th>
+					    <th style="width: 8%;">聯絡人</th>
+					    <th style="width: 12%;">電話</th>
+					    <th style="width: 18%;">Email</th> 
+					    <th style="width: 20%;">地址</th>
+					    <th style="width: 6%;">狀態</th>
+					    <th style="width: 10%;">操作功能</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -267,7 +267,7 @@
 						<td th:text="${s.supplierName}"></td>
 						<td th:text="${s.supplierContact}"></td>
 						<td th:text="${s.supplierTel}"></td>
-						<td th:text="${s.supplierEmail}"></td>
+						<td th:text="${s.supplierEmail}" style="word-break: break-all;"></td>
 						<td th:text="${s.supplierAddress}"></td>
 						
 						<td>
