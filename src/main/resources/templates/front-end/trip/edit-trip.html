@@ -8,9 +8,11 @@
     <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
     <link href="/css/styles.css" rel="stylesheet" />
-    
+
     <!-- 引入 Google Fonts (Outfit & Noto Sans TC) -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
 
     <!-- 引入 SortableJS -->
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
@@ -20,7 +22,8 @@
             font-family: 'Outfit', 'Noto Sans TC', sans-serif;
             background: radial-gradient(circle at 10% 20%, rgba(255, 245, 240, 0.8) 0%, rgba(243, 244, 246, 0.6) 90%);
             color: #334155;
-            padding-top: 140px; /* 預留頂部雙導覽列的高度 */
+            padding-top: 140px;
+            /* 預留頂部雙導覽列的高度 */
             min-height: 100vh;
             position: relative;
             overflow-x: hidden;
@@ -54,8 +57,13 @@
         }
 
         @keyframes pulse {
-            0% { transform: scale(1) translate(0px, 0px); }
-            100% { transform: scale(1.15) translate(40px, 30px); }
+            0% {
+                transform: scale(1) translate(0px, 0px);
+            }
+
+            100% {
+                transform: scale(1.15) translate(40px, 30px);
+            }
         }
 
         /* 手動控制下拉選單 */
@@ -63,16 +71,20 @@
             display: none;
             margin-top: 8px;
         }
+
         .nav-item.dropdown .dropdown-menu.show {
             display: block;
         }
+
         .dropdown-item {
             transition: all 0.2s;
         }
+
         .dropdown-item:hover {
             background-color: #fff5f2 !important;
             color: #ff5722 !important;
         }
+
         .dropdown-item:hover i {
             color: #ff5722 !important;
         }
@@ -146,7 +158,8 @@
         .main-container {
             display: flex;
             gap: 24px;
-            height: calc(100vh - 250px); /* 扣除導覽列與操作區的動態高度 */
+            height: calc(100vh - 250px);
+            /* 扣除導覽列與操作區的動態高度 */
             min-height: 550px;
         }
 
@@ -166,13 +179,16 @@
         .left-panel::-webkit-scrollbar {
             width: 6px;
         }
+
         .left-panel::-webkit-scrollbar-track {
             background: transparent;
         }
+
         .left-panel::-webkit-scrollbar-thumb {
             background: #cbd5e1;
             border-radius: 10px;
         }
+
         .left-panel::-webkit-scrollbar-thumb:hover {
             background: #94a3b8;
         }
@@ -297,6 +313,7 @@
         .search-results::-webkit-scrollbar {
             width: 6px;
         }
+
         .search-results::-webkit-scrollbar-thumb {
             background: #cbd5e1;
             border-radius: 10px;
@@ -322,7 +339,8 @@
         <!-- 主選單 (Top Bar) -->
         <nav class="navbar navbar-expand-lg navbar-light border-bottom py-2">
             <div class="container px-4 px-lg-5">
-                <a class="navbar-brand fw-bold fs-3" href="/" style="color: #ff5722; font-family: 'Outfit', sans-serif;">旅圖 | MapIt</a>
+                <a class="navbar-brand fw-bold fs-3" href="/"
+                    style="color: #ff5722; font-family: 'Outfit', sans-serif;">旅圖 | MapIt</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
@@ -333,10 +351,12 @@
 
                         <!-- 會員中心 -->
                         <li class="nav-item dropdown" th:if="${userName}">
-                            <a class="nav-link text-secondary px-3 dropdown-toggle" href="#" id="memberDropdown" role="button">
+                            <a class="nav-link text-secondary px-3 dropdown-toggle" href="#" id="memberDropdown"
+                                role="button">
                                 <i class="bi bi-person-circle"></i> <span th:text="${userName} + ' 你好'">會員中心</span>
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2" aria-labelledby="memberDropdown" style="border-radius: 10px;">
+                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2"
+                                aria-labelledby="memberDropdown" style="border-radius: 10px;">
                                 <li>
                                     <a class="dropdown-item py-2" th:href="@{/customer/updateProfile}">
                                         <i class="bi bi-person-lines-fill me-2 text-secondary"></i>修改個人資料
@@ -387,13 +407,104 @@
             <div class="container px-4 px-lg-5">
                 <ul class="nav justify-content-center fw-bold">
                     <li class="nav-item"><a class="nav-link text-dark px-4" href="/">首頁</a></li>
-                    <li class="nav-item"><a class="nav-link text-dark px-4" href="#!">關於我們</a></li>
-                    <li class="nav-item"><a class="nav-link text-dark px-4" th:href="@{/frontend/product/listAll}">商城</a></li>
-                    <li class="nav-item"><a class="nav-link text-dark px-4" href="/front/attr/list">景點探索</a></li>
-                    <li class="nav-item"><a class="nav-link text-dark px-4" href="#!">主題推薦</a></li>
-                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/trip/my-trips}" style="color: #ff5722; border-bottom: 2px solid #ff5722;">我的行程</a></li>
+                    <li class="nav-item"><a class="nav-link text-dark px-4" href="/front/attr/about">關於我們</a></li>
+                    <li class="nav-item"><a class="nav-link text-dark px-4"
+                            th:href="@{/frontend/product/listAll}">商城</a></li>
+
+                    <!-- 景點探索 (地區下拉選單) -->
+                    <li class="nav-item megamenu-nav-item position-relative">
+                        <a class="nav-link text-dark px-4" href="/front/attr/search">景點探索</a>
+
+                        <!-- 觀光景點小型下拉選單 (無地圖版) -->
+                        <div class="megamenu-dropdown"
+                            style="width: 200px !important; left: 50% !important; transform: translateX(-50%) !important; right: auto !important; border-radius: 12px; padding: 20px;">
+                            <h6 class="fw-bold text-dark mb-3" style="font-size: 1.05rem; letter-spacing: 1px;">觀光景點
+                            </h6>
+                            <ul class="list-unstyled ps-3"
+                                style="border-left: 2px solid #ff5722; line-height: 2.2; margin-bottom: 0;">
+                                <li><a href="/front/attr/search?area=北部地區"
+                                        class="text-secondary text-decoration-none region-link">北部地區</a></li>
+                                <li><a href="/front/attr/search?area=中部地區"
+                                        class="text-secondary text-decoration-none region-link">中部地區</a></li>
+                                <li><a href="/front/attr/search?area=南部地區"
+                                        class="text-secondary text-decoration-none region-link">南部地區</a></li>
+                                <li><a href="/front/attr/search?area=東部地區"
+                                        class="text-secondary text-decoration-none region-link">東部地區</a></li>
+                                <li><a href="/front/attr/search?area=離島地區"
+                                        class="text-secondary text-decoration-none region-link">離島地區</a></li>
+                            </ul>
+                        </div>
+                    </li>
+
+                    <!-- 整合後的主題推薦 (帶有 Megamenu 功能) -->
+                    <li class="nav-item megamenu-nav-item">
+                        <a class="nav-link text-dark px-4" href="#!">主題推薦</a>
+                        <div class="megamenu-dropdown">
+                            <div class="container px-4 px-lg-5">
+                                <div class="megamenu-grid">
+                                    <!-- 1. 自然景觀 (categoryId=1) -->
+                                    <a href="/front/attr/search?categoryId=1"
+                                        class="megamenu-card text-decoration-none">
+                                        <div class="megamenu-img-wrapper">
+                                            <img src="/images/nature.jpg" class="megamenu-img" alt="自然景觀">
+                                        </div>
+                                        <div class="megamenu-title">自然景觀</div>
+                                    </a>
+                                    <!-- 2. 歷史古蹟 (categoryId=2) -->
+                                    <a href="/front/attr/search?categoryId=2"
+                                        class="megamenu-card text-decoration-none">
+                                        <div class="megamenu-img-wrapper">
+                                            <img src="/images/history.jpg" class="megamenu-img" alt="歷史古蹟">
+                                        </div>
+                                        <div class="megamenu-title">歷史古蹟</div>
+                                    </a>
+                                    <!-- 3. 主題樂園 (categoryId=3) -->
+                                    <a href="/front/attr/search?categoryId=3"
+                                        class="megamenu-card text-decoration-none">
+                                        <div class="megamenu-img-wrapper">
+                                            <img src="/images/amusement.jpg" class="megamenu-img" alt="主題樂園">
+                                        </div>
+                                        <div class="megamenu-title">主題樂園</div>
+                                    </a>
+                                    <!-- 4. 藝文館所 (categoryId=4) -->
+                                    <a href="/front/attr/search?categoryId=4"
+                                        class="megamenu-card text-decoration-none">
+                                        <div class="megamenu-img-wrapper">
+                                            <img src="/images/gallery.jpg" class="megamenu-img" alt="藝文館所">
+                                        </div>
+                                        <div class="megamenu-title">藝文館所</div>
+                                    </a>
+                                    <!-- 5. 商圈夜市 (categoryId=5) -->
+                                    <a href="/front/attr/search?categoryId=5"
+                                        class="megamenu-card text-decoration-none">
+                                        <div class="megamenu-img-wrapper">
+                                            <img src="/images/market.jpg" class="megamenu-img" alt="商圈夜市">
+                                        </div>
+                                        <div class="megamenu-title">商圈夜市</div>
+                                    </a>
+                                    <!-- 6. 休閒農場 (categoryId=6) -->
+                                    <a href="/front/attr/search?categoryId=6"
+                                        class="megamenu-card text-decoration-none">
+                                        <div class="megamenu-img-wrapper">
+                                            <img src="/images/farm.jpg" class="megamenu-img" alt="休閒農場">
+                                        </div>
+                                        <div class="megamenu-title">休閒農場</div>
+                                    </a>
+                                    <!-- 7. 宗教廟宇 (categoryId=7) -->
+                                    <a href="/front/attr/search?categoryId=7"
+                                        class="megamenu-card text-decoration-none">
+                                        <div class="megamenu-img-wrapper">
+                                            <img src="/images/temple.jpg" class="megamenu-img" alt="宗教廟宇">
+                                        </div>
+                                        <div class="megamenu-title">宗教廟宇</div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="nav-item"><a class="nav-link text-dark px-4" th:href="@{/trip/my-trips}">我的行程</a></li>
                     <li class="nav-item"><a class="nav-link text-dark px-4" href="/front/favorite/list">我的收藏</a></li>
-                    <li class="nav-item"><a class="nav-link text-dark px-4" href="#!">客服中心</a></li>
+                    <li class="nav-item"><a class="nav-link text-dark px-4" href="/contact">客服中心</a></li>
                 </ul>
             </div>
         </nav>
@@ -409,13 +520,18 @@
                 <div class="d-flex align-items-center gap-3 flex-wrap">
                     <div class="d-flex align-items-center gap-2">
                         <span class="fw-bold text-secondary small" style="min-width: 65px;">行程名稱 :</span>
-                        <input type="text" id="tripNameInput" th:value="${trip.tripName}" class="form-control form-control-sm border" style="width: 250px; font-weight: 600; outline: none; border-radius: 8px;">
+                        <input type="text" id="tripNameInput" th:value="${trip.tripName}"
+                            class="form-control form-control-sm border"
+                            style="width: 250px; font-weight: 600; outline: none; border-radius: 8px;">
                     </div>
                     <div class="d-flex align-items-center gap-2">
                         <span class="fw-bold text-secondary small" style="min-width: 65px;">出發日期 :</span>
-                        <input type="date" id="tripDateInput" th:value="${trip.tripDate}" class="form-control form-control-sm border" style="width: 155px; outline: none; border-radius: 8px;">
+                        <input type="date" id="tripDateInput" th:value="${trip.tripDate}"
+                            class="form-control form-control-sm border"
+                            style="width: 155px; outline: none; border-radius: 8px;">
                     </div>
-                    <button class="btn btn-gradient btn-sm rounded-pill px-3 fw-bold d-flex align-items-center gap-1" onclick="updateTripBasicInfo()">
+                    <button class="btn btn-gradient btn-sm rounded-pill px-3 fw-bold d-flex align-items-center gap-1"
+                        onclick="updateTripBasicInfo()">
                         <i class="bi bi-save2-fill"></i> 儲存資訊
                     </button>
                 </div>
@@ -425,10 +541,12 @@
                     <button class="btn btn-outline-orange btn-sm rounded-pill px-3 fw-bold" onclick="openCollabModal()">
                         <i class="bi bi-people-fill"></i> 旅群管理
                     </button>
-                    <button class="btn btn-gradient btn-sm rounded-pill px-3 fw-bold d-flex align-items-center gap-1" onclick="openModal()">
+                    <button class="btn btn-gradient btn-sm rounded-pill px-3 fw-bold d-flex align-items-center gap-1"
+                        onclick="openModal()">
                         <i class="bi bi-plus-circle-fill"></i> 加入景點
                     </button>
-                    <a th:href="@{/trip/my-trips}" class="btn btn-outline-secondary-custom btn-sm rounded-pill px-3 fw-bold">
+                    <a th:href="@{/trip/my-trips}"
+                        class="btn btn-outline-secondary-custom btn-sm rounded-pill px-3 fw-bold">
                         <i class="bi bi-arrow-left-circle"></i> 返回清單
                     </a>
                 </div>
@@ -479,12 +597,15 @@
 
             <!-- 新增協作者區塊 -->
             <div id="addCollabSection" style="margin-bottom: 20px; display: none;">
-                <label style="font-size: 13px; color: #64748b; display: block; margin-bottom: 8px; font-weight: 600;">邀請好友加入協作</label>
+                <label
+                    style="font-size: 13px; color: #64748b; display: block; margin-bottom: 8px; font-weight: 600;">邀請好友加入協作</label>
                 <div class="search-box">
                     <div style="position: relative; flex: 1;">
-                        <input type="text" id="collabAccountInput" placeholder="輸入好友的帳號 (Account)" autocomplete="off" style="width: 100%;">
+                        <input type="text" id="collabAccountInput" placeholder="輸入好友的帳號 (Account)" autocomplete="off"
+                            style="width: 100%;">
                         <!-- 自動完成建議選單 -->
-                        <div id="collabSuggestions" style="display: none; position: absolute; top: 100%; left: 0; width: 100%; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 1010; max-height: 200px; overflow-y: auto; margin-top: 4px;">
+                        <div id="collabSuggestions"
+                            style="display: none; position: absolute; top: 100%; left: 0; width: 100%; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 1010; max-height: 200px; overflow-y: auto; margin-top: 4px;">
                         </div>
                     </div>
                     <button class="btn-search rounded-3" onclick="addCollaborator()">新增</button>
@@ -495,7 +616,8 @@
             <div style="border-top: 1px solid #e2e8f0; padding-top: 15px;">
                 <h4 style="font-size: 14px; color: #334155; margin-bottom: 12px; font-weight: 700;">群組成員列表</h4>
                 <div id="collabList">
-                    <p style="color: #94a3b8; text-align: center; font-weight: 300;"><i class="bi bi-hourglass-split"></i> 載入中，請稍候...</p>
+                    <p style="color: #94a3b8; text-align: center; font-weight: 300;"><i
+                            class="bi bi-hourglass-split"></i> 載入中，請稍候...</p>
                 </div>
             </div>
         </div>
@@ -538,7 +660,7 @@
             document.getElementById('searchResults').innerHTML = '<p style="color: #94a3b8; text-align: center; font-weight: 300;">請輸入關鍵字開始搜尋...</p>';
         }
 
-        const isOwner = [[${ trip.custVO.custId == loginCustId }]];
+        const isOwner = /*[[${trip.custVO.custId == loginCustId}]]*/ false;
         const collabModal = document.getElementById('collabModal');
 
         function openCollabModal() {
@@ -1247,18 +1369,18 @@
             }
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const memberDropdownToggle = document.getElementById('memberDropdown');
             if (memberDropdownToggle) {
                 const dropdownMenu = memberDropdownToggle.nextElementSibling;
-                
-                memberDropdownToggle.addEventListener('click', function(e) {
+
+                memberDropdownToggle.addEventListener('click', function (e) {
                     e.preventDefault();
                     e.stopPropagation();
                     dropdownMenu.classList.toggle('show');
                 });
-                
-                document.addEventListener('click', function(e) {
+
+                document.addEventListener('click', function (e) {
                     if (dropdownMenu.classList.contains('show')) {
                         if (!dropdownMenu.contains(e.target) && e.target !== memberDropdownToggle && !memberDropdownToggle.contains(e.target)) {
                             dropdownMenu.classList.remove('show');
@@ -1270,7 +1392,1436 @@
     </script>
 
     <!-- Google Maps API -->
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCE4YKL8rdzbBLQnVS1st55-QOEhXM0juE&callback=initMap" async defer></script>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        var googleMapsApiKey = /*[[${googleMapsApiKey}]]*/ '';
+
+        // 動態載入 Google Maps API
+        if (googleMapsApiKey) {
+            var script = document.createElement('script');
+            script.src = 'https://maps.googleapis.com/maps/api/js?key=' + googleMapsApiKey + '&callback=initMap&language=zh-TW';
+            script.async = true;
+            script.defer = true;
+            document.head.appendChild(script);
+        } else {
+            console.error('Google Maps API Key 未設定');
+        }
+        /*]]>*/
+    </script>
+
+</body>
+
+</html><!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>編輯行程 - MapIt</title>
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+    <link href="/css/styles.css" rel="stylesheet" />
+
+    <!-- 引入 Google Fonts (Outfit & Noto Sans TC) -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+
+    <!-- 引入 SortableJS -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Outfit', 'Noto Sans TC', sans-serif;
+            background: radial-gradient(circle at 10% 20%, rgba(255, 245, 240, 0.8) 0%, rgba(243, 244, 246, 0.6) 90%);
+            color: #334155;
+            padding-top: 140px;
+            /* 預留頂部雙導覽列的高度 */
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* 夢幻氣泡背景裝飾 */
+        .bg-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: -1;
+            opacity: 0.6;
+            animation: pulse 12s infinite alternate ease-in-out;
+        }
+
+        .blob-1 {
+            width: 450px;
+            height: 450px;
+            background: rgba(255, 87, 34, 0.1);
+            top: 5%;
+            left: -150px;
+        }
+
+        .blob-2 {
+            width: 400px;
+            height: 400px;
+            background: rgba(255, 179, 0, 0.08);
+            bottom: 5%;
+            right: -150px;
+            animation-delay: -3s;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1) translate(0px, 0px);
+            }
+
+            100% {
+                transform: scale(1.15) translate(40px, 30px);
+            }
+        }
+
+        /* 手動控制下拉選單 */
+        .nav-item.dropdown .dropdown-menu {
+            display: none;
+            margin-top: 8px;
+        }
+
+        .nav-item.dropdown .dropdown-menu.show {
+            display: block;
+        }
+
+        .dropdown-item {
+            transition: all 0.2s;
+        }
+
+        .dropdown-item:hover {
+            background-color: #fff5f2 !important;
+            color: #ff5722 !important;
+        }
+
+        .dropdown-item:hover i {
+            color: #ff5722 !important;
+        }
+
+        /* 漸層與品牌色字樣 */
+        .text-orange {
+            color: #ff5722;
+        }
+
+        .text-gradient {
+            background: linear-gradient(135deg, #ff7e5f 0%, #ff5722 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+        }
+
+        .btn-gradient {
+            background: linear-gradient(135deg, #ff7e5f 0%, #ff5722 100%);
+            color: #ffffff;
+            border: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 14px rgba(255, 87, 34, 0.3);
+        }
+
+        .btn-gradient:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 87, 34, 0.4);
+            color: #ffffff;
+        }
+
+        .btn-outline-orange {
+            color: #ff5722;
+            border: 1.5px solid #ff5722;
+            background-color: transparent;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-outline-orange:hover {
+            color: #ffffff;
+            background-color: #ff5722;
+            border-color: #ff5722;
+            box-shadow: 0 4px 12px rgba(255, 87, 34, 0.15);
+        }
+
+        .btn-outline-secondary-custom {
+            color: #475569;
+            border: 1.5px solid #cbd5e1;
+            background-color: transparent;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-outline-secondary-custom:hover {
+            color: #1e293b;
+            background-color: #f1f5f9;
+            border-color: #94a3b8;
+        }
+
+        /* 玻璃面板與卡片 */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 20px;
+            box-shadow: 0 10px 15px -3px rgba(255, 87, 34, 0.03), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+        }
+
+        /* ===== 主要內容區：左右分割 ===== */
+        .main-container {
+            display: flex;
+            gap: 24px;
+            height: calc(100vh - 250px);
+            /* 扣除導覽列與操作區的動態高度 */
+            min-height: 550px;
+        }
+
+        .left-panel {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 20px;
+            padding: 24px;
+            overflow-y: auto;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+        }
+
+        /* 客製化滾動條 */
+        .left-panel::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .left-panel::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .left-panel::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        .left-panel::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        .left-panel h3 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 20px;
+            border-left: 4px solid #ff5722;
+            padding-left: 10px;
+        }
+
+        .right-panel {
+            flex: 1;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+            background: #f1f5f9;
+        }
+
+        /* ===== 彈出視窗 (Modal) ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 1050;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 32px;
+            width: 550px;
+            max-width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+            border: none;
+        }
+
+        .modal-content h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 20px;
+            border-left: 4px solid #ff5722;
+            padding-left: 10px;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 18px;
+            right: 24px;
+            font-size: 22px;
+            cursor: pointer;
+            color: #94a3b8;
+            transition: color 0.2s;
+            background: none;
+            border: none;
+        }
+
+        .close-btn:hover {
+            color: #ef4444;
+        }
+
+        /* 搜尋框 */
+        .search-box {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 10px 16px;
+            font-size: 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+            outline: none;
+            transition: all 0.2s;
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+
+        .search-box input:focus {
+            border-color: #ff5722;
+            background-color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(255, 87, 34, 0.15);
+        }
+
+        .btn-search {
+            padding: 10px 20px;
+            font-size: 13px;
+            color: #FFFFFF;
+            background: #ff5722;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 600;
+        }
+
+        .btn-search:hover {
+            background: #e64a19;
+        }
+
+        .search-results {
+            margin-top: 15px;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 15px;
+        }
+
+        .search-results::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .search-results::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        /* 拖拉景點卡片時的虛線佔位符樣式 */
+        .sortable-ghost {
+            opacity: 0.4;
+            background-color: #f1f5f9 !important;
+            border: 2px dashed #ff5722 !important;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- 夢幻背景氣泡 -->
+    <div class="bg-blob blob-1"></div>
+    <div class="bg-blob blob-2"></div>
+
+    <!-- 組合式固定導覽列 (與首頁結構完全一致) -->
+    <header class="fixed-top bg-white shadow-sm" style="z-index: 1030;">
+        <!-- 主選單 (Top Bar) -->
+        <nav class="navbar navbar-expand-lg navbar-light border-bottom py-2">
+            <div class="container px-4 px-lg-5">
+                <a class="navbar-brand fw-bold fs-3" href="/"
+                    style="color: #ff5722; font-family: 'Outfit', sans-serif;">旅圖 | MapIt</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center" style="font-size: 0.9rem;">
+
+                        <!-- 會員中心 -->
+                        <li class="nav-item dropdown" th:if="${userName}">
+                            <a class="nav-link text-secondary px-3 dropdown-toggle" href="#" id="memberDropdown"
+                                role="button">
+                                <i class="bi bi-person-circle"></i> <span th:text="${userName} + ' 你好'">會員中心</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2"
+                                aria-labelledby="memberDropdown" style="border-radius: 10px;">
+                                <li>
+                                    <a class="dropdown-item py-2" th:href="@{/customer/updateProfile}">
+                                        <i class="bi bi-person-lines-fill me-2 text-secondary"></i>修改個人資料
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item py-2" th:href="@{/customer/ticket}">
+                                        <i class="bi bi-tags me-2 text-secondary"></i>我的票券夾
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item py-2" th:href="@{/orders/my-orders}">
+                                        <i class="bi bi-file-earmark-text me-2 text-secondary"></i>我的訂單紀錄
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item py-2" th:href="@{/customer/message}">
+                                        <i class="bi bi-bell me-2 text-secondary"></i>我的通知
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link text-secondary px-3" th:href="@{/cart/show}">
+                                <i class="bi bi-cart3"></i> 購物車
+                            </a>
+                        </li>
+
+                        <!-- 登出按鈕 -->
+                        <li class="nav-item ms-lg-2" th:if="${userName}">
+                            <a class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-bold shadow-sm"
+                                th:href="@{/customer/logout}">登出</a>
+                        </li>
+
+                        <!-- 註冊 / 登入按鈕 -->
+                        <li class="nav-item ms-lg-2" th:unless="${userName}">
+                            <a class="btn btn-warning btn-sm rounded-pill px-3 fw-bold shadow-sm"
+                                th:href="@{/customer/login}">註冊 / 登入</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!-- 次選單 (Sub-Navbar) -->
+        <nav class="sub-navbar bg-white py-1">
+            <div class="container px-4 px-lg-5">
+                <ul class="nav justify-content-center fw-bold">
+                    <li class="nav-item"><a class="nav-link text-dark px-4" href="/">首頁</a></li>
+                    <li class="nav-item"><a class="nav-link text-dark px-4" href="/front/attr/about">關於我們</a></li>
+                    <li class="nav-item"><a class="nav-link text-dark px-4"
+                            th:href="@{/frontend/product/listAll}">商城</a></li>
+
+                    <!-- 景點探索 (地區下拉選單) -->
+                    <li class="nav-item megamenu-nav-item position-relative">
+                        <a class="nav-link text-dark px-4" href="/front/attr/search">景點探索</a>
+
+                        <!-- 觀光景點小型下拉選單 (無地圖版) -->
+                        <div class="megamenu-dropdown"
+                            style="width: 200px !important; left: 50% !important; transform: translateX(-50%) !important; right: auto !important; border-radius: 12px; padding: 20px;">
+                            <h6 class="fw-bold text-dark mb-3" style="font-size: 1.05rem; letter-spacing: 1px;">觀光景點
+                            </h6>
+                            <ul class="list-unstyled ps-3"
+                                style="border-left: 2px solid #ff5722; line-height: 2.2; margin-bottom: 0;">
+                                <li><a href="/front/attr/search?area=北部地區"
+                                        class="text-secondary text-decoration-none region-link">北部地區</a></li>
+                                <li><a href="/front/attr/search?area=中部地區"
+                                        class="text-secondary text-decoration-none region-link">中部地區</a></li>
+                                <li><a href="/front/attr/search?area=南部地區"
+                                        class="text-secondary text-decoration-none region-link">南部地區</a></li>
+                                <li><a href="/front/attr/search?area=東部地區"
+                                        class="text-secondary text-decoration-none region-link">東部地區</a></li>
+                                <li><a href="/front/attr/search?area=離島地區"
+                                        class="text-secondary text-decoration-none region-link">離島地區</a></li>
+                            </ul>
+                        </div>
+                    </li>
+
+                    <!-- 整合後的主題推薦 (帶有 Megamenu 功能) -->
+                    <li class="nav-item megamenu-nav-item">
+                        <a class="nav-link text-dark px-4" href="#!">主題推薦</a>
+                        <div class="megamenu-dropdown">
+                            <div class="container px-4 px-lg-5">
+                                <div class="megamenu-grid">
+                                    <!-- 1. 自然景觀 (categoryId=1) -->
+                                    <a href="/front/attr/search?categoryId=1"
+                                        class="megamenu-card text-decoration-none">
+                                        <div class="megamenu-img-wrapper">
+                                            <img src="/images/nature.jpg" class="megamenu-img" alt="自然景觀">
+                                        </div>
+                                        <div class="megamenu-title">自然景觀</div>
+                                    </a>
+                                    <!-- 2. 歷史古蹟 (categoryId=2) -->
+                                    <a href="/front/attr/search?categoryId=2"
+                                        class="megamenu-card text-decoration-none">
+                                        <div class="megamenu-img-wrapper">
+                                            <img src="/images/history.jpg" class="megamenu-img" alt="歷史古蹟">
+                                        </div>
+                                        <div class="megamenu-title">歷史古蹟</div>
+                                    </a>
+                                    <!-- 3. 主題樂園 (categoryId=3) -->
+                                    <a href="/front/attr/search?categoryId=3"
+                                        class="megamenu-card text-decoration-none">
+                                        <div class="megamenu-img-wrapper">
+                                            <img src="/images/amusement.jpg" class="megamenu-img" alt="主題樂園">
+                                        </div>
+                                        <div class="megamenu-title">主題樂園</div>
+                                    </a>
+                                    <!-- 4. 藝文館所 (categoryId=4) -->
+                                    <a href="/front/attr/search?categoryId=4"
+                                        class="megamenu-card text-decoration-none">
+                                        <div class="megamenu-img-wrapper">
+                                            <img src="/images/gallery.jpg" class="megamenu-img" alt="藝文館所">
+                                        </div>
+                                        <div class="megamenu-title">藝文館所</div>
+                                    </a>
+                                    <!-- 5. 商圈夜市 (categoryId=5) -->
+                                    <a href="/front/attr/search?categoryId=5"
+                                        class="megamenu-card text-decoration-none">
+                                        <div class="megamenu-img-wrapper">
+                                            <img src="/images/market.jpg" class="megamenu-img" alt="商圈夜市">
+                                        </div>
+                                        <div class="megamenu-title">商圈夜市</div>
+                                    </a>
+                                    <!-- 6. 休閒農場 (categoryId=6) -->
+                                    <a href="/front/attr/search?categoryId=6"
+                                        class="megamenu-card text-decoration-none">
+                                        <div class="megamenu-img-wrapper">
+                                            <img src="/images/farm.jpg" class="megamenu-img" alt="休閒農場">
+                                        </div>
+                                        <div class="megamenu-title">休閒農場</div>
+                                    </a>
+                                    <!-- 7. 宗教廟宇 (categoryId=7) -->
+                                    <a href="/front/attr/search?categoryId=7"
+                                        class="megamenu-card text-decoration-none">
+                                        <div class="megamenu-img-wrapper">
+                                            <img src="/images/temple.jpg" class="megamenu-img" alt="宗教廟宇">
+                                        </div>
+                                        <div class="megamenu-title">宗教廟宇</div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="nav-item"><a class="nav-link text-dark px-4" th:href="@{/trip/my-trips}">我的行程</a></li>
+                    <li class="nav-item"><a class="nav-link text-dark px-4" href="/front/favorite/list">我的收藏</a></li>
+                    <li class="nav-item"><a class="nav-link text-dark px-4" href="/contact">客服中心</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <!-- 主要內容區 -->
+    <main class="container px-4 px-lg-5 mt-4">
+
+        <!-- 頂部資訊及管理控制面板 -->
+        <div class="card glass-card p-3 mb-4 border-0 bg-white">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+                <!-- 左側：行程基本資料與儲存 -->
+                <div class="d-flex align-items-center gap-3 flex-wrap">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="fw-bold text-secondary small" style="min-width: 65px;">行程名稱 :</span>
+                        <input type="text" id="tripNameInput" th:value="${trip.tripName}"
+                            class="form-control form-control-sm border"
+                            style="width: 250px; font-weight: 600; outline: none; border-radius: 8px;">
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="fw-bold text-secondary small" style="min-width: 65px;">出發日期 :</span>
+                        <input type="date" id="tripDateInput" th:value="${trip.tripDate}"
+                            class="form-control form-control-sm border"
+                            style="width: 155px; outline: none; border-radius: 8px;">
+                    </div>
+                    <button class="btn btn-gradient btn-sm rounded-pill px-3 fw-bold d-flex align-items-center gap-1"
+                        onclick="updateTripBasicInfo()">
+                        <i class="bi bi-save2-fill"></i> 儲存資訊
+                    </button>
+                </div>
+
+                <!-- 右側：功能按鈕群 -->
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-orange btn-sm rounded-pill px-3 fw-bold" onclick="openCollabModal()">
+                        <i class="bi bi-people-fill"></i> 旅群管理
+                    </button>
+                    <button class="btn btn-gradient btn-sm rounded-pill px-3 fw-bold d-flex align-items-center gap-1"
+                        onclick="openModal()">
+                        <i class="bi bi-plus-circle-fill"></i> 加入景點
+                    </button>
+                    <a th:href="@{/trip/my-trips}"
+                        class="btn btn-outline-secondary-custom btn-sm rounded-pill px-3 fw-bold">
+                        <i class="bi bi-arrow-left-circle"></i> 返回清單
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 左右分割主內容 -->
+        <div class="main-container mb-4">
+            <!-- 左欄：行程景點明細 -->
+            <div class="left-panel">
+                <h3><i class="bi bi-geo-alt-fill text-orange me-1"></i> 行程景點規劃</h3>
+                <div id="tripItemList">
+                    <p style="color: #94a3b8; font-weight: 300; text-align: center; padding: 60px 0;">
+                        目前還沒有加入任何景點，請點擊上方按鈕開始搜尋並加入景點。
+                    </p>
+                </div>
+            </div>
+
+            <!-- 右欄：Google Map 實體地圖 -->
+            <div class="right-panel">
+                <div id="map" style="width: 100%; height: 100%;"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- ====== 搜尋景點彈出視窗 ====== -->
+    <div id="searchModal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <h3><i class="bi bi-search text-orange me-1"></i> 搜尋景點</h3>
+
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="輸入景點關鍵字（例如：台北101、西門町）">
+                <button class="btn-search rounded-3" onclick="searchAttractions()">搜尋</button>
+            </div>
+
+            <div id="searchResults" class="search-results" style="max-height: 50vh; overflow-y: auto;">
+                <p style="color: #94a3b8; text-align: center; font-weight: 300;">請輸入關鍵字開始搜尋...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== 👥 協作者管理彈出視窗 ====== -->
+    <div id="collabModal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeCollabModal()">&times;</span>
+            <h3><i class="bi bi-people-fill text-orange me-1"></i> 旅遊群組管理</h3>
+
+            <!-- 新增協作者區塊 -->
+            <div id="addCollabSection" style="margin-bottom: 20px; display: none;">
+                <label
+                    style="font-size: 13px; color: #64748b; display: block; margin-bottom: 8px; font-weight: 600;">邀請好友加入協作</label>
+                <div class="search-box">
+                    <div style="position: relative; flex: 1;">
+                        <input type="text" id="collabAccountInput" placeholder="輸入好友的帳號 (Account)" autocomplete="off"
+                            style="width: 100%;">
+                        <!-- 自動完成建議選單 -->
+                        <div id="collabSuggestions"
+                            style="display: none; position: absolute; top: 100%; left: 0; width: 100%; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 1010; max-height: 200px; overflow-y: auto; margin-top: 4px;">
+                        </div>
+                    </div>
+                    <button class="btn-search rounded-3" onclick="addCollaborator()">新增</button>
+                </div>
+            </div>
+
+            <!-- 協作者清單 -->
+            <div style="border-top: 1px solid #e2e8f0; padding-top: 15px;">
+                <h4 style="font-size: 14px; color: #334155; margin-bottom: 12px; font-weight: 700;">群組成員列表</h4>
+                <div id="collabList">
+                    <p style="color: #94a3b8; text-align: center; font-weight: 300;"><i
+                            class="bi bi-hourglass-split"></i> 載入中，請稍候...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Thymeleaf inline 腳本 -->
+    <script th:inline="javascript">
+        const modal = document.getElementById('searchModal');
+        const searchInput = document.getElementById('searchInput');
+
+        let map = null;
+        let markers = [];
+        let polyline = null;
+        let directionsRenderer = null;
+        let directionsService = null;
+
+        const morandiStyles = [
+            { name: "玫瑰粉", bg: "rgba(244, 224, 224, 0.65)", border: "#C99E9E", line: "#D36A6A" },
+            { name: "鼠尾草綠", bg: "rgba(224, 238, 224, 0.65)", border: "#9EC99E", line: "#5A9E5A" },
+            { name: "霧霾藍", bg: "rgba(224, 230, 244, 0.65)", border: "#9EB0C9", line: "#4F86B5" },
+            { name: "丁香紫", bg: "rgba(234, 224, 244, 0.65)", border: "#A99EC9", line: "#8A5AB5" },
+            { name: "暖沙黃", bg: "rgba(244, 238, 224, 0.65)", border: "#C9BE9E", line: "#C4924A" }
+        ];
+
+        searchInput.addEventListener('keypress', function (event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                searchAttractions();
+            }
+        });
+
+        function openModal() {
+            modal.style.display = 'flex';
+            searchInput.focus();
+        }
+
+        function closeModal() {
+            modal.style.display = 'none';
+            searchInput.value = '';
+            document.getElementById('searchResults').innerHTML = '<p style="color: #94a3b8; text-align: center; font-weight: 300;">請輸入關鍵字開始搜尋...</p>';
+        }
+
+        const isOwner = /*[[${trip.custVO.custId == loginCustId}]]*/ false;
+        const collabModal = document.getElementById('collabModal');
+
+        function openCollabModal() {
+            collabModal.style.display = 'flex';
+            if (isOwner) {
+                document.getElementById('addCollabSection').style.display = 'block';
+            }
+            loadCollaborators();
+        }
+
+        function closeCollabModal() {
+            collabModal.style.display = 'none';
+            document.getElementById('collabAccountInput').value = '';
+            document.getElementById('collabList').innerHTML = '<p style="color: #94a3b8; text-align: center; font-weight: 300;">⏳ 載入中，請稍候...</p>';
+        }
+
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                closeModal();
+            } else if (event.target == collabModal) {
+                closeCollabModal();
+            }
+        }
+
+        function loadCollaborators() {
+            const urlParts = window.location.pathname.split('/');
+            const tripId = urlParts[urlParts.length - 1];
+
+            fetch(`/api/collabs/${tripId}`)
+                .then(response => {
+                    if (!response.ok) throw new Error("無法取得群組成員清單");
+                    return response.json();
+                })
+                .then(data => {
+                    const listDiv = document.getElementById('collabList');
+
+                    if (data.length === 0) {
+                        listDiv.innerHTML = '<p style="color: #94a3b8; text-align: center; font-weight: 300; padding: 15px 0;">目前尚無其他成員加入此行程</p>';
+                        return;
+                    }
+
+                    let html = '<ul style="list-style: none; padding: 0; margin: 0;">';
+                    data.forEach(collab => {
+                        html += `
+                            <li style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f1f5f9;">
+                                <div>
+                                    <span style="font-weight: 600; color: #334155;"><i class="bi bi-person-fill text-orange me-1"></i>${collab.custName}</span>
+                                    <span style="font-size: 12px; color: #64748b; margin-left: 8px;">(@${collab.custAccount})</span>
+                                </div>
+                        `;
+                        if (isOwner) {
+                            html += `
+                                <button onclick="removeCollaborator(${collab.collabId})" 
+                                        style="background: transparent; border: none; font-size: 16px; cursor: pointer; color: #ef4444; padding: 4px;" 
+                                        title="移除成員"><i class="bi bi-trash-fill"></i></button>
+                            `;
+                        }
+                        html += `</li>`;
+                    });
+                    html += '</ul>';
+                    listDiv.innerHTML = html;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('collabList').innerHTML = '<p style="color: #ef4444; text-align: center;">系統異常，載入失敗！</p>';
+                });
+        }
+
+        function addCollaborator() {
+            const urlParts = window.location.pathname.split('/');
+            const tripId = urlParts[urlParts.length - 1];
+            const accountInput = document.getElementById('collabAccountInput');
+            const custAccount = accountInput.value.trim();
+
+            if (!custAccount) {
+                alert("請輸入朋友的帳號！");
+                return;
+            }
+
+            fetch(`/api/collabs/${tripId}/add`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ custAccount: custAccount })
+            })
+                .then(response => {
+                    if (response.ok) {
+                        alert("新增好友成功！");
+                        accountInput.value = '';
+                        document.getElementById('collabSuggestions').style.display = 'none';
+                        loadCollaborators();
+                    } else {
+                        return response.text().then(text => { throw new Error(text) });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("新增失敗：" + error.message);
+                });
+        }
+
+        function removeCollaborator(collabId) {
+            if (!confirm("確定要將此會員從成員名單中移除嗎？")) return;
+
+            fetch(`/api/collabs/${collabId}`, { method: 'DELETE' })
+                .then(response => {
+                    if (response.ok) {
+                        alert("成員已成功移除！");
+                        loadCollaborators();
+                    } else {
+                        return response.text().then(text => { throw new Error(text) });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("移除失敗：" + error.message);
+                });
+        }
+
+        function searchAttractions() {
+            const keyword = document.getElementById('searchInput').value;
+            const resultsDiv = document.getElementById('searchResults');
+
+            if (!keyword.trim()) {
+                resultsDiv.innerHTML = '<p style="color: #ef4444; text-align: center;">請輸入關鍵字！</p>';
+                return;
+            }
+
+            resultsDiv.innerHTML = '<p style="color: #94a3b8; text-align: center; font-weight: 300;"><i class="bi bi-hourglass-split"></i> 搜尋中，請稍候...</p>';
+
+            fetch(`/api/attractions/search?keyword=${keyword}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length === 0) {
+                        resultsDiv.innerHTML = '<p style="color: #94a3b8; text-align: center; font-weight: 300;">找不到相關景點，換個關鍵字試試看？</p>';
+                        return;
+                    }
+
+                    let html = '<ul style="list-style: none; padding: 0; margin: 0;">';
+
+                    data.forEach(attr => {
+                        const openTimeHtml = getOpenStatusHtml(attr.openTime);
+
+                        html += `
+                        <li style="border-bottom: 1px solid #f1f5f9; padding: 16px 0; display: flex; justify-content: space-between; align-items: center; gap: 16px;">
+                            <div style="display: flex; align-items: center; gap: 16px; flex: 1;">
+                                <!-- 景點小圖 -->
+                                <img src="${attr.firstImageUrl}" 
+                                     alt="${attr.attrName}" 
+                                     style="width: 70px; height: 70px; object-fit: cover; border-radius: 8px; flex-shrink: 0; box-shadow: 0 2px 4px rgba(0,0,0,0.08);"
+                                     onerror="this.onerror=null; this.src='https://dummyimage.com/150x150/dee2e6/6c757d.jpg&text=No+Image';">
+                                     
+                                <!-- 景點文字資訊 -->
+                                <div style="flex: 1;">
+                                    <h4 style="margin: 0 0 5px 0; color: #1e293b; font-weight: 600; font-size: 15px;">
+                                        ${attr.attrName}
+                                        <span style="font-size: 12px; color: #eab308; font-weight: 500;"><i class="bi bi-star-fill text-warning me-1"></i>${attr.avgStars} (${attr.attrVotes}人評分)</span>
+                                    </h4>
+                                    <p style="margin: 0; font-size: 13px; color: #64748b; font-weight: 400;"><i class="bi bi-geo-alt-fill text-orange me-1"></i>${attr.regionId} | ${attr.categoryId}</p>
+                                    <p style="margin: 4px 0 0 0; font-size: 12px; color: #94a3b8; font-weight: 300; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; word-break: break-all;">${attr.attrAddress}</p>
+                                    <p style="margin: 4px 0 0 0; font-size: 12px;"><i class="bi bi-clock me-1"></i>${openTimeHtml}</p>
+                                </div>
+                            </div>
+                            <button class="btn btn-orange btn-sm rounded-pill px-3 fw-bold"
+                                    style="flex-shrink: 0;"
+                                    onclick="addArrcToTrip(${attr.attrId})">加入</button>
+                        </li>
+                    `;
+                    });
+
+                    html += '</ul>';
+                    resultsDiv.innerHTML = html;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    resultsDiv.innerHTML = '<p style="color: #ef4444; text-align: center;">系統發生異常，請稍後再試！</p>';
+                });
+        }
+
+        function addArrcToTrip(attrId) {
+            const urlParts = window.location.pathname.split('/');
+            const tripId = urlParts[urlParts.length - 1];
+
+            const formData = new FormData();
+            formData.append('tripId', tripId);
+            formData.append('attrId', attrId);
+
+            fetch('/api/trip-items/add', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        closeModal();
+                        loadTripItems();
+                    } else {
+                        alert("發生錯誤：" + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("連線異常，請稍後再試！");
+                });
+        }
+
+        function loadTripItems() {
+            const urlParts = window.location.pathname.split('/');
+            const tripId = urlParts[urlParts.length - 1];
+
+            fetch(`/api/trip-items/${tripId}`)
+                .then(response => response.json())
+                .then(data => {
+                    const listDiv = document.getElementById('tripItemList');
+
+                    if (data.length === 0) {
+                        listDiv.innerHTML = '<p style="color: #94a3b8; font-weight: 300; text-align: center; padding: 60px 0;">目前還沒有加入任何景點，請點擊上方按鈕開始搜尋</p>';
+                        return;
+                    }
+
+                    const tripDateStr = document.getElementById('tripDateInput').value;
+                    const startDate = new Date(tripDateStr);
+                    const dayCounters = {};
+                    let lastDayNo = 1;
+
+                    data.forEach(item => {
+                        let dayNo = lastDayNo;
+                        if (item.arrivalTime) {
+                            const arrDate = new Date(item.arrivalTime.split('T')[0]);
+                            const diffTime = arrDate.getTime() - startDate.getTime();
+                            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                            dayNo = diffDays >= 0 ? diffDays + 1 : 1;
+                        }
+                        item.dayNo = dayNo;
+                        lastDayNo = dayNo;
+
+                        if (!dayCounters[dayNo]) {
+                            dayCounters[dayNo] = 0;
+                        }
+                        dayCounters[dayNo]++;
+                        item.daySeqNo = dayCounters[dayNo];
+                    });
+
+                    let html = '';
+                    data.forEach((item, index) => {
+                        const style = morandiStyles[(item.dayNo - 1) % 5];
+
+                        html += `
+                        <div class="trip-item-card" data-id="${item.itemId}" style="background: ${style.bg}; border: 1px solid rgba(123,143,161,0.12); padding: 18px 20px; margin-bottom: 12px; border-left: 4px solid ${style.border}; border-radius: 12px; transition: all 0.3s ease; display: flex; flex-direction: column;">
+                            
+                            <div style="font-size: 11px; font-weight: bold; color: ${style.line}; margin-bottom: 6px; letter-spacing: 0.5px;">
+                                DAY ${item.dayNo}
+                            </div>
+
+                            <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                                <span style="font-size: 12px; color: #64748b; min-width: 65px; font-weight: 500;"><i class="bi bi-clock me-1"></i>到達時間</span>
+                                <input type="datetime-local" id="arr_${item.itemId}" value="${item.arrivalTime}" onchange="onArrivalChange(${item.itemId})" style="padding: 6px 10px; font-size: 12px; border: 1px solid #cbd5e1; border-radius: 6px; outline: none; color: #334155; background: #FFF; width: 100%; max-width: 200px;">
+                            </div>
+
+                            <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.5); padding: 10px 14px; border-radius: 8px; margin-bottom: 12px; border-left: 3px solid ${style.border};">
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div class="drag-handle" style="background: ${style.border}; color: white; width: 26px; height: 26px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 700; font-size: 12px; flex-shrink: 0; cursor: grab;" title="按住可拖曳排序">
+                                        ${item.daySeqNo}
+                                    </div>
+                                    <div>
+                                        <h4 style="margin: 0 0 3px 0; color: #1e293b; font-weight: 600; font-size: 14px;">${item.attrName}</h4>
+                                        <p style="margin: 0; font-size: 11px; color: #64748b; font-weight: 400; word-break: break-all;">${item.attrAddress}</p>
+                                    </div>
+                                </div>
+                                <button onclick="deleteTripItem(${item.itemId})" style="background: transparent; border: none; font-size: 15px; cursor: pointer; color: #ef4444; padding: 5px; flex-shrink: 0;" title="移除景點"><i class="bi bi-trash-fill"></i></button>
+                            </div>
+
+                            <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                                <span style="font-size: 12px; color: #64748b; min-width: 65px; font-weight: 500;"><i class="bi bi-pencil-square me-1"></i>備註</span>
+                                <input type="text" id="note_${item.itemId}" value="${item.itemNote}" placeholder="請輸入備忘錄（如：抵達後先集合）..." style="padding: 6px 10px; font-size: 12px; border: 1px solid #cbd5e1; border-radius: 6px; outline: none; color: #334155; background: #FFF; flex: 1;">
+                            </div>
+
+                            <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+                                <div style="display: flex; align-items: center; gap: 8px; flex: 1;">
+                                    <span style="font-size: 12px; color: #64748b; min-width: 65px; font-weight: 500;"><i class="bi bi-clock me-1"></i>離開時間</span>
+                                    <input type="datetime-local" id="dep_${item.itemId}" value="${item.depTime}" onchange="onDepartureChange(${item.itemId})" oninput="onDepartureChange(${item.itemId})" style="padding: 6px 10px; font-size: 12px; border: 1px solid #cbd5e1; border-radius: 6px; outline: none; color: #334155; background: #FFF; width: 100%; max-width: 200px;">
+                                </div>
+                                <button onclick="updateTripItem(${item.itemId})" class="btn btn-orange btn-sm rounded-pill px-3 fw-bold text-white shadow-sm" style="padding: 6px 14px; font-size: 12px; flex-shrink: 0;">儲存</button>
+                            </div>
+
+                        </div>
+                        `;
+
+                        if (index < data.length - 1) {
+                            html += `
+                            <div class="transit-time-container" id="transit_time_${index}" style="display: flex; align-items: center; justify-content: flex-start; margin: 12px 0 12px 24px; font-size: 13px; color: #ff5722; font-weight: 600;">
+                                <span style="display: flex; align-items: center; gap: 8px;">
+                                    <i class="bi bi-car-front-fill fs-5"></i> 
+                                    <span class="transit-time-text"><i class="bi bi-hourglass-split me-1"></i>計算車程中...</span>
+                                </span>
+                            </div>
+                            `;
+                        }
+                    });
+
+                    listDiv.innerHTML = html;
+                    initSortable();
+                    updateMapState(data);
+                })
+                .catch(error => console.error('Error fetching items:', error));
+        }
+
+        let sortableInstance = null;
+        function initSortable() {
+            const listDiv = document.getElementById('tripItemList');
+            if (sortableInstance) {
+                sortableInstance.destroy();
+            }
+
+            sortableInstance = Sortable.create(listDiv, {
+                animation: 250,
+                handle: '.drag-handle',
+                ghostClass: 'sortable-ghost',
+                onEnd: function () {
+                    saveNewOrder();
+                }
+            });
+        }
+
+        function saveNewOrder() {
+            const listDiv = document.getElementById('tripItemList');
+            const cards = listDiv.getElementsByClassName('trip-item-card');
+            const itemIds = [];
+
+            for (let card of cards) {
+                itemIds.push(parseInt(card.getAttribute('data-id'), 10));
+            }
+
+            fetch('/api/trip-items/reorder', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(itemIds)
+            })
+                .then(response => {
+                    if (response.ok) {
+                        loadTripItems();
+                    } else {
+                        return response.text().then(text => { throw new Error(text) });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error saving order:', error);
+                    alert("❌ 儲存排序失敗：" + error.message);
+                    loadTripItems();
+                });
+        }
+
+        function deleteTripItem(itemId) {
+            if (!confirm('確定要從行程中移除這個景點嗎？')) return;
+
+            fetch(`/api/trip-items/${itemId}`, { method: 'DELETE' })
+                .then(response => {
+                    if (response.ok) {
+                        loadTripItems();
+                    } else {
+                        return response.text().then(text => { throw new Error(text) });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("❌ 刪除失敗：" + error.message);
+                });
+        }
+
+        function onArrivalChange(itemId) {
+            const arrInput = document.getElementById("arr_" + itemId);
+            const depInput = document.getElementById("dep_" + itemId);
+            if (arrInput && depInput) {
+                depInput.value = arrInput.value;
+                validateTimes(itemId);
+            }
+        }
+
+        function onDepartureChange(itemId) {
+            validateTimes(itemId);
+        }
+
+        function validateTimes(itemId) {
+            const arrInput = document.getElementById("arr_" + itemId);
+            const depInput = document.getElementById("dep_" + itemId);
+            if (!arrInput || !depInput) return true;
+            const arrVal = arrInput.value;
+            const depVal = depInput.value;
+            const depLabel = depInput.previousElementSibling;
+            let warnSpan = document.getElementById("warn_" + itemId);
+
+            if (arrVal && depVal && depVal < arrVal) {
+                depInput.style.borderColor = "#ef4444";
+                depInput.style.color = "#ef4444";
+                if (depLabel) depLabel.style.color = "#ef4444";
+
+                if (!warnSpan) {
+                    warnSpan = document.createElement("span");
+                    warnSpan.id = "warn_" + itemId;
+                    warnSpan.className = "time-warning-text";
+                    warnSpan.style.color = "#ef4444";
+                    warnSpan.style.fontSize = "11px";
+                    warnSpan.style.marginLeft = "8px";
+                    warnSpan.style.fontWeight = "bold";
+                    warnSpan.textContent = "離開時間不可早於到達時間！";
+                    depInput.parentNode.appendChild(warnSpan);
+                }
+                return false;
+            } else {
+                depInput.style.borderColor = "#cbd5e1";
+                depInput.style.color = "#334155";
+                if (depLabel) depLabel.style.color = "#64748b";
+
+                if (warnSpan) warnSpan.remove();
+                return true;
+            }
+        }
+
+        function updateTripItem(itemId) {
+            if (!validateTimes(itemId)) {
+                alert("離開時間不能早於到達時間，請修正後再點選儲存！");
+                return;
+            }
+
+            const arrTime = document.getElementById(`arr_${itemId}`).value;
+            const depTime = document.getElementById(`dep_${itemId}`).value;
+            const note = document.getElementById(`note_${itemId}`).value;
+
+            fetch(`/api/trip-items/${itemId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    arrivalTime: arrTime,
+                    depTime: depTime,
+                    itemNote: note
+                })
+            })
+                .then(response => {
+                    if (response.ok) {
+                        alert('儲存成功！');
+                    } else {
+                        return response.text().then(text => { throw new Error(text) });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("更新失敗：" + error.message);
+                });
+        }
+
+        function updateTripBasicInfo() {
+            const tripName = document.getElementById('tripNameInput').value;
+            const tripDate = document.getElementById('tripDateInput').value;
+
+            const urlParts = window.location.pathname.split('/');
+            const tripId = urlParts[urlParts.length - 1];
+
+            fetch(`/api/trips/${tripId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    tripName: tripName,
+                    tripDate: tripDate,
+                })
+            })
+                .then(response => {
+                    if (response.ok) {
+                        alert('行程資訊更新成功！');
+                    } else {
+                        return response.text().then(text => { throw new Error(text) });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("更新失敗：" + error.message);
+                });
+        }
+
+        function getOpenStatusHtml(openTimeStr) {
+            if (!openTimeStr) return `<span style="color: #94a3b8;">無營業時間資訊</span>`;
+            if (openTimeStr === '24小時開放') return `<span style="color: #10b981;">24小時開放</span>`;
+            if (openTimeStr === '已歇業') return `<span style="color: #ef4444; font-weight: 500;">已歇業</span>`;
+
+            const timeRegex = /^(\d{2}):(\d{2})-(\d{2}):(\d{2})$/;
+            const match = openTimeStr.match(timeRegex);
+
+            if (match) {
+                const now = new Date();
+                const nowMin = now.getHours() * 60 + now.getMinutes();
+                const startH = parseInt(match[1], 10);
+                const startM = parseInt(match[2], 10);
+                let endH = parseInt(match[3], 10);
+                const endM = parseInt(match[4], 10);
+                const startMin = startH * 60 + startM;
+                let endMin = endH * 60 + endM;
+
+                if (endH === 0 && endM === 0) endMin = 24 * 60;
+
+                let isOpen = false;
+                if (startMin < endMin) {
+                    isOpen = (nowMin >= startMin && nowMin < endMin);
+                } else {
+                    isOpen = (nowMin >= startMin || nowMin < endMin);
+                }
+
+                if (isOpen) {
+                    return `<span style="color: #10b981; font-weight: 500;">營業中</span> <span style="color: #64748b;">${openTimeStr}</span>`;
+                } else {
+                    return `<span style="color: #ef4444; font-weight: 500;">已打烊</span> <span style="color: #ef4444;">${openTimeStr}</span>`;
+                }
+            }
+
+            return `<span style="color: #64748b;">${openTimeStr}</span>`;
+        }
+
+        let collabDebounceTimer;
+        const collabAccountInput = document.getElementById('collabAccountInput');
+        const collabSuggestions = document.getElementById('collabSuggestions');
+
+        collabAccountInput.addEventListener('input', function () {
+            clearTimeout(collabDebounceTimer);
+            const keyword = this.value.trim();
+
+            if (!keyword) {
+                collabSuggestions.style.display = 'none';
+                collabSuggestions.innerHTML = '';
+                return;
+            }
+
+            collabDebounceTimer = setTimeout(() => {
+                fetch(`/api/collabs/search-users?keyword=${keyword}`)
+                    .then(response => response.json())
+                    .then(users => {
+                        if (users.length === 0) {
+                            collabSuggestions.style.display = 'none';
+                            collabSuggestions.innerHTML = '';
+                            return;
+                        }
+
+                        let html = '';
+                        users.forEach(user => {
+                            html += `
+                                <div style="padding: 10px 16px; cursor: pointer; border-bottom: 1px solid #f1f5f9; font-size: 13px; color: #334155; display: flex; justify-content: space-between;" 
+                                     class="collab-suggestion-item"
+                                     onclick="selectCollabUser('${user.custAccount}')">
+                                    <span style="font-weight: 600;"><i class="bi bi-person-fill text-orange me-1"></i>${user.custName}</span>
+                                    <span style="color: #64748b; font-weight: 300;">(${user.custAccount})</span>
+                                </div>
+                            `;
+                        });
+                        collabSuggestions.innerHTML = html;
+                        collabSuggestions.style.display = 'block';
+
+                        const items = collabSuggestions.getElementsByClassName('collab-suggestion-item');
+                        for (let item of items) {
+                            item.addEventListener('mouseenter', () => item.style.backgroundColor = '#fff5f2');
+                            item.addEventListener('mouseleave', () => item.style.backgroundColor = 'transparent');
+                        }
+                    })
+                    .catch(error => console.error('Error fetching users:', error));
+            }, 200);
+        });
+
+        function selectCollabUser(account) {
+            collabAccountInput.value = account;
+            collabSuggestions.style.display = 'none';
+            collabSuggestions.innerHTML = '';
+        }
+
+        document.addEventListener('click', function (e) {
+            if (e.target !== collabAccountInput && e.target !== collabSuggestions) {
+                collabSuggestions.style.display = 'none';
+            }
+        });
+
+        function initMap() {
+            console.log("🗺️ Google Maps SDK 載入成功！");
+
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: 25.033964, lng: 121.564472 },
+                zoom: 12,
+                mapTypeControl: false,
+                streetViewControl: false,
+                styles: [
+                    { featureType: "poi", stylers: [{ visibility: "off" }] },
+                    { featureType: "transit", stylers: [{ visibility: "off" }] },
+                    { featureType: "road", elementType: "labels.icon", stylers: [{ visibility: "off" }] },
+                    { featureType: "road", elementType: "geometry", stylers: [{ color: "#F1F5F9" }] },
+                    { featureType: "water", elementType: "geometry", stylers: [{ color: "#E2E8F0" }] },
+                    { featureType: "landscape", elementType: "geometry", stylers: [{ color: "#F8FAFC" }] }
+                ]
+            });
+
+            directionsService = new google.maps.DirectionsService();
+            directionsRenderer = new google.maps.DirectionsRenderer({
+                map: map,
+                suppressMarkers: true,
+                preserveViewport: false,
+                polylineOptions: {
+                    strokeColor: "#ff5722",
+                    strokeOpacity: 0.85,
+                    strokeWeight: 5
+                }
+            });
+
+            loadTripItems();
+        }
+
+        function updateMapState(data) {
+            markers.forEach(marker => marker.setMap(null));
+            markers = [];
+
+            if (directionsRenderer) {
+                directionsRenderer.setDirections({ routes: [] });
+            }
+
+            if (!data || data.length === 0) return;
+
+            const bounds = new google.maps.LatLngBounds();
+            const points = [];
+
+            data.forEach(item => {
+                const position = {
+                    lat: parseFloat(item.latitude),
+                    lng: parseFloat(item.longitude)
+                };
+                points.push(position);
+                bounds.extend(position);
+
+                const style = morandiStyles[(item.dayNo - 1) % 5];
+
+                const marker = new google.maps.Marker({
+                    position: position,
+                    map: map,
+                    title: item.attrName,
+                    icon: {
+                        path: google.maps.SymbolPath.CIRCLE,
+                        fillColor: style.border,
+                        fillOpacity: 0.9,
+                        scale: 13,
+                        strokeColor: "#FFFFFF",
+                        strokeWeight: 2
+                    },
+                    label: {
+                        text: String(item.daySeqNo),
+                        color: "#FFFFFF",
+                        fontWeight: "bold",
+                        fontSize: "14px"
+                    }
+                });
+
+                markers.push(marker);
+            });
+
+            if (data.length === 1) {
+                map.setCenter(points[0]);
+                map.setZoom(15);
+            } else if (data.length >= 2) {
+                const origin = points[0];
+                const destination = points[points.length - 1];
+                const waypoints = [];
+
+                for (let i = 1; i < points.length - 1; i++) {
+                    waypoints.push({
+                        location: points[i],
+                        stopover: true
+                    });
+                }
+
+                directionsService.route({
+                    origin: origin,
+                    destination: destination,
+                    waypoints: waypoints,
+                    travelMode: google.maps.TravelMode.DRIVING
+                }, function (response, status) {
+                    if (status === google.maps.DirectionsStatus.OK) {
+                        directionsRenderer.setDirections(response);
+
+                        const legs = response.routes[0].legs;
+                        for (let i = 0; i < legs.length; i++) {
+                            const durationText = legs[i].duration.text;
+                            const container = document.getElementById("transit_time_" + i);
+                            if (container) {
+                                const textSpan = container.querySelector(".transit-time-text");
+                                if (textSpan) {
+                                    textSpan.textContent = "約 " + durationText;
+                                }
+                            }
+                        }
+                    } else {
+                        console.error("導航路線規劃失敗，原因：" + status);
+                        map.fitBounds(bounds);
+
+                        const containers = document.querySelectorAll(".transit-time-container");
+                        for (let i = 0; i < containers.length; i++) {
+                            const textSpan = containers[i].querySelector(".transit-time-text");
+                            if (textSpan) {
+                                textSpan.textContent = "無法取得車程時間";
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const memberDropdownToggle = document.getElementById('memberDropdown');
+            if (memberDropdownToggle) {
+                const dropdownMenu = memberDropdownToggle.nextElementSibling;
+
+                memberDropdownToggle.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropdownMenu.classList.toggle('show');
+                });
+
+                document.addEventListener('click', function (e) {
+                    if (dropdownMenu.classList.contains('show')) {
+                        if (!dropdownMenu.contains(e.target) && e.target !== memberDropdownToggle && !memberDropdownToggle.contains(e.target)) {
+                            dropdownMenu.classList.remove('show');
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+
+    <!-- Google Maps API -->
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        var googleMapsApiKey = /*[[${googleMapsApiKey}]]*/ '';
+
+        // 動態載入 Google Maps API
+        if (googleMapsApiKey) {
+            var script = document.createElement('script');
+            script.src = 'https://maps.googleapis.com/maps/api/js?key=' + googleMapsApiKey + '&callback=initMap&language=zh-TW';
+            script.async = true;
+            script.defer = true;
+            document.head.appendChild(script);
+        } else {
+            console.error('Google Maps API Key 未設定');
+        }
+        /*]]>*/
+    </script>
+
 </body>
 
 </html>

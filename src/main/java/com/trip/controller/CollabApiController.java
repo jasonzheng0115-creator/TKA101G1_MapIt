@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@RestController // 標註這是專門回傳 JSON 資料的 API 控制器
+@RestController // 標註這是專門回傳 JSON 資料的 API
 @RequestMapping("/api/collabs") // 統一此控制器的網址開頭為 /api/collabs
 public class CollabApiController {
 
@@ -42,7 +42,7 @@ public class CollabApiController {
             // 呼叫 Service 取得完整的協作者實體物件清單
             List<CollabItemVO> collabs = collabItemService.getCollaborators(tripId);
 
-            // 💡 新手友善設計：使用簡單的 for 迴圈來過濾欄位，避免 Circular Reference (循環參考) 導致序列化 JSON 失敗！
+            // 使用簡單的 for 迴圈來過濾欄位，避免 Circular Reference (循環參考) 導致序列化 JSON 失敗！
             List<Map<String, Object>> resultList = new ArrayList<>();
             for (CollabItemVO c : collabs) {
                 Map<String, Object> map = new HashMap<>();

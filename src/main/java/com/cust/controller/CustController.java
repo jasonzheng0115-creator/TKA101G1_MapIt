@@ -257,16 +257,16 @@ public class CustController {
 	}
 
 	@GetMapping("/ticket") // 票券匣功能
-	public String ticket(HttpSession session, ModelMap model) {
-		CustVO loginCust = (CustVO) session.getAttribute("loginCust");
-		if (loginCust == null) {
-			return "redirect:/customer/login";
-		}
-		model.addAttribute("loginCust", loginCust);
-		List<TicketItemVO> ticketList = ticketItemRepository.findTicketsByCustId(loginCust.getCustId());
-		model.addAttribute("ticketList", ticketList);
-		return "front-end/ticket/ticket";
-	}
+ public String ticket(HttpSession session, ModelMap model) {
+  CustVO loginCust = (CustVO) session.getAttribute("loginCust");
+  if (loginCust == null) {
+   return "redirect:/customer/login";
+  }
+  model.addAttribute("loginCust", loginCust);
+  List<TicketItemVO> ticketList = ticketItemRepository.findTicketsByCustId(loginCust.getCustId());
+  model.addAttribute("ticketList", ticketList);
+  return "front-end/ticket/ticket";
+ }
 
 
 
