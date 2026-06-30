@@ -1,6 +1,7 @@
 package com.reports.model;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 /**
  * ReportRepository - 檢舉清單資料存取介面
@@ -8,4 +9,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
  */
 public interface ReportRepository extends JpaRepository<ReportVO, Integer> {
     
+    @Query("SELECT MAX(r.reportId) FROM ReportVO r")
+    Integer findMaxId();
 }

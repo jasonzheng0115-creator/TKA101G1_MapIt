@@ -27,6 +27,8 @@ import com.attr.model.AttrVO;
 import com.category.model.CategoryVO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.region.model.RegionVO;
+import com.comment.model.CommentService;
+import com.comment.model.CommentVO;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -48,6 +50,7 @@ public class AttrFrontController {
     private AttrService attrService;
     private AttrRepository attrRepository;
     private AttrImageRepository attrImageRepository;
+    private CommentService commentService;
     
     // 從 application.properties 讀取 Google Maps API Key
     @Value("${google.maps.api.key:}")
@@ -56,10 +59,12 @@ public class AttrFrontController {
     /**
      * 建構子注入（推薦方式，Spring 4.3+ 無需 @Autowired）
      */
-    public AttrFrontController(AttrService attrService, AttrRepository attrRepository, AttrImageRepository attrImageRepository) {
+    public AttrFrontController(AttrService attrService, AttrRepository attrRepository, 
+                               AttrImageRepository attrImageRepository, CommentService commentService) {
         this.attrService = attrService;
         this.attrRepository = attrRepository;
         this.attrImageRepository = attrImageRepository;
+        this.commentService = commentService;
     }
     
     // ========== 前台景點列表（地圖模式） ==========
@@ -159,11 +164,25 @@ public class AttrFrontController {
         model.addAttribute("attr", attr);
         model.addAttribute("images", images);
         
+        // 查詢該景點已審核通過的評論並放入 model
+        List<CommentVO> commentList = commentService.getApprovedComments(attrId);
+        model.addAttribute("commentList", commentList);
+        
         // 5. 將 Google Maps API Key 傳遞給前端
         model.addAttribute("googleMapsApiKey", googleMapsApiKey);
         
         // 6. 返回詳情頁視圖
         return "front-end/attr/detailAttr";
+    }
+    
+    /**
+     * 關於我們頁面
+     * 路由：GET /front/attr/about
+     * 視圖：templates/front-end/about.html
+     */
+    @GetMapping("/about")
+    public String about() {
+        return "front-end/about"; 
     }
     
     // ========== 前台景點搜尋（支援複合條件與分頁） ==========
@@ -191,6 +210,7 @@ public class AttrFrontController {
     public String search(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) Integer regionId,
+            @RequestParam(required = false) String area,
             @RequestParam(required = false) Integer categoryId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "12") int size,
@@ -199,8 +219,36 @@ public class AttrFrontController {
         // 1. 建立分頁參數（依景點名稱排序）
         Pageable pageable = PageRequest.of(page, size, Sort.by("attrName").ascending());
         
+        // 解析大區域參數對應的複數地區 ID
+        List<Integer> regionIds = null;
+        if (area != null && !area.trim().isEmpty()) {
+            regionIds = new ArrayList<>();
+            switch (area.trim()) {
+                case "北部地區":
+                    regionIds.addAll(List.of(1, 2, 3, 4, 5, 6, 17));
+                    break;
+                case "中部地區":
+                    regionIds.addAll(List.of(7, 8, 9, 10, 11));
+                    break;
+                case "南部地區":
+                    regionIds.addAll(List.of(12, 13, 14, 15, 16));
+                    break;
+                case "東部地區":
+                    regionIds.addAll(List.of(18, 19));
+                    break;
+                case "離島地區":
+                    regionIds.addAll(List.of(20, 21, 22));
+                    break;
+                default:
+                    break;
+            }
+        } else if (regionId != null) {
+            regionIds = new ArrayList<>();
+            regionIds.add(regionId);
+        }
+        
         // 2. 使用 Specification 建立動態查詢條件
-        Specification<AttrVO> spec = AttrSpecification.buildSpecification(keyword, regionId, categoryId);
+        Specification<AttrVO> spec = AttrSpecification.buildSpecification(keyword, regionIds, categoryId);
         
         // 3. 執行查詢
         Page<AttrVO> attrPage = attrRepository.findAll(spec, pageable);
@@ -238,6 +286,7 @@ public class AttrFrontController {
         // 7. 保留搜尋條件（用於前端顯示與分頁連結）
         model.addAttribute("keyword", keyword != null ? keyword : "");
         model.addAttribute("regionId", regionId);
+        model.addAttribute("area", area != null ? area : "");
         model.addAttribute("categoryId", categoryId);
         
         // 8. 返回搜尋結果頁面

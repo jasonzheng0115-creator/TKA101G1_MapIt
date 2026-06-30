@@ -215,7 +215,7 @@
                             
                             <!-- 新增：地圖定位按鈕 -->
                             <a th:if="${attr.attrAddress != null}" 
-                               th:href="'https://www.google.com/maps/search/?api=1&query=' + ${attr.attrName} + '+' + ${attr.attrAddress}" 
+                               th:href="|https://www.google.com/maps/search/?api=1&query=${attr.attrName}+${attr.attrAddress}|" 
                                target="_blank" 
                                class="btn btn-sm btn-outline-primary ms-2 rounded-pill px-3 py-1 flex-shrink-0"
                                style="font-size: 0.8rem;">
@@ -247,8 +247,8 @@
                         </div>
                         <div>
                             <span class="badge badge-custom"
-                                  th:classappend="${attr.isOpen == 'Y'} ? 'bg-success' : 'bg-secondary'"
-                                  th:text="${attr.isOpen == 'Y'} ? '正常營業' : '暫停營業'">
+                                  th:classappend="${attr.isOpen == 'Y' or attr.isOpen == '正常營業'} ? 'bg-success' : 'bg-secondary'"
+                                  th:text="${attr.isOpen == 'Y' or attr.isOpen == '正常營業'} ? '正常營業' : '暫停營業'">
                                 營業狀態
                             </span>
                         </div>
@@ -303,7 +303,7 @@
                             onclick="addToFavorite(this.getAttribute('data-attr-id'))">
                         <i class="bi bi-heart"></i> 加入收藏
                     </button>
-                    <button class="btn btn-outline-primary btn-lg" type="button">
+                    <button class="btn btn-outline-primary btn-lg" type="button" onclick="shareAttraction()">
                         <i class="bi bi-share"></i> 分享景點
                     </button>
                 </div>
@@ -320,7 +320,7 @@
                     </h4>
                     
                     <!-- 若有評論則顯示 -->
-                    <div th:if="${#lists.size(commentList) > 0}">
+                    <div th:if="${commentList != null and #lists.size(commentList) > 0}">
                         <div th:each="comment : ${commentList}" class="info-item">
                             <div class="d-flex justify-content-between align-items-start mb-2">
                                 <div>
@@ -329,6 +329,13 @@
                                         <i class="bi bi-star-fill" th:each="i : ${#numbers.sequence(1, comment.commentScore)}"></i>
                                         <span th:text="${comment.commentScore} + ' 分'">5 分</span>
                                     </span>
+                                    <!-- 檢舉按鈕 -->
+                                    <button class="btn btn-link btn-sm text-danger p-0 ms-3 btn-report-comment" 
+                                            th:data-comment-id="${comment.commentId}" 
+                                            title="檢舉此評論"
+                                            style="font-size: 0.85rem; text-decoration: none;">
+                                        <i class="bi bi-flag-fill"></i> 檢舉
+                                    </button>
                                 </div>
                                 <small class="text-muted" th:text="${#temporals.format(comment.commentTime, 'yyyy-MM-dd HH:mm')}">2024-01-01 12:00</small>
                             </div>
@@ -337,7 +344,7 @@
                     </div>
                     
                     <!-- 若無評論則顯示提示 -->
-                    <div th:if="${#lists.size(commentList) == 0}" class="text-center text-muted py-4">
+                    <div th:if="${commentList == null or #lists.size(commentList) == 0}" class="text-center text-muted py-4">
                         <i class="bi bi-chat-left-dots" style="font-size: 3rem;"></i>
                         <p class="mt-2">目前尚無評論，成為第一個評論的人吧！</p>
                     </div>
@@ -422,6 +429,117 @@
                 console.error('Error:', error);
             });
         }
+
+        // ==========================================
+        // 分享景點的功能
+        // ==========================================
+        function shareAttraction() {
+            const shareData = {
+                title: document.title,
+                text: '我在 MapIt 發現了一個超棒的景點，推薦給你！',
+                url: window.location.href
+            };
+
+            // 優先：如果瀏覽器支援原生分享 API（主要是行動裝置）
+            if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+                navigator.share(shareData)
+                    .catch(err => {
+                        console.log('使用者取消分享或發生錯誤：', err);
+                    });
+            } else {
+                // 備用：複製網址到剪貼簿（所有瀏覽器適用）
+                navigator.clipboard.writeText(window.location.href)
+                    .then(() => {
+                        alert('景點網址已複製到剪貼簿，快貼給好友分享吧！');
+                    })
+                    .catch(err => {
+                        console.error('複製失敗:', err);
+                        alert('複製失敗，請手動複製瀏覽器網址列進行分享！');
+                    });
+            }
+        }
+
+        // ==========================================
+        // 評論檢舉的功能
+        // ==========================================
+        document.addEventListener('DOMContentLoaded', function() {
+            const reportModal = new bootstrap.Modal(document.getElementById('reportCommentModal'));
+            const reportCommentIdInput = document.getElementById('reportCommentId');
+            const reportContentInput = document.getElementById('reportContent');
+
+            // 監聽所有檢舉按鈕
+            document.querySelectorAll('.btn-report-comment').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const commentId = this.getAttribute('data-comment-id');
+                    reportCommentIdInput.value = commentId;
+                    reportContentInput.value = ''; // 清空先前的輸入
+                    reportModal.show();
+                });
+            });
+
+            // 提交檢舉
+            document.getElementById('submitReportBtn').addEventListener('click', function() {
+                const commentId = reportCommentIdInput.value;
+                const reportContent = reportContentInput.value.trim();
+
+                if (!reportContent) {
+                    alert('請輸入檢舉理由！');
+                    return;
+                }
+
+                // 發送 POST 請求
+                fetch('/front/report/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        commentId: commentId,
+                        reportContent: reportContent
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                        reportModal.hide();
+                    } else {
+                        alert(data.message || '檢舉失敗，請稍後再試。');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('系統發生錯誤，請稍後再試。');
+                });
+            });
+        });
     </script>
+
+    <!-- ========== 評論檢舉 Modal ========== -->
+    <div class="modal fade" id="reportCommentModal" tabindex="-1" aria-labelledby="reportCommentModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="reportCommentModalLabel">
+                        <i class="bi bi-exclamation-triangle-fill"></i> 檢舉此評論
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="reportCommentForm">
+                        <input type="hidden" id="reportCommentId" name="commentId">
+                        <div class="mb-3">
+                            <label for="reportContent" class="form-label fw-bold">請說明檢舉理由 <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="reportContent" name="reportContent" rows="4" placeholder="例如：含有不當字眼、垃圾廣告、惡意抹黑等..." required></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-danger" id="submitReportBtn">送出檢舉</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
