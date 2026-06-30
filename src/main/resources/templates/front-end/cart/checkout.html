@@ -368,27 +368,25 @@
 		// 讓 JS 接收後端的會員資料物件
 		const currentMember = /*[[${loginCust}]]*/ {};
 		
-		// 如有預設卡號帶入信用卡欄位
-		if (currentMember && currentMember.custCard) {
-		    document.getElementById('creditCardNumber').value = currentMember.custCard;
-		}
-		
 		// 監聽 Checkbox 狀態改變
 		document.getElementById('syncMemberBtn').addEventListener('change', function() {
 		    const nameInput = document.getElementById('receiverName');
 		    const telInput = document.getElementById('receiverTel');
 		    const emailInput = document.getElementById('receiverEmail');
+		    const cardInput = document.getElementById('creditCardNumber');
 		    
 		    if (this.checked) {
 		        // 如果打勾，自動帶入真實會員資料（欄位名稱請對齊你的 CustVO）
 		        nameInput.value = currentMember.custName || '';
 		        telInput.value = currentMember.custTel || '';
 		        emailInput.value = currentMember.custEmail || '';
+		        cardInput.value = currentMember.custCard || '';
 		    } else {
 		        // 取消打勾，自動清空
 		        nameInput.value = '';
 		        telInput.value = '';
 		        emailInput.value = '';
+		        cardInput.value = '';
 		    }
 		});
 		

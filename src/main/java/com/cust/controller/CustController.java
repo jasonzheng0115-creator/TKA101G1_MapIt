@@ -6,9 +6,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -38,6 +39,10 @@ public class CustController {
 
 	@Autowired
 	TicketItemRepository ticketItemRepository;
+	
+	@Autowired
+	private StringRedisTemplate redisTemplate; 
+	// 購物車
 
 	@GetMapping("/login") // 登入功能，指向前端的登入html
 	public String loginPage() {
@@ -70,6 +75,30 @@ public class CustController {
 		session.setAttribute("loginCust", custVO);
 		// 查詢正確就轉向登入成功的畫面
 		model.addAttribute("loginCust", custVO);
+		
+		// ========== 購物車 ========== // 
+		// 未登入的狀態下加入購物車,登入後清單會帶入會員購物車
+		String guestKey = "cart:guest";
+		String memberKey = "cart:member:" + custVO.getCustId();
+		
+		// 取出遊客購物車內的所有欄位與數量
+		Map<Object, Object> guestCart = redisTemplate.opsForHash().entries(guestKey);
+		
+		if (guestCart != null && !guestCart.isEmpty()) {
+			// 逐一將商品與數量累加到會員購物車
+			for (Map.Entry<Object, Object> entry : guestCart.entrySet()) {
+				String productId = (String) entry.getKey();
+				// 轉成 long 是因為 increment 方法需要 long 或 double 類型的增量
+				long quantity = Long.parseLong((String) entry.getValue()); 
+				
+				// 累加數量到會員的 Redis Hash 中
+				redisTemplate.opsForHash().increment(memberKey, productId, quantity);
+			}
+			// 合併完成後，刪除遊客購物車，避免留給下一位遊客
+			redisTemplate.delete(guestKey);
+		}
+		// ========== 購物車 ========== //
+		
 
 		// 檢查是否有被 LoginFilter 記下的原請求路徑 (location)
 		String location = (String) session.getAttribute("location");
@@ -93,6 +122,16 @@ public class CustController {
 
 	@GetMapping("/logout") // 登出功能，指向前端的登入html
 	public String logout(HttpSession session) {
+		
+		// 登出後清除購物車
+		CustVO loginCust = (CustVO) session.getAttribute("loginCust");
+		
+		if (loginCust != null) {
+	        String key = "cart:member:" + loginCust.getCustId();
+	        redisTemplate.delete(key); 
+	    }
+		
+		
 		session.invalidate();
 		return "redirect:/";
 	}
