@@ -290,11 +290,11 @@
             </div>
 
             <div class="form-group">
-                <label>權限狀態</label>
-                <select name="custUse">
-                    <option value="">-- 全部狀態 --</option>
-                    <option value="啟動">啟動</option>
-                    <option value="未啟動">未啟動</option>
+                <label>權限等級</label>
+                <select name="custRight">
+                    <option value="">-- 全部等級 --</option>
+                    <option value="正常">正常</option>
+                    <option value="停權">停權</option>
                 </select>
             </div>
 
@@ -318,7 +318,7 @@
                     <th>登入帳號</th>
                     <th>真實姓名</th>
                     <th>信箱</th>
-                    <th>權限狀態</th>
+                    <th>會員權限</th>
                     <th>操作指令</th>
                 </tr>
             </thead>
@@ -331,15 +331,13 @@
                     <td th:text="${cust.custEmail}"></td>
                     
                     <td>
-                        <!-- 用 th:classappend 或是 th:if 根據狀態讓「啟動」和「停權」顯示不同的顏色嗎？ -->
                         <span class="status-badge status-active" 
-                        	  th:if = "${cust.custUse == '啟動'}"
-                        	  th:text = '${cust.custUse}'>
-                        	  
+                        	  th:if = "${cust.custRight == '正常'}"
+                        	  th:text = '${cust.custRight}'>
                         </span>	  
                         <span class="status-badge status-suspend" 
-                        	  th:if = "${cust.custUse == '未啟動'}"
-                        	  th:text = '${cust.custUse}'>
+                        	  th:if = "${cust.custRight == '停權'}"
+                        	  th:text = '${cust.custRight}'>
                         </span>
                     </td>
                     
