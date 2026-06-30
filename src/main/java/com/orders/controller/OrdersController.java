@@ -205,15 +205,19 @@ public class OrdersController {
 	// 前台會員歷史訂單
 	// 網址：GET http://localhost:8080/orders/my-orders
 	@GetMapping("/my-orders")
-	public String showMyOrders(ModelMap model) {
-		
-		// 先寫1號會員
-		Integer currentCustId = 1; 
+	public String showMyOrders(HttpSession session, ModelMap model) {
+		//從 session 取得真正登入的會員
+		CustVO loginCust = (CustVO) session.getAttribute("loginCust");
+		if (loginCust == null) {
+			return "redirect:/customer/login"; //如果沒登入，踢回登入頁
+		}
+		//將名字塞進 Model，這樣導覽列上角顯示OOO 你好
+		model.addAttribute("userName", loginCust.getCustName());
+		//用會員ID去查歷史訂單
+		Integer currentCustId = loginCust.getCustId(); 
 		List<OrdersVO> list = ordersSvc.getOrdersByCustId(currentCustId);
-		
-		// 訂單裝箱給 Thymeleaf 渲染
+		// 訂單裝給 Thymeleaf 渲染
 		model.addAttribute("ordersList", list);
-		
 		// 導向前台列表
 		return "front-end/cart/order_list";
 	}
