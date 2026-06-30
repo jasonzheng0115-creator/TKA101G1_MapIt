@@ -1,9 +1,7 @@
 package com.trip.model;
 
 import java.sql.Date;
-
 import com.cust.model.CustVO;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -13,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
@@ -20,27 +19,29 @@ import jakarta.validation.constraints.NotNull;
 @Table(name = "TRIP")
 public class TripVO implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "TRIP_ID")
 	private Integer tripId;
-	
+
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "CUST_ID")
-//	private Integer custId;
 	private CustVO custVO;
-	
+
 	@Column(name = "TRIP_NAME")
-	@NotEmpty(message="請填入行程名稱")
+	@NotEmpty(message = "請填入行程名稱")
 	private String tripName;
-	
+
 	@Column(name = "TRIP_DATE")
-	@NotNull(message="請選擇行程日期")
+	@NotNull(message = "請選擇行程日期")
 	private Date tripDate;
-	
+
 	@Column(name = "TRIP_STATUS")
 	private Boolean tripStatus = false; // 預設為私有;
+
+	@Transient
+	private java.util.List<CustVO> collaborators;
 
 	public Integer getTripId() {
 		return tripId;
@@ -86,6 +87,11 @@ public class TripVO implements java.io.Serializable {
 		return serialVersionUID;
 	}
 
+	public java.util.List<CustVO> getCollaborators() {
+		return collaborators;
+	}
 
-
+	public void setCollaborators(java.util.List<CustVO> collaborators) {
+		this.collaborators = collaborators;
+	}
 }
