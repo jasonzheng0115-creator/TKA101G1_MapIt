@@ -77,9 +77,13 @@ public class CustController {
 			model.addAttribute("errorMsg", "帳號或密碼錯誤");
 			return "front-end/customer/login";
 		}
-		// 加入信箱驗證碼阻擋，如果帳號是未啟動，就不准登入
+		//如果帳號是未啟動，就無法登入(未驗證信箱成功)
 		if ("未啟動".equals(custVO.getCustUse())) {
 			model.addAttribute("errorMsg", "您的帳號尚未完成信箱驗證，請先完成信箱驗證(測試看後台 Console 拿驗證碼)");
+			//給html boolean判別，如果true就顯示重新發送信件按鈕
+			model.addAttribute("showResendBtn", true);
+			//將帳號存入Session，等一下重新發信才知道要寄給誰
+			session.setAttribute("unverifiedAccount", custVO.getCustAccount());
 			return "front-end/customer/login";
 		}
 		// 成功登入後，存入session長期記憶，保持登入狀態
@@ -191,7 +195,7 @@ public class CustController {
 	
 	@GetMapping("/verify") // 驗證碼輸入功能
 	public String verifyPage(HttpSession session) {
-		// 防呆，如果Session裡面沒有信箱，代表不是剛註冊完，重導向回到登入頁
+		// 如果Session裡面沒有信箱，代表不是剛註冊完，重導向回到登入頁
 		if (session.getAttribute("verifyEmail") == null) {
 			return "redirect:/customer/login";
 		}
@@ -223,12 +227,47 @@ public class CustController {
 			model.addAttribute("successMsg", "信箱驗證成功！帳號已啟用，請重新登入！");
 			return "front-end/customer/login";
 		} else {
-			// 驗證失敗，給錯誤訊息，留在輸入驗證碼頁面
+			//驗證失敗，給錯誤訊息，留在輸入驗證碼頁面
 			model.addAttribute("errorMsg", "驗證碼錯誤，請重新輸入！");
 			return "front-end/customer/verify";
 		}
 	}
 
+	// 重新發送驗證信功能
+	@GetMapping("/resendVerify")
+	public String resendVerify(HttpSession session) {
+		//從loginCheck拿出存在session，登入失敗的帳號
+		String account = (String) session.getAttribute("unverifiedAccount");
+		//如果沒有帳號，代表是不小心連到這網址的，踢回登入頁
+		if (account == null) {
+			return "redirect:/customer/login";
+		}
+		//透過 Service 去資料庫把這個人找出來(需要拿Email)
+		CustVO custVO = custService.findByAccount(account);
+		
+		if (custVO != null) {
+			//產生一組全新的 6 位數亂碼
+			int randomNum = (int)(Math.random() * 900000) + 100000; 
+			String randomCode = String.valueOf(randomNum);
+			
+			// 測試用，把驗證碼印在Console裡，測試時收不到信也能通過
+			System.out.println("======================================");
+			System.out.println("重新發送，新的信箱驗證碼是：" + randomCode);
+			System.out.println("======================================");
+			// 寄出新的驗證信
+			mailService.sendVerificationCode(custVO.getCustEmail(), randomCode);
+			// 把全新的驗證碼存進session，直接覆蓋掉之前舊的驗證碼
+			session.setAttribute("verifyCode", randomCode);
+			session.setAttribute("verifyEmail", custVO.getCustEmail());
+			session.setAttribute("verifyAccount", custVO.getCustAccount());
+		}
+		//清除新的驗證碼
+		session.removeAttribute("unverifiedAccount");
+		//將畫面無縫導向原有的「輸入驗證碼」頁面！
+		return "redirect:/customer/verify";
+	}
+
+	
 	@GetMapping("/updateProfile") // 修改個人資料功能，指向前端的登入html
 	public String updateProfile(HttpSession session, ModelMap model) {
 		// 取得先前會員的就個人資料
@@ -277,7 +316,7 @@ public class CustController {
 				String originalFilename = file.getOriginalFilename();
 				// 取出副檔名
 				String fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
-				// 合成唯一的黨名
+				// 合成唯一的檔名
 				String newFileName = "avatar_" + custVO.getCustId() + fileExtension;
 				// 建立目的地的file物件
 				File saveFile = new File(uploadDirectory, newFileName);
@@ -441,5 +480,40 @@ public class CustController {
 			e.printStackTrace();
 			return ResponseEntity.internalServerError().build();
 		}
+	}
+
+	
+	@GetMapping("/forgotPassword") //忘記密碼功能
+	public String forgotPasswordPage() {
+		return "front-end/customer/forgot-password";
+	}
+
+	@PostMapping("/forgotPassword") //接收忘記密碼表單送出的帳號
+	public String processForgotPassword(
+		@RequestParam("account") String account, ModelMap model) {
+		//去資料庫尋找這個帳號
+		CustVO custVO = custService.findByAccount(account);
+		//如果找不到，就給錯誤訊息並留在原畫面
+		if (custVO == null) {
+			model.addAttribute("errorMsg", "查無此會員帳號，請確認後再試！");
+			return "front-end/customer/forgot-password";
+		}
+		//資料庫找到符合的資料，產生符合8碼以上，大小寫英數字的新密碼
+		int randomNum = (int)(Math.random() * 9000) + 1000; // 產生 1000 ~ 9999 的亂數
+		String newPassword = "MapIt" + randomNum; // 組合結果例如：MapIt5839
+		
+		// 測試用，印在Console
+		System.out.println("======================================");
+		System.out.println("忘記密碼，強制配發的新密碼是：" + newPassword);
+		System.out.println("======================================");
+		
+		//把新密碼，存回資料庫更新
+		custVO.setCustPassword(newPassword);
+		custService.updateProfile(custVO);
+		//呼叫發送信件功能，把新密碼寄到信箱
+		mailService.sendNewPassword(custVO.getCustEmail(), newPassword);
+		//導回登入頁面，並顯示成功訊息
+		model.addAttribute("successMsg", "新密碼已成功發送至您的信箱，請使用新密碼登入！");
+		return "front-end/customer/login";
 	}
 }

@@ -22,7 +22,9 @@ public class LoginFilter extends OncePerRequestFilter {
 		if (uri.equals("/customer/login") ||
 				uri.equalsIgnoreCase("/customer/loginCheck") ||
 				uri.equals("/customer/register") ||
-				uri.equals("/customer/verify") || // ✅ 加入驗證頁面白名單！
+				uri.equals("/customer/verify") || //加入驗證頁面白名單
+				uri.equals("/customer/resendVerify") || //加入重新發送信件 API 白名單
+				uri.equals("/customer/forgotPassword") || //加入忘記密碼，重發信件 API 白名單
 				uri.startsWith("/customer/emp") || // 排除後台會員管理相關 (empCustomerList, empUpdateCustomer)
 				uri.startsWith("/customer/api") || // 排除會員後台 AJAX API
 				uri.startsWith("/orders/backend-") // 排除後台訂單管理
