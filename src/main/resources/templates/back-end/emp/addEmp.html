@@ -144,19 +144,40 @@
             </div>
         </nav>
 
-        <!-- 次選單 (後台功能選單) -->
+        <!-- 次選單 (後台各模組功能選單) -->
         <nav class="sub-navbar-backend py-1">
             <div class="container-fluid px-4 px-lg-5">
                 <ul class="nav justify-content-center fw-bold">
-                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/product/select_page}">商品管理</a></li>
-                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/orders/backend-list}">訂單管理</a></li>
-                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/customer/empCustomerList}">會員管理</a></li>
-                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/supplier/select_page}">廠商管理</a></li>
-                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/ap/select_page}">應付帳款</a></li>
-                    <li class="nav-item"><a class="nav-link active px-4" th:href="@{/emp/select_page}">員工管理</a>
+                    <li class="nav-item">
+                        <a class="nav-link px-4" th:href="@{/product/select_page}">商品管理</a>
                     </li>
-                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/dept/listAllDept}">部門管理</a></li>
-                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/emp/message/send}">通知發送</a></li>
+
+                    <li class="nav-item">
+                        <a class="nav-link px-4" th:href="@{/orders/backend-list}">訂單管理</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link px-4" th:href="@{/customer/empCustomerList}">會員管理</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link px-4" th:href="@{/supplier/select_page}">廠商管理</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link px-4" th:href="@{/ap/select_page}">應付帳款</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link active px-4" th:href="@{/emp/select_page}">員工管理</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link px-4" th:href="@{/dept/listAllDept}">部門管理</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-4" th:href="@{/emp/message/send}">通知發送</a>
+                    </li>
                 </ul>
             </div>
         </nav>

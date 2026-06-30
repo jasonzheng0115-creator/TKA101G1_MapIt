@@ -346,6 +346,7 @@
             left: 0;
             right: 0;
             top: 100%;
+            margin-top: -10px;
             display: none;
             position: absolute;
             background: white;
@@ -356,6 +357,7 @@
             z-index: 1050;
         }
 
+        /* 滑鼠移入時顯示選單並套用平滑動畫 */
         .megamenu-nav-item:hover .megamenu-dropdown {
             display: block;
             animation: megamenuFade 0.25s ease-out;
@@ -433,6 +435,17 @@
         .region-link:hover {
             color: #ff5722 !important;
             transform: translateX(6px);
+        }
+
+        /* 游標移到上面時文字變成橘色 */
+        .sub-navbar .nav-link {
+            color: #475569;
+            transition: color 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .sub-navbar .nav-link:hover {
+            color: #ff5722 !important;
         }
     </style>
 </head>
@@ -515,16 +528,120 @@
         <nav class="sub-navbar bg-white py-1">
             <div class="container px-4 px-lg-5">
                 <ul class="nav justify-content-center fw-bold">
-                    <li class="nav-item"><a class="nav-link text-dark px-4" href="/">首頁</a></li>
-                    <li class="nav-item"><a class="nav-link text-dark px-4" href="#!">關於我們</a></li>
-                    <li class="nav-item"><a class="nav-link text-dark px-4"
-                            th:href="@{/frontend/product/listAll}">商城</a></li>
-                    <li class="nav-item"><a class="nav-link text-dark px-4" href="/front/attr/list">景點探索</a></li>
-                    <li class="nav-item"><a class="nav-link text-dark px-4" href="#!">主題推薦</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark px-4" href="/">首頁</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link text-dark px-4" href="/front/attr/about">關於我們</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link text-dark px-4" th:href="@{/frontend/product/listAll}">商城</a>
+                    </li>
+
+                    <li class="nav-item megamenu-nav-item position-relative">
+                        <a class="nav-link text-dark px-4" href="/front/attr/search">景點探索</a>
+
+                        <!-- 觀光景點小型下拉選單 (無地圖版) -->
+                        <div class="megamenu-dropdown"
+                            style="width: 200px !important; left: 50% !important; transform: translateX(-50%) !important; right: auto !important; border-radius: 12px; padding: 20px;">
+                            <h6 class="fw-bold text-dark mb-3" style="font-size: 1.05rem; letter-spacing: 1px;">觀光景點
+                            </h6>
+                            <ul class="list-unstyled ps-3"
+                                style="border-left: 2px solid #ff5722; line-height: 2.2; margin-bottom: 0;">
+                                <li><a href="/front/attr/search?area=北部地區"
+                                        class="text-secondary text-decoration-none region-link">北部地區</a></li>
+                                <li><a href="/front/attr/search?area=中部地區"
+                                        class="text-secondary text-decoration-none region-link">中部地區</a></li>
+                                <li><a href="/front/attr/search?area=南部地區"
+                                        class="text-secondary text-decoration-none region-link">南部地區</a></li>
+                                <li><a href="/front/attr/search?area=東部地區"
+                                        class="text-secondary text-decoration-none region-link">東部地區</a></li>
+                                <li><a href="/front/attr/search?area=離島地區"
+                                        class="text-secondary text-decoration-none region-link">離島地區</a></li>
+                            </ul>
+                        </div>
+                    </li>
+
+                    <li class="nav-item megamenu-nav-item">
+                        <a class="nav-link text-dark px-4" href="#!">主題推薦</a>
+
+                        <div class="megamenu-dropdown">
+                            <div class="container px-4 px-lg-5">
+                                <div class="megamenu-grid">
+                                    <!-- 1. 自然景觀 (categoryId=1) -->
+                                    <a href="/front/attr/search?categoryId=1"
+                                        class="megamenu-card text-decoration-none">
+                                        <div class="megamenu-img-wrapper">
+                                            <img src="/images/nature.jpg" class="megamenu-img" alt="自然景觀">
+                                        </div>
+                                        <div class="megamenu-title">自然景觀</div>
+                                    </a>
+                                    <!-- 2. 歷史古蹟 (categoryId=2) -->
+                                    <a href="/front/attr/search?categoryId=2"
+                                        class="megamenu-card text-decoration-none">
+                                        <div class="megamenu-img-wrapper">
+                                            <img src="/images/history.jpg" class="megamenu-img" alt="歷史古蹟">
+                                        </div>
+                                        <div class="megamenu-title">歷史古蹟</div>
+                                    </a>
+                                    <!-- 3. 主題樂園 (categoryId=3) -->
+                                    <a href="/front/attr/search?categoryId=3"
+                                        class="megamenu-card text-decoration-none">
+                                        <div class="megamenu-img-wrapper">
+                                            <img src="/images/amusement.jpg" class="megamenu-img" alt="主題樂園">
+                                        </div>
+                                        <div class="megamenu-title">主題樂園</div>
+                                    </a>
+                                    <!-- 4. 藝文館所 (categoryId=4) -->
+                                    <a href="/front/attr/search?categoryId=4"
+                                        class="megamenu-card text-decoration-none">
+                                        <div class="megamenu-img-wrapper">
+                                            <img src="/images/gallery.jpg" class="megamenu-img" alt="藝文館所">
+                                        </div>
+                                        <div class="megamenu-title">藝文館所</div>
+                                    </a>
+                                    <!-- 5. 商圈夜市 (categoryId=5) -->
+                                    <a href="/front/attr/search?categoryId=5"
+                                        class="megamenu-card text-decoration-none">
+                                        <div class="megamenu-img-wrapper">
+                                            <img src="/images/market.jpg" class="megamenu-img" alt="商圈夜市">
+                                        </div>
+                                        <div class="megamenu-title">商圈夜市</div>
+                                    </a>
+                                    <!-- 6. 休閒農場 (categoryId=6) -->
+                                    <a href="/front/attr/search?categoryId=6"
+                                        class="megamenu-card text-decoration-none">
+                                        <div class="megamenu-img-wrapper">
+                                            <img src="/images/farm.jpg" class="megamenu-img" alt="休閒農場">
+                                        </div>
+                                        <div class="megamenu-title">休閒農場</div>
+                                    </a>
+                                    <!-- 7. 宗教廟宇 (categoryId=7) -->
+                                    <a href="/front/attr/search?categoryId=7"
+                                        class="megamenu-card text-decoration-none">
+                                        <div class="megamenu-img-wrapper">
+                                            <img src="/images/temple.jpg" class="megamenu-img" alt="宗教廟宇">
+                                        </div>
+                                        <div class="megamenu-title">宗教廟宇</div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+
                     <li class="nav-item"><a class="nav-link px-4" th:href="@{/trip/my-trips}"
                             style="color: #ff5722; border-bottom: 2px solid #ff5722;">我的行程</a></li>
-                    <li class="nav-item"><a class="nav-link text-dark px-4" href="/front/favorite/list">我的收藏</a></li>
-                    <li class="nav-item"><a class="nav-link text-dark px-4" href="/contact">客服中心</a></li>
+
+                    <li class="nav-item">
+                        <a class="nav-link text-dark px-4" href="/front/favorite/list">我的收藏</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link text-dark px-4" href="/contact">客服中心</a>
+                    </li>
+
                 </ul>
             </div>
         </nav>
