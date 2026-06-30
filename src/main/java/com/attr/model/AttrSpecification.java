@@ -27,14 +27,14 @@ import jakarta.persistence.criteria.Root;
 public class AttrSpecification {
     
     /**
-     * 建立動態查詢規格
+     * 建立動態查詢規格（支援多地區 ID）
      * 
      * @param keyword 景點名稱關鍵字（可為 null 或空字串）
-     * @param regionId 地區 ID（可為 null）
+     * @param regionIds 地區 ID 列表（可為 null 或空列表）
      * @param categoryId 類別 ID（可為 null）
      * @return Specification 查詢規格
      */
-    public static Specification<AttrVO> buildSpecification(String keyword, Integer regionId, Integer categoryId) {
+    public static Specification<AttrVO> buildSpecification(String keyword, List<Integer> regionIds, Integer categoryId) {
         return new Specification<AttrVO>() {
             private static final long serialVersionUID = 1L;
 
@@ -52,12 +52,9 @@ public class AttrSpecification {
                     predicates.add(keywordPredicate);
                 }
                 
-                // 2. 地區條件
-                if (regionId != null) {
-                    Predicate regionPredicate = criteriaBuilder.equal(
-                        root.get("regionVO").get("regionId"), 
-                        regionId
-                    );
+                // 2. 地區條件（支援 IN 查詢多地區）
+                if (regionIds != null && !regionIds.isEmpty()) {
+                    Predicate regionPredicate = root.get("regionVO").get("regionId").in(regionIds);
                     predicates.add(regionPredicate);
                 }
                 
@@ -81,6 +78,18 @@ public class AttrSpecification {
             }
         };
     }
+
+    /**
+     * 建立動態查詢規格（單一地區 ID，相容舊版）
+     */
+    public static Specification<AttrVO> buildSpecification(String keyword, Integer regionId, Integer categoryId) {
+        List<Integer> regionIds = null;
+        if (regionId != null) {
+            regionIds = new ArrayList<>();
+            regionIds.add(regionId);
+        }
+        return buildSpecification(keyword, regionIds, categoryId);
+    }
     
     /**
      * 建立只有關鍵字的查詢規格
@@ -89,7 +98,7 @@ public class AttrSpecification {
      * @return Specification 查詢規格
      */
     public static Specification<AttrVO> byKeyword(String keyword) {
-        return buildSpecification(keyword, null, null);
+        return buildSpecification(keyword, (List<Integer>) null, null);
     }
     
     /**
@@ -109,6 +118,6 @@ public class AttrSpecification {
      * @return Specification 查詢規格
      */
     public static Specification<AttrVO> byCategory(Integer categoryId) {
-        return buildSpecification(null, null, categoryId);
+        return buildSpecification(null, (List<Integer>) null, categoryId);
     }
 }

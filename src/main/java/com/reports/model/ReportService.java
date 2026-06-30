@@ -42,6 +42,11 @@ public class ReportService {
      * @return 儲存後的檢舉物件
      */
     public ReportVO addReport(ReportVO reportVO) {
+        // 若沒有手動設定 ID，自動計算下一個最大 ID
+        if (reportVO.getReportId() == null) {
+            Integer maxId = reportRepository.findMaxId();
+            reportVO.setReportId(maxId == null ? 1 : maxId + 1);
+        }
         // 設定檢舉時間為當前時間
         if (reportVO.getReportTime() == null) {
             reportVO.setReportTime(LocalDateTime.now());

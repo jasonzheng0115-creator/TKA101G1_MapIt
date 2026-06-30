@@ -76,7 +76,7 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
                     <li class="nav-item"><a class="nav-link" href="/">首頁</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/front/attr/list">所有景點</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/front/attr/search">所有景點</a></li>
                     <li class="nav-item"><a class="nav-link" href="#!">關於我們</a></li>
                 </ul>
                 <!-- 搜尋表單 -->
@@ -191,7 +191,7 @@
                 <!-- Previous Page -->
                 <li class="page-item" th:classappend="${attrPage.first} ? 'disabled'">
                     <a class="page-link" 
-                       th:href="@{/front/attr/search(keyword=${keyword}, regionId=${regionId}, categoryId=${categoryId}, page=${attrPage.number - 1})}"
+                       th:href="@{/front/attr/search(keyword=${keyword}, regionId=${regionId}, area=${area}, categoryId=${categoryId}, page=${attrPage.number - 1})}"
                        aria-label="Previous">
                         <span aria-hidden="true">&laquo;</span>
                     </a>
@@ -202,14 +202,14 @@
                     th:each="i : ${#numbers.sequence(0, attrPage.totalPages - 1)}"
                     th:classappend="${i == attrPage.number} ? 'active'">
                     <a class="page-link" 
-                       th:href="@{/front/attr/search(keyword=${keyword}, regionId=${regionId}, categoryId=${categoryId}, page=${i})}"
+                       th:href="@{/front/attr/search(keyword=${keyword}, regionId=${regionId}, area=${area}, categoryId=${categoryId}, page=${i})}"
                        th:text="${i + 1}">1</a>
                 </li>
                 
                 <!-- Next Page -->
                 <li class="page-item" th:classappend="${attrPage.last} ? 'disabled'">
                     <a class="page-link" 
-                       th:href="@{/front/attr/search(keyword=${keyword}, regionId=${regionId}, categoryId=${categoryId}, page=${attrPage.number + 1})}"
+                       th:href="@{/front/attr/search(keyword=${keyword}, regionId=${regionId}, area=${area}, categoryId=${categoryId}, page=${attrPage.number + 1})}"
                        aria-label="Next">
                         <span aria-hidden="true">&raquo;</span>
                     </a>
