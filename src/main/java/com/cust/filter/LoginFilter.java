@@ -11,7 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-//@Component
+@Component
 public class LoginFilter extends OncePerRequestFilter {
 
 	@Override
@@ -21,7 +21,10 @@ public class LoginFilter extends OncePerRequestFilter {
 		// 絕對必須公開的白名單
 		if (uri.equals("/customer/login") ||
 				uri.equalsIgnoreCase("/customer/loginCheck") ||
-				uri.equals("/customer/register")) {
+				uri.equals("/customer/register") ||
+				uri.equals("/customer/empCustomerList") || // 排除後台會員管理
+				uri.startsWith("/orders/backend-") // 排除後台訂單管理
+		) {
 			return true;
 		}
 		// 黑名單
