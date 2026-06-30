@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,7 +35,7 @@ public class CustController {
 
 	@Autowired // 自動new CustService()
 	CustService custService;
-	
+
 	@Autowired
 	TicketItemRepository ticketItemRepository;
 
@@ -280,15 +281,15 @@ public class CustController {
 		if (loginCust == null || loginCust.getCustImg() == null || loginCust.getCustImg().trim().isEmpty()) {
 			return ResponseEntity.notFound().build();
 		}
-		
+
 		try {
 			File imgFile = new File(loginCust.getCustImg());
 			if (!imgFile.exists()) {
 				return ResponseEntity.notFound().build();
 			}
-			
+
 			byte[] imageBytes = java.nio.file.Files.readAllBytes(imgFile.toPath());
-			
+
 			// 簡單判斷 Content-Type
 			org.springframework.http.MediaType mediaType = org.springframework.http.MediaType.IMAGE_JPEG;
 			if (loginCust.getCustImg().toLowerCase().endsWith(".png")) {
@@ -296,7 +297,39 @@ public class CustController {
 			} else if (loginCust.getCustImg().toLowerCase().endsWith(".gif")) {
 				mediaType = org.springframework.http.MediaType.IMAGE_GIF;
 			}
-			
+
+			return ResponseEntity.ok()
+					.contentType(mediaType)
+					.body(imageBytes);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.internalServerError().build();
+		}
+	}
+
+	// 行程中的浮動頭像
+	@GetMapping("/avatar/{custId}")
+	public ResponseEntity<byte[]> getAvatarById(@PathVariable("custId") Integer custId) {
+		CustVO custVO = custService.getOneCust(custId);
+		if (custVO == null || custVO.getCustImg() == null || custVO.getCustImg().trim().isEmpty()) {
+			return ResponseEntity.notFound().build();
+		}
+
+		try {
+			File imgFile = new File(custVO.getCustImg());
+			if (!imgFile.exists()) {
+				return ResponseEntity.notFound().build();
+			}
+
+			byte[] imageBytes = java.nio.file.Files.readAllBytes(imgFile.toPath());
+
+			org.springframework.http.MediaType mediaType = org.springframework.http.MediaType.IMAGE_JPEG;
+			if (custVO.getCustImg().toLowerCase().endsWith(".png")) {
+				mediaType = org.springframework.http.MediaType.IMAGE_PNG;
+			} else if (custVO.getCustImg().toLowerCase().endsWith(".gif")) {
+				mediaType = org.springframework.http.MediaType.IMAGE_GIF;
+			}
+
 			return ResponseEntity.ok()
 					.contentType(mediaType)
 					.body(imageBytes);

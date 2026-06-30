@@ -29,12 +29,6 @@ public class TripController {
     @GetMapping("/my-trips")
     public String showMyTrips(HttpSession session, Model model) {
         CustVO loginCust = (CustVO) session.getAttribute("loginCust");
-        // ★ 如果沒有登入，導向「請先登入」提示頁面
-        if (loginCust == null) {
-            // 把「紙條」放進包裹，告訴提示頁面：登入後要跳回 /trip/my-trips
-            model.addAttribute("redirectURL", "/trip/my-trips");
-            return "front-end/trip/my-trips";
-        }
 
         // 把髒活交給 Service
         List<TripVO> myTrips = tripService.getTripsByCustomer(loginCust);
@@ -49,9 +43,11 @@ public class TripController {
     // 2. 顯示「新增行程」的表單
     @GetMapping("/create")
     public String showCreateTripForm(HttpSession session, Model model) {
-        if (session.getAttribute("loginCust") == null)
+        CustVO loginCust = (CustVO) session.getAttribute("loginCust");
+        if (loginCust == null)
             return "redirect:/login";
 
+        model.addAttribute("userName", loginCust.getCustName());
         model.addAttribute("trip", new TripVO());
         return "front-end/trip/create-trip";
     }
@@ -84,6 +80,7 @@ public class TripController {
             return "redirect:/trip/my-trips";
         }
 
+        model.addAttribute("userName", loginCust.getCustName());
         model.addAttribute("trip", trip);
         // 新增這行：將目前登入的會員 ID 傳給編輯頁，用來判定是否顯示管理協作者的權限
         model.addAttribute("loginCustId", loginCust.getCustId());
