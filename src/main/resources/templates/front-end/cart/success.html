@@ -199,16 +199,15 @@
 			</table>
 		</div>
 		
-		<div class="ticket-box">
-			<h3>🎫 您的數位入場券 (QR Code)</h3>
-			<p style="color: gray; font-size: 13px;">（未來對接完成後，此處將由票券倉模組自動發行真實 QR Code）</p>
-			
-			<div class="qrcode-placeholder">
-				<div class="qrcode-placeholder">
-					<span style="font-size: 48px;">📱</span>
-					<p style="font-size: 12px; margin-top: 5px; color: dimgray;">[ 虛擬憑證 待票券倉對接 ]</p>
-				</div>
+		<!-- ====Sasha修改==== -->
+		<div class="ticket-box text-center" style="padding: 30px 20px;">
+			<h3 style="text-align: center; border-left: none; margin-bottom: 20px;">🎫 票券已發送至您的票券匣</h3>
+			<p style="color: gray; font-size: 14px; margin-bottom: 20px;">感謝您的購買！請前往【我的票券匣】查看 QR Code 並進行使用</p>
+			<a th:href="@{/customer/ticket}" class="btn-custom-primary" style="background-color: #ff5722; color: white; padding: 12px 30px; border-radius: 25px; text-decoration: none; font-weight: bold; display: inline-block; transition: background-color 0.2s;">
+				➡︎ 立即前往我的票券匣
+			</a>
 		</div>
+		<!-- ================ -->
 		
 	</div>
 
