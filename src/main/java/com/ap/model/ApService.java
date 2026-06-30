@@ -49,5 +49,11 @@ public class ApService {
 	public List<ApVO> getByApStatus(Boolean apStatus) {
 		return repository.findByApStatus(apStatus);
 	}
+	
+	// 給controller檢查是否有未付款帳單
+		public boolean hasUnpaidApBySupplier(Integer supplierId) {
+			// 傳入廠商編號，並且狀態查 false（代表未付款）
+			return repository.existsBySplrVO_SupplierIdAndApStatus(supplierId, false);
+		}
 
 }

@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.ap.model.ApService;
+import com.prod.model.ProdRepository;
 import com.splr.model.SplrService;
 import com.splr.model.SplrVO;
 
@@ -23,6 +25,12 @@ public class SplrController {
 	
 	@Autowired
 	private SplrService splrSvc;
+	
+	@Autowired
+	private ApService apSvc;
+
+	@Autowired
+	private ProdRepository prodRepository;
 	
 	@GetMapping("/select_page")
 	public String select_Page(ModelMap model) {
@@ -103,11 +111,64 @@ public class SplrController {
 		return "redirect:/supplier/listAllSupplier";
 	}
 	
+//	@PostMapping("/delete")
+//	public String delete(Integer supplierId, ModelMap model) {
+//		
+//		splrSvc.deleteSplr(supplierId);
+//		
+//		return "redirect:/supplier/listAllSupplier";	
+//	}
+	
 	@PostMapping("/delete")
-	public String delete(Integer supplierId, ModelMap model) {
+	public String delete(
+			@RequestParam("supplierId") Integer supplierId, 
+			ModelMap model,
+	        @RequestParam(value = "page", defaultValue = "1") int page) {
 		
-		splrSvc.deleteSplr(supplierId);
+		// 檢查應付帳款（是否還有未付款 false 的帳單）
+		boolean hasUnpaid = apSvc.hasUnpaidApBySupplier(supplierId); 
+		if (hasUnpaid) {
+			// 將錯誤訊息塞入 model，並導回列表頁
+			model.addAttribute("errorMsg", "❌ 停用失敗：該廠商尚有未結清（未付款）之應付帳款！");
+			
+			// 為了讓原本列表頁的分頁與資料不會因為攔截而消失，重新呼叫一次撈取分頁的 method
+			return listAllSupplier(page, model); 
+		}
 		
-		return "redirect:/supplier/listAllSupplier";	
+		// 檢查商品狀態（該廠商名下是否還有商品正處於「上架中 true」的狀態）
+		boolean hasActiveProduct = prodRepository.existsBySplrVO_SupplierIdAndProductStatus(supplierId, true);
+		if (hasActiveProduct) {
+			// 提示管理員必須先將廠商商品全部下架
+			model.addAttribute("errorMsg", "❌ 停用失敗：該廠商目前仍有商品上架中，請先至商品管理將其下架！");
+			return listAllSupplier(page, model); 
+		}
+		
+		// 執行安全停用邏輯（改狀態而不刪資料）
+		SplrVO splrVO = splrSvc.getOneSplr(supplierId);
+		if (splrVO != null) {
+			splrVO.setSupplierStatus(false); // 將狀態改成已停用 (false)
+			splrSvc.updateSplr(splrVO);     // 存回資料庫
+			model.addAttribute("successMsg", "🟢 廠商已成功停用！");
+		}
+		
+		// 停用成功後，貼心地重新導向回原本的那一頁分頁
+		return "redirect:/supplier/listAllSupplier?page=" + page;    
+	}
+	
+	
+	
+	// 重新啟用廠商
+	@PostMapping("/resume")
+	public String resume(@RequestParam("supplierId") Integer supplierId, 
+	                     @RequestParam(value = "page", defaultValue = "1") int page) {
+	    
+		SplrVO splrVO = splrSvc.getOneSplr(supplierId);
+		if (splrVO != null) {
+			splrVO.setSupplierStatus(true); // 將狀態改回 1 (true) 啟用中
+			splrSvc.updateSplr(splrVO);     // 儲存修改
+		}
+	    
+		// 導回原本的那一頁分頁
+		return "redirect:/supplier/listAllSupplier?page=" + page;
 	}
 }

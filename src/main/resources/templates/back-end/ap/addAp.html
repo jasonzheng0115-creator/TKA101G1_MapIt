@@ -259,7 +259,7 @@
 		
 		        <div class="form-group">
 		            <label class="form-label">帳單月份 (YYYY-MM)：</label>
-		            <input type="text" class="form-control" th:field="*{billMonth}" placeholder="例如: 2026-06"/>
+		            <input type="month" class="form-control" th:field="*{billMonth}" placeholder="例如: 2026-06"/>
 		            <span class="error" th:if="${#fields.hasErrors('billMonth')}" th:errors="*{billMonth}"></span>
 		        </div>
 
@@ -276,5 +276,42 @@
 		    
 		</div>
 	</div>
+	
+	<script>
+		document.addEventListener("DOMContentLoaded", function () {
+		    // 透過 Thymeleaf 生成的 id 或 name 抓取單選鈕與日期欄位
+		    const radioPaid = document.querySelector('input[name="apStatus"][value="true"]');
+		    const radioUnpaid = document.querySelector('input[name="apStatus"][value="false"]');
+		    const paymentDateInput = document.getElementById('paymentDate');
+		
+		    function togglePaymentDate() {
+		        if (radioUnpaid && radioUnpaid.checked) {
+		            // 如果選未付款：清空日期並禁用
+		            paymentDateInput.value = "";
+		            paymentDateInput.disabled = true;
+		            paymentDateInput.style.backgroundColor = "lightgray";
+		        } else if (radioPaid && radioPaid.checked) {
+		            // 如果選已付款：解除禁用
+		            paymentDateInput.disabled = false;
+		            paymentDateInput.style.backgroundColor = "white";
+		            
+		            // 如果原本沒日期，自動帶入今天日期
+		            if (!paymentDateInput.value) {
+		                const today = new Date().toISOString().split('T')[0];
+		                paymentDateInput.value = today;
+		            }
+		        }
+		    }
+		
+		    // 綁定點擊事件
+		    if (radioPaid && radioUnpaid && paymentDateInput) {
+		        radioPaid.addEventListener("change", togglePaymentDate);
+		        radioUnpaid.addEventListener("change", togglePaymentDate);
+		        
+		        // 網頁剛載入時先執行一次，確保初始狀態正確
+		        togglePaymentDate();
+		    }
+		});
+	</script>
 </body>
 </html>

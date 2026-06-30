@@ -43,5 +43,13 @@ public interface ProdRepository extends JpaRepository<ProdVO, Integer> {
 	// LIMIT :limit：限制只拿幾筆
 	@Query(value = "SELECT * FROM PRODUCT WHERE PRODUCT_STATUS = 1 ORDER BY RAND() LIMIT :limit", nativeQuery = true)
 	List<ProdVO> findRandomProducts(@Param("limit") int limit);
+	
+	// 檢查該廠商是否還有任何「上架中(true)」的商品
+	boolean existsBySplrVO_SupplierIdAndProductStatus(Integer supplierId, Boolean productStatus);
 
+	// 撈取「商品上架中」且「廠商啟用中」的所有商品（有分頁）
+		Page<ProdVO> findByProductStatusTrueAndSplrVO_SupplierStatusTrue(Pageable pageable);
+
+	// 搜尋「關鍵字」且限定「商品上架中」且「廠商啟用中」的商品（有分頁）
+	Page<ProdVO> findByProductNameContainingAndProductStatusTrueAndSplrVO_SupplierStatusTrue(String productName, Pageable pageable);
 }
