@@ -44,7 +44,20 @@ public class TripService {
             }
         }
 
-        // 1.5 回傳合併完成的完整行程清單
+        // 1.5 為清單中的所有行程載入協作者 (排除擁有者自己，避免重複)
+        for (TripVO trip : allTrips) {
+            List<CollabItemVO> collabs = collabItemRepository.findByTripVO_TripId(trip.getTripId());
+            List<CustVO> collabCusts = new java.util.ArrayList<>();
+            for (CollabItemVO collab : collabs) {
+                CustVO collabCust = collab.getCustVO();
+                if (collabCust != null && !collabCust.getCustId().equals(trip.getCustVO().getCustId())) {
+                    collabCusts.add(collabCust);
+                }
+            }
+            trip.setCollaborators(collabCusts);
+        }
+
+        // 1.6 回傳合併完成 hometown行程清單
         return allTrips;
     }
 

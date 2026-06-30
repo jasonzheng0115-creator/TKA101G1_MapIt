@@ -2,6 +2,7 @@ package com.attr.controller;
 
 import com.attr.model.AttrRepository;
 import com.attr.model.AttrVO;
+import com.attr.model.AttrImageVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -75,6 +76,29 @@ public class AttrApiController {
             // 將地區與類別的「中文名稱」直接回傳，配合前端 HTML 顯示
             map.put("regionId", attr.getRegionVO() != null ? attr.getRegionVO().getRegionName() : "未知地區");
             map.put("categoryId", attr.getCategoryVO() != null ? attr.getCategoryVO().getCategoryName() : "未分類");
+
+            // 💡 取得景點圖片：若有主圖或有任何圖片，取得其 imageUrl/imagePath，否則用預設占位圖
+            String firstImageUrl = "https://dummyimage.com/450x300/dee2e6/6c757d.jpg";
+            if (attr.getImages() != null && !attr.getImages().isEmpty()) {
+                AttrImageVO mainImg = null;
+                for (AttrImageVO img : attr.getImages()) {
+                    if (img.getIsMain() != null && img.getIsMain()) {
+                        mainImg = img;
+                        break;
+                    }
+                }
+                if (mainImg == null) {
+                    mainImg = attr.getImages().iterator().next();
+                }
+                if (mainImg != null) {
+                    if (mainImg.getImageUrl() != null && !mainImg.getImageUrl().trim().isEmpty()) {
+                        firstImageUrl = mainImg.getImageUrl();
+                    } else if (mainImg.getImagePath() != null && !mainImg.getImagePath().trim().isEmpty()) {
+                        firstImageUrl = "/attraction_images/" + mainImg.getImagePath();
+                    }
+                }
+            }
+            map.put("firstImageUrl", firstImageUrl);
 
             resultList.add(map);
         }
