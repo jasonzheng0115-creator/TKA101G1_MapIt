@@ -34,6 +34,9 @@ public class OrdersService {
 	@Transactional
 	public OrdersVO insertOrder(OrdersVO ordersVO) {
 		
+		// 在開始任何計算與存檔之前，先把下單時間設為現在，前台結帳畫面才會成立
+	    ordersVO.setOrderTimestamp(LocalDateTime.now());
+		
 		// 防禦性檢查：確認這張訂單裡面有沒有明細
 		if (ordersVO.getOrderItems() == null || ordersVO.getOrderItems().isEmpty()) {
 			throw new IllegalArgumentException("結帳失敗：訂單內必須包含至少一項商品項目！");

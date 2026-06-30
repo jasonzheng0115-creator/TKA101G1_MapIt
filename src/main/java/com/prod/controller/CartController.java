@@ -14,9 +14,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.cust.model.CustVO;
 import com.prod.model.CartVO;
 import com.prod.model.ProdService;
 import com.prod.model.ProdVO;
+
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/cart")
@@ -51,7 +54,7 @@ public class CartController {
 	
 	// 顯示購物車 ( Redis + Function 資料轉換 Stream)
 	@GetMapping("/show")
-	public String showCart(ModelMap model) {
+	public String showCart(ModelMap model, HttpSession session) {
 		String key = getCartKey();
 		
 		// 官方標準寫法：直接把這個 key 的所有 {商品ID: 數量} 倒出來
@@ -78,9 +81,21 @@ public class CartController {
 				.mapToInt(CartVO::getSubtotal)
 				.sum();
 		
-		// 把所有旅遊商品從資料庫撈出來，裝進 frontProdList 
-		// 讓推薦商品區塊顯示
-		List<ProdVO> frontProdList = prodSvc.getAll();
+		String currentUserName = "旅客"; // 預設值，沒登入時顯示
+		
+		// 登入
+		CustVO loginCust = (CustVO) session.getAttribute("loginCust");
+		
+		if (loginCust != null) {
+	        currentUserName = loginCust.getCustName(); // 拿到真正的使用者名字！
+	    }
+		
+		// 如有會員登入，傳名字給前端
+	    model.addAttribute("userName", currentUserName);
+		
+		// 推薦商品區塊顯示，把所有旅遊商品從資料庫撈出來，裝進 frontProdList 
+		// 隨機撈取功能，限制只撈取 4 筆上架中的商品作為推薦商品
+		List<ProdVO> frontProdList = prodSvc.getRandomProducts(4);
 		model.addAttribute("frontProdList", frontProdList);
 		
 		model.addAttribute("cartList", cartList);
