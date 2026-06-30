@@ -261,6 +261,12 @@ public class AttrFrontController {
                     
                     // 查詢該景點的主圖
                     AttrImageVO mainImage = attrImageRepository.findMainImageByAttrId(attr.getAttrId());
+                    if (mainImage == null) {
+                        List<AttrImageVO> images = attrImageRepository.findByAttrId(attr.getAttrId());
+                        if (images != null && !images.isEmpty()) {
+                            mainImage = images.get(0);
+                        }
+                    }
                     map.put("mainImage", mainImage);
                     
                     // 【重要】確保 imageUrl 也被傳遞到前端（用於 fallback 機制）
