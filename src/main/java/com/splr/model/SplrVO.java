@@ -46,6 +46,9 @@ public class SplrVO implements Serializable {
 	@Column(name = "SUPPLIER_ADDRESS")
 	private String supplierAddress;
 	
+	@Column(name = "SUPPLIER_STATUS", insertable = false)
+	private Boolean supplierStatus = true; // 預設啟用中 (true)
+	
 	public SplrVO() {
 	}
 	
@@ -96,12 +99,20 @@ public class SplrVO implements Serializable {
 	public void setSupplierAddress(String supplierAddress) {
 		this.supplierAddress = supplierAddress;
 	}
+	
+	public Boolean getSupplierStatus() {
+		return supplierStatus;
+	}
+
+	public void setSupplierStatus(Boolean supplierStatus) {
+		this.supplierStatus = supplierStatus;
+	}
 
 	@Override
 	public String toString() {
 		return "SplrVO [supplierId=" + supplierId + ", supplierName=" + supplierName + ", supplierContact="
 				+ supplierContact + ", supplierTel=" + supplierTel + ", supplierEmail=" + supplierEmail
-				+ ", supplierAddress=" + supplierAddress + "]";
+				+ ", supplierAddress=" + supplierAddress + ", supplierStatus=" + supplierStatus + "]";
 	}
 	
 }

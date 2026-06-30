@@ -231,7 +231,17 @@
 		
 		<div class="main-card">
 	
-			<h3>📋 所有廠商清單資料</h3>
+			<h3>📋 所有廠商清單資料</h3>	
+			
+			<!-- 提示框 -->
+			<div th:if="${errorMsg}" style="color: white; background-color: crimson; padding: 12px; border-radius: 6px; margin: 15px 0; font-weight: bold; font-size: 14px;">
+			    <i class="bi bi-exclamation-triangle-fill"></i> <span th:text="${errorMsg}"></span>
+			</div>
+			
+			<div th:if="${successMsg}" style="color: white; background-color: green; padding: 12px; border-radius: 6px; margin: 15px 0; font-weight: bold; font-size: 14px;">
+			    <i class="bi bi-check-circle-fill"></i> <span th:text="${successMsg}"></span>
+			</div>
+			
 			
 			<div>
 				<a th:href="@{/supplier/select_page}" class="btn-back">🔙 返回首頁</a>
@@ -246,6 +256,7 @@
 						<th>電話</th>
 						<th>Email</th>
 						<th>地址</th>
+						<th>狀態</th>
 						<th>操作功能</th>
 					</tr>
 				</thead>
@@ -257,17 +268,33 @@
 						<td th:text="${s.supplierTel}"></td>
 						<td th:text="${s.supplierEmail}"></td>
 						<td th:text="${s.supplierAddress}"></td>
+						
+						<td>
+							<span th:if="${s.supplierStatus}" style="color: green; font-weight: bold;">🟢 啟用中</span>
+							<span th:if="${!s.supplierStatus}" style="color: red; font-weight: bold;">🔴 已停用</span>
+						</td>
+						
 						<td>
 							<form th:action="@{/supplier/getOne_For_Update}" method="post" style="display: inline;">
 								<input type="hidden" name="supplierId" th:value="${s.supplierId}">
 								<button type="submit" class="btn-action btn-update">✍️ 修改</button>
 							</form>
-							<form th:action="@{/supplier/delete}" method="post" style="display: inline;">
+							
+							<form th:if="${s.supplierStatus}" th:action="@{/supplier/delete}" method="post" style="display: inline;">
 								<input type="hidden" name="supplierId" th:value="${s.supplierId}">
+								<input type="hidden" name="page" th:value="${currentPage}">
 								<button type="submit" class="btn-action btn-delete" 
-										onclick="return confirm('確定要刪除嗎？');">🗑️ 刪除</button>
+										onclick="return confirm('確定要停用此廠商嗎？');">🚫 停用</button>
+							</form>
+							
+							<form th:if="${!s.supplierStatus}" th:action="@{/supplier/resume}" method="post" style="display: inline;">
+								<input type="hidden" name="supplierId" th:value="${s.supplierId}">
+								<button type="submit" class="btn-action btn-update" 
+										style="border-color: green; color: green;"
+										onclick="return confirm('確定要重新啟用此廠商嗎？');">⚡ 啟用</button>
 							</form>
 						</td>
+						
 					</tr>
 				</tbody>
 			</table>
@@ -305,6 +332,6 @@
 		</div>
 	</div>
 	
-	
+
 </body>
 </html>

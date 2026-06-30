@@ -21,4 +21,6 @@ public interface ApRepository extends JpaRepository<ApVO, Integer> {
 	
 	List<ApVO> findByApStatus(Boolean apStatus);
 	
+	// 檢查是否存在屬於某廠商且付款狀態為特定值(例如 false)的帳款
+	boolean existsBySplrVO_SupplierIdAndApStatus(Integer supplierId, Boolean apStatus);
 }

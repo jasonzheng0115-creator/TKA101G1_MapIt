@@ -154,8 +154,8 @@
 	}
 	
 	.btn-submit:hover {
-		background-color: royalblue;  
-		border-color: royalblue;
+		background-color: darkorange;  
+		border-color: darkorange;
 	}
 	
 	/* 取消返回 */
@@ -248,16 +248,17 @@
 					<div class="form-text-static" th:text="*{apId}"></div>
 				</div>
 		
-		        <div class="form-group">
-		            <label class="form-label">選擇廠商：</label>
-		            <select class="form-control" name="splrVO.supplierId">
-		                <option value="">-- 請選擇廠商 --</option>
-		                <option th:each="supplier : ${supplierList}" 
-		                        th:value="${supplier.supplierId}" 
-		                        th:text="${supplier.supplierId + ' - ' + supplier.supplierName}"></option>
-		            </select>
-		            <span class="error" th:if="${#fields.hasErrors('splrVO.supplierId')}" th:errors="*{splrVO.supplierId}"></span>
-		        </div>
+				<div class="form-group">
+				    <label class="form-label">選擇廠商：</label>
+				    <select class="form-control" name="splrVO.supplierId">
+				        <option value="">-- 請選擇廠商 --</option>
+				        <option th:each="supplier : ${supplierList}" 
+				                th:value="${supplier.supplierId}" 
+				                th:text="${supplier.supplierId + ' - ' + supplier.supplierName}"
+				                th:selected="${apVO.splrVO != null && supplier.supplierId == apVO.splrVO.supplierId}"></option>
+				    </select>
+				    <span class="error" th:if="${#fields.hasErrors('splrVO.supplierId')}" th:errors="*{splrVO.supplierId}"></span>
+				</div>
 		
 		        <div class="form-group">
 		            <label class="form-label">應付金額：</label>
@@ -276,7 +277,7 @@
 		
 		        <div class="form-group">
 		            <label class="form-label">帳單月份 (YYYY-MM)：</label>
-		            <input type="text" class="form-control" th:field="*{billMonth}" />
+		            <input type="month" class="form-control" th:field="*{billMonth}" />
 		            <span class="error" th:if="${#fields.hasErrors('billMonth')}" th:errors="*{billMonth}"></span>
 		        </div>
 		
@@ -287,13 +288,47 @@
 		        </div>
 		
 				<div class="form-actions">
-					<a th:href="@{/ap/select_page}" class="btn-back">❌ 取消返回</a>
+					<a th:href="@{/ap/listAllAp}" class="btn-back">❌ 取消返回</a>
 					<button type="submit" class="btn-submit">💾 儲存修改</button>
 				</div>
 		    </form>
 
 		</div>
 	</div>
-
+	
+	<script>
+		document.addEventListener("DOMContentLoaded", function () {
+		    const radioPaid = document.querySelector('input[name="apStatus"][value="true"]');
+		    const radioUnpaid = document.querySelector('input[name="apStatus"][value="false"]');
+		    const paymentDateInput = document.getElementById('paymentDate');
+		
+		    function togglePaymentDate(isInitialLoad) {
+		        if (radioUnpaid && radioUnpaid.checked) {
+		            // 如果是未付款：清空日期並禁用
+		            paymentDateInput.value = "";
+		            paymentDateInput.disabled = true;
+		            paymentDateInput.style.backgroundColor = "lightgray";
+		        } else if (radioPaid && radioPaid.checked) {
+		            // 如果是已付款：解除禁用
+		            paymentDateInput.disabled = false;
+		            paymentDateInput.style.backgroundColor = "white";
+		            
+		            // 如果原本沒日期，且是在切換單選鈕時（非初次載入），自動帶入今天日期
+		            if (!paymentDateInput.value && !isInitialLoad) {
+		                const today = new Date().toISOString().split('T')[0];
+		                paymentDateInput.value = today;
+		            }
+		        }
+		    }
+		
+		    if (radioPaid && radioUnpaid && paymentDateInput) {
+		        radioPaid.addEventListener("change", function() { togglePaymentDate(false); });
+		        radioUnpaid.addEventListener("change", function() { togglePaymentDate(false); });
+		        
+		        // 網頁剛載入時執行第一次，傳入 true 代表初次載入，保留原本資料庫帶出來的日期
+		        togglePaymentDate(true);
+		    }
+		});
+	</script>
 </body>
 </html>

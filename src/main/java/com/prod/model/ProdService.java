@@ -75,4 +75,14 @@ public class ProdService {
 		return repository.findRandomProducts(limit);
 	}
 	
+	// 獲取所有上架中且廠商啟用的商品（供前台無搜尋時使用）
+	public Page<ProdVO> getFrontActiveProducts(Pageable pageable) {
+		return repository.findByProductStatusTrueAndSplrVO_SupplierStatusTrue(pageable);
+	}
+
+	// 依關鍵字搜尋上架中且廠商啟用的商品（供前台搜尋時使用）
+	public Page<ProdVO> getFrontActiveProductsByKeyword(String keyword, Pageable pageable) {
+		return repository.findByProductNameContainingAndProductStatusTrueAndSplrVO_SupplierStatusTrue(keyword, pageable);
+	}
+	
 }
