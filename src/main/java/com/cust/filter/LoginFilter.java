@@ -30,7 +30,9 @@ public class LoginFilter extends OncePerRequestFilter {
 		// 黑名單
 		if (uri.startsWith("/customer") ||
 				uri.startsWith("/order") ||
-				uri.startsWith("/trip")) {
+				uri.startsWith("/trip") ||
+				uri.startsWith("/front/favorite/list"))
+		{
 			return false;
 		}
 		// 剩下的全部公開
