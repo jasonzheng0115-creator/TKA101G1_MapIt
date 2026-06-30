@@ -1,289 +1,365 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="zh-TW" xmlns:th="http://www.thymeleaf.org">
+
 <head>
-<meta charset="UTF-8">
-<title>我的歷史訂單</title>
-<style>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>我的訂單紀錄 - 旅圖 MapIt</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+    <link href="/css/styles.css" rel="stylesheet" />
+    <!-- 引入 Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Outfit', 'Noto Sans TC', sans-serif;
+            background-color: #f8fafc;
+            color: #334155;
+            padding-top: 140px; /* 避免固定導覽列遮擋內容 */
+        }
 
-	body {
-		font-family: 'Segoe UI', Arial, sans-serif;
-		color: darkslategray;
-		background-color: whitesmoke;
-		margin: 0;
-		padding: 0;
-	}
-	
-	.front-navbar {
-		background-color: white;
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: 15px 30px;
-		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-		border-bottom: 3px solid orange;
-	}
-	
-	.front-logo {
-		font-size: 22px;
-		font-weight: bold;
-		color: darkorange;
-		text-decoration: none;
-	}
-	
-	.member-status-box {
-		display: flex;
-		align-items: center;
-	}
-	
-	.member-link {
-		color: darkslategray;
-		text-decoration: none;
-		font-weight: 500;
-		transition: color 0.2s;
-	}
-	
-	.member-link:hover {
-		color: orange;
-	}
-	
-	.orders-page-container {
-		max-width: 1000px;
-		margin: 40px auto;
-		padding: 0 20px;
-	}
-	
-	.page-header {
-		margin-bottom: 30px;
-		border-left: 6px solid orange;
-		padding-left: 15px;
-	}
-	
-	.page-header h2 {
-		color: darkslategray;
-		margin: 0 0 5px 0;
-		font-size: 24px;
-	}
-	
-	.page-header p {
-		color: gray;
-		margin: 0;
-		font-size: 14px;
-	}
-	
-	.empty-orders-box {
-		background-color: white;
-		padding: 40px;
-		text-align: center;
-		border-radius: 8px;
-		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
-		color: gray;
-		border: 1px dashed orange;
-	}
-	
-	.order-master-card {
-		background-color: white;
-		border-radius: 8px;
-		box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
-		margin-bottom: 25px;
-		overflow: hidden;
-		border-top: 4px solid orange;
-		transition: transform 0.2s;
-	}
-	
-	.order-master-card:hover {
-		transform: translateY(-2px);
-	}
-	
-	.order-card-header {
-		background-color: seashell;
-		padding: 15px 20px;
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		border-bottom: 1px solid lightgray;
-	}
-	
-	.header-label {
-		color: gray;
-	}
-	
-	.order-time-split {
-		color: gray;
-		margin-left: 10px;
-		font-size: 14px;
-	}
-	
-	.status-badge {
-		font-weight: bold;
-		padding: 4px 12px;
-		border-radius: 20px;
-		background-color: white;
-		font-size: 14px;
-		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-	}
-	
-	.order-card-body {
-		padding: 20px;
-	}
-	
-	.item-details-table {
-		width: 100%;
-		border-collapse: collapse;
-		text-align: left;
-	}
-	
-	.item-details-table th {
-		background-color: whitesmoke;
-		color: darkslategray;
-		padding: 12px;
-		font-weight: 600;
-		border-bottom: 2px solid lightgray;
-	}
-	
-	.item-details-table td {
-		padding: 15px 12px;
-		border-bottom: 1px solid whitesmoke;
-		color: darkslategray;
-	}
-	
-	.order-card-footer {
-		background-color: white;
-		padding: 15px 20px;
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		border-top: 1px dashed lightgray;
-	}
-	
-	.total-amount-box {
-		font-size: 16px;
-		color: darkslategray;
-		font-weight: bold;
-	}
-	
-	.footer-price {
-		color: tomato;
-		font-size: 22px;
-		font-weight: 800;
-	}
-	
-	.action-buttons-box {
-		display: flex;
-		align-items: center;
-	}
-	
-	.btn-view-receipt {
-		background-color: orange;
-		color: white;
-		text-decoration: none;
-		padding: 10px 20px;
-		border-radius: 6px;
-		font-weight: bold;
-		font-size: 14px;
-		transition: background-color 0.2s;
-		display: inline-block;
-	}
-	
-	.btn-view-receipt:hover {
-		background-color: darkorange;
-	}
-	
-	.cancel-reason-text {
-		color: crimson;
-		background-color: lavenderblush;
-		padding: 6px 12px;
-		border-radius: 4px;
-	}
-	
-</style>
+        /* 手動控制下拉選單 */
+        .nav-item.dropdown .dropdown-menu {
+            display: none;
+            margin-top: 8px;
+        }
+
+        .nav-item.dropdown .dropdown-menu.show {
+            display: block;
+        }
+
+        .dropdown-item:hover {
+            background-color: #fff5f2 !important;
+            color: #ff5722 !important;
+        }
+        
+        .dropdown-item:hover i {
+            color: #ff5722 !important;
+        }
+
+        .orders-page-container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .page-header {
+            margin-bottom: 30px;
+            border-left: 6px solid #ff5722;
+            padding-left: 15px;
+        }
+
+        .page-header h2 {
+            color: #212529;
+            margin: 0 0 5px 0;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .page-header p {
+            color: #6c757d;
+            margin: 0;
+            font-size: 15px;
+        }
+
+        .empty-orders-box {
+            background-color: white;
+            padding: 50px 40px;
+            text-align: center;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+            color: #6c757d;
+            border: 2px dashed #ffb399;
+        }
+
+        .empty-orders-box p {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .order-master-card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+            margin-bottom: 25px;
+            overflow: hidden;
+            border-top: 4px solid #ff5722;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .order-master-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        }
+
+        .order-card-header {
+            background-color: #fff5f2;
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ffebd9;
+        }
+
+        .header-label {
+            color: #6c757d;
+            font-size: 15px;
+        }
+
+        .order-time-split {
+            color: #adb5bd;
+            margin-left: 10px;
+            font-size: 14px;
+        }
+
+        .status-badge {
+            font-weight: bold;
+            padding: 6px 16px;
+            border-radius: 20px;
+            background-color: white;
+            font-size: 14px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .order-card-body {
+            padding: 20px 25px;
+        }
+
+        .item-details-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        .item-details-table th {
+            background-color: #f8fafc;
+            color: #495057;
+            padding: 12px;
+            font-weight: 600;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .item-details-table td {
+            padding: 15px 12px;
+            border-bottom: 1px solid #f8fafc;
+            color: #495057;
+        }
+
+        .order-card-footer {
+            background-color: white;
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px dashed #e9ecef;
+        }
+
+        .total-amount-box {
+            font-size: 16px;
+            color: #495057;
+            font-weight: bold;
+        }
+
+        .footer-price {
+            color: #ff5722;
+            font-size: 22px;
+            font-weight: 800;
+        }
+
+        .action-buttons-box {
+            display: flex;
+            align-items: center;
+        }
+
+        .btn-view-receipt {
+            background-color: #ff5722;
+            color: white;
+            text-decoration: none;
+            padding: 10px 24px;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            display: inline-block;
+            box-shadow: 0 4px 10px rgba(255, 87, 34, 0.2);
+        }
+
+        .btn-view-receipt:hover {
+            background-color: #e64a19;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(255, 87, 34, 0.3);
+        }
+
+        .cancel-reason-text {
+            color: #dc3545;
+            background-color: #f8d7da;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+    </style>
 </head>
+
 <body>
+    <!-- 組合式固定導覽列 -->
+    <header class="fixed-top bg-white shadow-sm" style="z-index: 1030;">
+        <!-- 主選單 (Top Bar) -->
+        <nav class="navbar navbar-expand-lg navbar-light border-bottom py-2">
+            <div class="container px-4 px-lg-5">
+                <a class="navbar-brand fw-bold fs-3" href="/" style="color: #ff5722;">旅圖 | MapIt</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center" style="font-size: 0.9rem;">
+                        <!-- 會員中心 -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link text-secondary px-3 dropdown-toggle" href="#" id="memberDropdown" role="button">
+                                <i class="bi bi-person-circle"></i> <span th:text="${userName != null ? userName + ' 你好' : '會員中心'}">會員中心</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2" aria-labelledby="memberDropdown" style="border-radius: 10px;">
+                                <li>
+                                    <a class="dropdown-item py-2" th:href="@{/customer/updateProfile}">
+                                        <i class="bi bi-person-lines-fill me-2 text-secondary"></i>修改個人資料
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item py-2" th:href="@{/customer/ticket}">
+                                        <i class="bi bi-tags me-2 text-secondary"></i>我的票券夾
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item py-2" th:href="@{/orders/my-orders}">
+                                        <i class="bi bi-file-earmark-text me-2 text-secondary"></i>我的訂單紀錄
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item py-2" th:href="@{/customer/message}">
+                                        <i class="bi bi-bell me-2 text-secondary"></i>我的通知
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-secondary px-3" th:href="@{/cart/show}">
+                                <i class="bi bi-cart3"></i> 購物車
+                            </a>
+                        </li>
+                        <li class="nav-item ms-lg-2">
+                            <a class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-bold shadow-sm"
+                                th:href="@{/customer/logout}">登出</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <!-- 次選單 (Sub-Navbar) -->
+        <nav class="sub-navbar bg-white py-1">
+            <div class="container px-4 px-lg-5">
+                <ul class="nav justify-content-center fw-bold">
+                    <li class="nav-item"><a class="nav-link text-dark px-4" href="/">首頁</a></li>
+                    <li class="nav-item"><a class="nav-link text-dark px-4" href="/front/attr/about">關於我們</a></li>
+                    <li class="nav-item"><a class="nav-link text-dark px-4"
+                            th:href="@{/frontend/product/listAll}">商城</a></li>
+                    
+                    <!-- 景點探索 -->
+                    <li class="nav-item position-relative">
+                        <a class="nav-link text-dark px-4" href="/front/attr/list">景點探索</a>
+                    </li>
+                    <li class="nav-item"><a class="nav-link text-dark px-4" th:href="@{/trip/my-trips}">我的行程</a></li>
+                    <li class="nav-item"><a class="nav-link text-dark px-4" href="/front/favorite/list">我的收藏</a></li>
+                    <li class="nav-item"><a class="nav-link text-dark px-4" href="/contact">客服中心</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
 
-	<nav class="front-navbar">
-		<a th:href="@{/frontend/product/listAll}" class="front-logo">旅圖 |
-			MapIt</a>
-		<div class="member-status-box">
-			<a th:href="@{/frontend/product/listAll}" class="member-link"
-				style="font-size: 16px; margin-right: 20px;">🛒 繼續逛逛</a> <a
-				th:href="@{/orders/my-orders}" class="member-link"
-				style="font-size: 16px;">📋 我的訂單</a>
-		</div>
-	</nav>
+    <div class="orders-page-container">
 
-	<div class="orders-page-container">
+        <div class="page-header">
+            <h2>📋 您歷史購買的訂單紀錄</h2>
+            <p>您可以在此查詢所有行程、門票訂單狀態，並確認數位憑證。</p>
+        </div>
 
-		<div class="page-header">
-			<h2>📋 您歷史購買的訂單紀錄</h2>
-			<p>您可以在此查詢所有行程、門票訂單狀態，並確認數位憑證。</p>
-		</div>
+        <div th:if="${#lists.isEmpty(ordersList)}" class="empty-orders-box">
+            <p>目前還沒有任何訂單紀錄喔！快去商城逛逛吧！✨</p>
+            <a href="/frontend/product/listAll" class="btn btn-warning rounded-pill px-4 fw-bold" style="background-color: #ff5722; color: white; border: none; box-shadow: 0 4px 10px rgba(255, 87, 34, 0.2);">前往商城</a>
+        </div>
 
-		<div th:if="${#lists.isEmpty(ordersList)}" class="empty-orders-box">
-			<p>目前還沒有任何訂單紀錄喔！快去商城逛逛吧！✨</p>
-		</div>
+        <div th:unless="${#lists.isEmpty(ordersList)}" th:each="order : ${ordersList}" class="order-master-card">
 
-		<div th:unless="${#lists.isEmpty(ordersList)}"
-			th:each="order : ${ordersList}" class="order-master-card">
+            <div class="order-card-header">
+                <div>
+                    <span class="header-label">訂單編號：</span> <strong th:text="${order.orderId}">10025</strong>
+                    <span class="order-time-split" th:text="'| 成立時間：' + ${order.orderTimestamp}">| 成立時間：2026-06-26</span>
+                </div>
+                <div>
+                    <span class="status-badge" th:text="${order.orderStatus == '已取消' ? '🔴 已取消' : '🟢 已付款'}">🟢 已付款</span>
+                </div>
+            </div>
 
-			<div class="order-card-header">
-				<div>
-					<span class="header-label">訂單編號：</span> <strong
-						th:text="${order.orderId}">10025</strong> <span
-						class="order-time-split"
-						th:text="'| 成立時間：' + ${order.orderTimestamp}">|
-						成立時間：2026-06-26</span>
-				</div>
-				<div>
-					<span class="status-badge"
-						th:text="${order.orderStatus == '已取消' ? '🔴 已取消' : '🟢 已付款'}">🟢
-						已付款</span>
-				</div>
-			</div>
+            <div class="order-card-body">
+                <table class="item-details-table">
+                    <thead>
+                        <tr>
+                            <th>購買項目</th>
+                            <th>數量</th>
+                            <th>單價</th>
+                            <th>小計</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="item : ${order.orderItems}">
+                            <td>
+                                <span th:text="${item.prodVO.productName}" style="font-weight: bold; color: #212529;">商品名稱</span> <br> 
+                                <small th:text="'(編號 #' + ${item.productId} + ')'" style="color: #adb5bd;">(#1)</small>
+                            </td>
+                            <td th:text="${item.itemQty} + ' 張'">1 張</td>
+                            <td th:text="'NT$ ' + ${item.itemPrice}">NT$ 999</td>
+                            <td th:text="'NT$ ' + (${item.itemPrice} * ${item.itemQty})" style="font-weight: bold; color: #212529;">NT$ 999</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
 
-			<div class="order-card-body">
-				<table class="item-details-table">
-					<thead>
-						<tr>
-							<th>購買項目</th>
-							<th>數量</th>
-							<th>單價</th>
-							<th>小計</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr th:each="item : ${order.orderItems}">
-							<td><span th:text="${item.prodVO.productName}"
-								style="font-weight: bold;">商品名稱</span> <br> <small
-								th:text="'(編號 #' + ${item.productId} + ')'" style="color: gray;">(#1)</small>
-							</td>
-							<td th:text="${item.itemQty} + ' 張'">1 張</td>
-							<td th:text="'NT$ ' + ${item.itemPrice}">NT$ 999</td>
-							<td th:text="'NT$ ' + (${item.itemPrice} * ${item.itemQty})"
-								style="font-weight: bold;">NT$ 999</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
+            <div class="order-card-footer">
+                <div class="total-amount-box">
+                    實付總額：<span class="footer-price" th:text="'NT$ ' + ${order.orderPrice}">NT$ 9999</span>
+                </div>
+                <div class="action-buttons-box">
+                    <a th:if="${order.orderStatus != '已取消'}"
+                        th:href="@{/orders/success(orderId=${order.orderId})}"
+                        class="btn-view-receipt"> 🧾 查看電子收據 </a>
 
-			<div class="order-card-footer">
-				<div class="total-amount-box">
-					實付總額：<span class="footer-price"
-						th:text="'NT$ ' + ${order.orderPrice}">NT$ 99999999</span>
-				</div>
-				<div class="action-buttons-box">
-					<a th:if="${order.orderStatus != '已取消'}"
-						th:href="@{/orders/success(orderId=${order.orderId})}"
-						class="btn-view-receipt"> 🧾 查看電子收據 </a>
+                    <div th:if="${order.orderStatus == '已取消'}" class="cancel-reason-text">
+                        <small th:text="'❌ 取消原因：' + ${order.orderCancel}">❌ 取消原因：買錯了</small>
+                    </div>
+                </div>
+            </div>
 
-					<div th:if="${order.orderStatus == '已取消'}"
-						class="cancel-reason-text">
-						<small th:text="'❌ 取消原因：' + ${order.orderCancel}">❌
-							取消原因：買錯了</small>
-					</div>
-				</div>
-			</div>
+        </div>
+    </div>
 
-		</div>
-	</div>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const memberDropdownToggle = document.getElementById('memberDropdown');
+            if (memberDropdownToggle) {
+                const dropdownMenu = memberDropdownToggle.nextElementSibling;
+                memberDropdownToggle.addEventListener('click', function(e) {
+                    e.preventDefault(); e.stopPropagation();
+                    dropdownMenu.classList.toggle('show');
+                });
+                document.addEventListener('click', function(e) {
+                    if (!dropdownMenu.contains(e.target) && e.target !== memberDropdownToggle) {
+                        dropdownMenu.classList.remove('show');
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>

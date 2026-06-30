@@ -38,7 +38,8 @@ public class EmpLoginFilter extends OncePerRequestFilter { // ⚙️ 繼承 Spri
                 uri.startsWith("/ap/") ||
                 uri.equals("/ap") ||
                 uri.startsWith("/orders/backend-") ||
-                uri.equals("/customer/empCustomerList")) {
+                uri.startsWith("/customer/emp") ||
+                uri.startsWith("/customer/api")) {
             return false; // 回傳 false 代表必須進行過濾（檢查 Session）
         }
 

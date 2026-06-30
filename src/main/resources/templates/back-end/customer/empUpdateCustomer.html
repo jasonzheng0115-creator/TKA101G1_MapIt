@@ -2,65 +2,101 @@
 <html lang="zh-TW" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>員工管理 - 編輯會員資料</title>
+    <title>MapIt 後台 - 編輯會員資料</title>
+    <!-- 引入前台風格的 CSS (共用資源) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+    <link href="/css/styles.css" rel="stylesheet" />
     <style>
-        /* 簡約現代 UI 設計 */
         :root {
-            --primary: #4F46E5;
-            --primary-hover: #4338CA;
-            --bg-color: #F9FAFB;
+            --primary-orange: #ff5722;
+            --primary-orange-hover: #e64a19;
+            --dark-blue: #0f172a;
+            --bg-color: #f8fafc;
             --card-bg: #FFFFFF;
-            --text-main: #111827;
-            --text-muted: #4B5563;
-            --border-color: #D1D5DB;
+            --text-main: #334155;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
         }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans TC", sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
-            margin: 0;
-            padding: 40px 20px;
+            padding-top: 140px; /* 為了固定導覽列留出空間 */
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             min-height: 100vh;
-            box-sizing: border-box;
         }
+
+        /* 後台專用 Top Bar */
+        .navbar-backend {
+            background-color: white;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        /* 後台功能次選單 */
+        .sub-navbar-backend {
+            background-color: white;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .sub-navbar-backend .nav-link {
+            color: #475569;
+            transition: color 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .sub-navbar-backend .nav-link:hover {
+            color: var(--primary-orange);
+        }
+
+        /* 編輯表單卡片設計 */
         .form-card {
             background-color: var(--card-bg);
             border-radius: 12px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
             width: 100%;
-            max-width: 600px;
-            padding: 32px;
+            max-width: 800px;
+            padding: 40px;
             box-sizing: border-box;
+            border-top: 4px solid var(--primary-orange);
+            margin-bottom: 50px;
         }
-        h2 {
+
+        .form-card h2 {
             margin-top: 0;
-            margin-bottom: 24px;
+            margin-bottom: 30px;
             font-size: 1.5rem;
-            color: var(--primary);
-            border-bottom: 2px solid #F3F4F6;
-            padding-bottom: 12px;
+            color: var(--dark-blue);
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 15px;
+            font-weight: bold;
         }
+
         .form-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 20px;
         }
+
         .form-group {
             display: flex;
             flex-direction: column;
         }
+
         .form-group.full-width {
             grid-column: span 2;
         }
+
         label {
-            font-size: 0.875rem;
+            font-size: 0.9rem;
             font-weight: 600;
             margin-bottom: 8px;
             color: var(--text-muted);
         }
+
         input, select {
             padding: 10px 14px;
             border: 1px solid var(--border-color);
@@ -69,82 +105,116 @@
             outline: none;
             transition: border-color 0.2s, box-shadow 0.2s;
         }
+
         input:focus, select:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+            border-color: var(--primary-orange);
+            box-shadow: 0 0 0 3px rgba(255, 87, 34, 0.1);
         }
+
         input[readonly] {
-            background-color: #F3F4F6;
-            color: #9CA3AF;
+            background-color: #f1f5f9;
+            color: #94a3b8;
             cursor: not-allowed;
+            border-color: #e2e8f0;
         }
-        .field-error {
-            color: #DC2626;
-            font-size: 0.8rem;
-            margin-top: 4px;
-        }
+
         .btn-group {
-            margin-top: 32px;
+            margin-top: 40px;
             display: flex;
-            gap: 12px;
+            gap: 15px;
             justify-content: flex-end;
         }
+
         .btn-save {
-            background-color: var(--primary);
+            background-color: var(--primary-orange);
             color: white;
             border: none;
-            padding: 12px 24px;
+            padding: 12px 28px;
             border-radius: 6px;
             font-size: 0.95rem;
             font-weight: 600;
             cursor: pointer;
             transition: background-color 0.2s;
         }
+
         .btn-save:hover {
-            background-color: var(--primary-hover);
+            background-color: var(--primary-orange-hover);
         }
+
         .btn-back {
             background-color: #FFFFFF;
             color: var(--text-muted);
             border: 1px solid var(--border-color);
-            padding: 12px 24px;
+            padding: 12px 28px;
             border-radius: 6px;
             font-size: 0.95rem;
             font-weight: 600;
             text-decoration: none;
             text-align: center;
-            transition: background-color 0.2s;
+            transition: all 0.2s;
         }
+
         .btn-back:hover {
-            background-color: #F9FAFB;
+            background-color: #f8fafc;
+            color: var(--text-main);
         }
     </style>
 </head>
 
 <body>
 
+    <!-- 組合式固定導覽列 (後台專用) -->
+    <header class="fixed-top shadow-sm" style="z-index: 1030;">
+        <!-- 主選單 (Top Bar) -->
+        <nav class="navbar navbar-expand-lg navbar-light navbar-backend py-2">
+            <div class="container-fluid px-4 px-lg-5">
+                <a class="navbar-brand fw-bold fs-3" href="/manage" style="color: var(--primary-orange);">MapIt <span
+                        class="fs-5 text-secondary">後台管理系統</span></a>
+
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center" style="font-size: 0.9rem;">
+                        <li class="nav-item">
+                            <span class="nav-link text-secondary px-3">
+                                <i class="bi bi-person-badge-fill text-dark"></i>
+                                <span th:text="${session.loginEmp != null ? session.loginEmp.empName + ' 您好' : '管理員 您好'}">管理員 您好</span>
+                            </span>
+                        </li>
+                        <li class="nav-item ms-lg-2">
+                            <a class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-bold shadow-sm"
+                                th:href="@{/emp/logout}">登出</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!-- 次選單 (功能導覽) -->
+        <nav class="sub-navbar-backend py-1">
+            <div class="container-fluid px-4 px-lg-5">
+                <ul class="nav justify-content-center fw-bold">
+                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/product/select_page}">商品管理</a></li>
+                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/orders/backend-list}">訂單管理</a></li>
+                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/customer/empCustomerList}">會員管理</a></li>
+                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/supplier/select_page}">廠商管理</a></li>
+                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/ap/select_page}">應付帳款</a></li>
+                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/emp/select_page}">員工管理</a></li>
+                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/dept/listAllDept}">部門管理</a></li>
+                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/emp/message/send}">通知發送</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
 <script type="text/javascript">
 
-	/* 讓window.onload裡的程式碼，在網頁載入完成後才執行 */
 	window.onload = function(){
-		// ==========================================
-		// 🎯 GET 階段：網頁載入時自動去撈舊資料
-		// ==========================================
-		/* window.location.search 拿到網址列的 ?custId=3。
-		   urlParams 拿著這個字串進行解析*/
 		var urlParams = new URLSearchParams(window.location.search);
-		/* urlParams.get("custId") 把3拿出來，存進我們宣告的變數cust_id*/
 		var custId = urlParams.get("custId");		
-		/* 呼叫了fetch給後端地址：/customer/api/getOne?custId=3 */
 		fetch("/customer/api/getOne?custId=" + custId)
-			/* 拿到後端給的資料(responses)*/
 			.then(function(responses){
-				/* 把裡面的文字解析成JSON資料 */
 				return responses.json();
 		})
-		/* 拿到真正的會員資料(JSON)，塞入輸入框 */
 		.then(function(data){
-			/* 塞進網頁的輸入框裡 */
 			document.getElementById("custId").value = data.custId;
 			document.getElementById("custAccount").value = data.custAccount;
 			document.getElementById("custPassword").value = data.custPassword;
@@ -159,12 +229,8 @@
 			document.getElementById("custCard").value = data.custCard;
 			document.getElementById("custAddress").value = data.custAddress;
 		})
-		// ==========================================
-		// 🎯 POST 階段：當點擊「儲存修改」按鈕送出表單時
-		// ==========================================
-		/* 監聽表單的送出事件 (當按下儲存修改按鈕時) */
+
 		document.getElementById("updateForm").onsubmit = function(event){
-		/* 阻止瀏覽器預設的重整網頁行為*/
 		event.preventDefault();
 		
 		var payload = {
@@ -188,29 +254,26 @@
 		headers: {"Content-Type": "application/json"},
 		body:JSON.stringify(payload)
 		})
-		
 		.then(function(responses){
 		return responses.text();	
 		})
 		.then(function(resultText){
 			if(resultText === "success"){
-				alert("🎉 會員資料修改成功！");
+				alert("會員資料修改成功！");
 				window.location.href = "/customer/empCustomerList";
 			}else{
-				alert("❌ 修改失敗，原因：" + resultText);
+				alert("修改失敗，原因：" + resultText);
 			}
-	});
-	}
+	    });
+	  }
 	}
 	
 </script>
 
 <div class="form-card">
-    <h2>👥 員工後台 - 編輯會員資料</h2>
+    <h2>編輯會員資料</h2>
     
     <form id="updateForm">
-        
-        <!-- 核心隱藏欄位：這兩個欄位不開放員工修改，但必須帶回後端才能做 save() 更新 -->
         <input type="hidden" id="custId" name="custId"/>
         <input type="hidden" id="custPassword" name="custPassword"/>
         
@@ -252,11 +315,10 @@
             <div class="form-group">
                 <label>會員生日</label>
                 <input type="date" id="custBirthday" name="custBirthday" />
-               
             </div>
             
             <div class="form-group">
-                <label>權限狀態</label>
+                <label>啟用狀態</label>
                 <select id="custUse" name="custUse">
                     <option value="啟動">啟動</option>
                     <option value="未啟動">未啟動</option>
@@ -264,7 +326,7 @@
             </div>
             
             <div class="form-group">
-                <label>權限等級</label>
+                <label>會員權限</label>
                 <select id="custRight" name="custRight">
                     <option value="正常">正常</option>
                     <option value="停權">停權</option>
@@ -284,10 +346,11 @@
         
         <div class="btn-group">
             <a th:href="@{/customer/empCustomerList}" class="btn-back">返回列表</a>
-            <button type="submit" class="btn-save">💾 儲存修改</button>
+            <button type="submit" class="btn-save">儲存修改</button>
         </div>
     </form>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
