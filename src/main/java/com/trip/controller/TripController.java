@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
+import org.springframework.beans.factory.annotation.Value;
 import java.util.List;
 
 @Controller
@@ -24,6 +24,9 @@ public class TripController {
 
     @Autowired
     private com.trip.model.CollabItemService collabItemService;
+
+    @Value("${google.maps.api.key}")
+    private String googleMapsApiKey;
 
     // 1. 顯示「我的行程」
     @GetMapping("/my-trips")
@@ -44,8 +47,6 @@ public class TripController {
     @GetMapping("/create")
     public String showCreateTripForm(HttpSession session, Model model) {
         CustVO loginCust = (CustVO) session.getAttribute("loginCust");
-        if (loginCust == null)
-            return "redirect:/login";
 
         model.addAttribute("userName", loginCust.getCustName());
         model.addAttribute("trip", new TripVO());
@@ -56,8 +57,6 @@ public class TripController {
     @PostMapping("/create")
     public String processCreateTrip(TripVO trip, HttpSession session) {
         CustVO loginCust = (CustVO) session.getAttribute("loginCust");
-        if (loginCust == null)
-            return "redirect:/login";
 
         // 將存檔與綁定使用者的髒活交給 Service，並取得包含 ID 的新行程
         TripVO savedTrip = tripService.createTrip(trip, loginCust);
@@ -69,8 +68,6 @@ public class TripController {
     @GetMapping("/edit/{id}")
     public String showEditTripPage(@PathVariable("id") Integer tripId, HttpSession session, Model model) {
         CustVO loginCust = (CustVO) session.getAttribute("loginCust");
-        if (loginCust == null)
-            return "redirect:/login";
 
         // 改呼叫我們放寬權限的方法，傳入「行程ID」與「登入者會員ID」
         TripVO trip = tripService.getTripByIdAndPermission(tripId, loginCust.getCustId());
@@ -79,6 +76,8 @@ public class TripController {
         if (trip == null) {
             return "redirect:/trip/my-trips";
         }
+
+        model.addAttribute("googleMapsApiKey", googleMapsApiKey);
 
         model.addAttribute("userName", loginCust.getCustName());
         model.addAttribute("trip", trip);
@@ -92,9 +91,6 @@ public class TripController {
     public String deleteTrip(@RequestParam("tripId") Integer tripId, HttpSession session) {
         // 權限檢查：確認有登入
         CustVO loginCust = (CustVO) session.getAttribute("loginCust");
-        if (loginCust == null) {
-            return "redirect:/login";
-        }
 
         try {
             // 呼叫 Service 執行刪除邏輯 (裡面包含了防呆與刪除子表)
@@ -114,9 +110,6 @@ public class TripController {
     public String exitCollab(@RequestParam("tripId") Integer tripId, HttpSession session) {
         // 權限檢查：是否登入
         CustVO loginCust = (CustVO) session.getAttribute("loginCust");
-        if (loginCust == null) {
-            return "redirect:/login";
-        }
 
         try {
             // 呼叫服務層方法，傳入「行程ID」與「目前登入者會員ID」進行刪除
