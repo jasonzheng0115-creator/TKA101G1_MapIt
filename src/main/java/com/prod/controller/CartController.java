@@ -32,17 +32,34 @@ public class CartController {
 	private StringRedisTemplate redisTemplate; // Spring Boot 內建操作 Redis 的工具
 	
 	// 輔助方法：定義 Redis 的專屬號碼箱（Key）
-	private String getCartKey() {
-		return "cart:member:1"; // 驗收 Demo 先寫死 1 號會員
+	private String getCartKey(HttpSession session) {
+		CustVO loginCust = (CustVO) session.getAttribute("loginCust");
+		
+		if (loginCust != null) {
+	        // 有登入，動態返回該會員專屬的 Key
+	        return "cart:member:" + loginCust.getCustId();
+	    } else {
+	        // 沒登入，返回旅客專屬的 Key
+	        return "cart:guest";
+	    }
 	}
 	
 	// 加入購物車 (數量自動累加)
 	@PostMapping("/add")
 	public String addToCart(
 			@RequestParam("productId") Integer productId, 
-			@RequestParam("quantity") Integer quantity) {
+			@RequestParam("quantity") Integer quantity,
+			HttpSession session) {
 		
-		String key = getCartKey();                // 指定一個會員的購物車
+		String key;  // 指定一個會員的購物車
+		CustVO loginCust = (CustVO) session.getAttribute("loginCust");
+	    if (loginCust != null) {
+	        key = "cart:member:" + loginCust.getCustId();
+	    } else {
+	        key = "cart:guest";
+	    }
+		
+		
 		String field = String.valueOf(productId); // 此會員購物車裡的某一個商品
 		
 		// 官方標準寫法：去這個 key 的 Hash 結構裡，把這個商品欄位數量累加
@@ -55,7 +72,16 @@ public class CartController {
 	// 顯示購物車 ( Redis + Function 資料轉換 Stream)
 	@GetMapping("/show")
 	public String showCart(ModelMap model, HttpSession session) {
-		String key = getCartKey();
+		String key;
+		CustVO loginCust = (CustVO) session.getAttribute("loginCust");
+		
+		if (loginCust != null) {
+	        // 如果有登入，用該會員專屬的號碼箱
+	        key = "cart:member:" + loginCust.getCustId();
+	    } else {
+	        // 如果是沒登入的旅客，用遊客專用的號碼箱
+	        key = "cart:guest";
+	    }
 		
 		// 官方標準寫法：直接把這個 key 的所有 {商品ID: 數量} 倒出來
 		Map<Object, Object> redisCart = redisTemplate.opsForHash().entries(key);
@@ -81,17 +107,14 @@ public class CartController {
 				.mapToInt(CartVO::getSubtotal)
 				.sum();
 		
-		String currentUserName = "旅客"; // 預設值，沒登入時顯示
-		
-		// 登入
-		CustVO loginCust = (CustVO) session.getAttribute("loginCust");
-		
 		if (loginCust != null) {
-	        currentUserName = loginCust.getCustName(); // 拿到真正的使用者名字！
+			// 有登入，傳入會員名字
+		    model.addAttribute("userName", loginCust.getCustName());
+	    } else {
+	        // 未登入不傳
+	        // 前端的 th:unless="${userName}" 會成立，右上角顯示「註冊 / 登入」
+	        model.addAttribute("userName", null);
 	    }
-		
-		// 如有會員登入，傳名字給前端
-	    model.addAttribute("userName", currentUserName);
 		
 		// 推薦商品區塊顯示，把所有旅遊商品從資料庫撈出來，裝進 frontProdList 
 		// 隨機撈取功能，限制只撈取 4 筆上架中的商品作為推薦商品
@@ -107,9 +130,17 @@ public class CartController {
 	@PostMapping("/update")
 	public String updateCart(
 			@RequestParam("productId") Integer productId, 
-			@RequestParam("quantity") Integer quantity) {
+			@RequestParam("quantity") Integer quantity,
+			HttpSession session) {
 		
-		String key = getCartKey();
+		String key;
+		CustVO loginCust = (CustVO) session.getAttribute("loginCust");
+	    if (loginCust != null) {
+	        key = "cart:member:" + loginCust.getCustId();
+	    } else {
+	        key = "cart:guest";
+	    }
+		
 		String field = String.valueOf(productId);
 		
 		if (quantity <= 0) {
@@ -123,18 +154,27 @@ public class CartController {
 	
 	// 手動刪除
 	@PostMapping("/delete")
-	public String deleteFormCart(@RequestParam("productId") Integer productId) {
-		String key = getCartKey();
+	public String deleteFormCart(
+			@RequestParam("productId") Integer productId,
+			HttpSession session) {
+		String key;
+		CustVO loginCust = (CustVO) session.getAttribute("loginCust");
+	    if (loginCust != null) {
+	        key = "cart:member:" + loginCust.getCustId();
+	    } else {
+	        key = "cart:guest";
+	    }
+	    
 		redisTemplate.opsForHash().delete(key, String.valueOf(productId));
 		return "redirect:/cart/show";
 	}
 	
-	// 一鍵清空購物車
+	// 清空購物車
 	@PostMapping("/clear")
-	public String clearCart() {
-		String key = getCartKey();      // 取得cart:member:1
-		redisTemplate.delete(key);      // 核心:直接把這個會員的 Redis 號碼箱整箱刪除
-		return "redirect:/cart/show";   // 刪完後重整購物車畫面
+	public String clearCart(HttpSession session) {
+		String key = getCartKey(session);     
+		redisTemplate.delete(key);      // 刪除此會員的 Redis 
+		return "redirect:/cart/show"; 
 	}
 	
 	
