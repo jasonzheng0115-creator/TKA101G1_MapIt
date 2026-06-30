@@ -267,7 +267,7 @@
 	                <li class="nav-item"><a class="nav-link text-dark px-4" href="#!">主題推薦</a></li>
 	                <li class="nav-item"><a class="nav-link text-dark px-4" th:href="@{/trip/my-trips}">我的行程</a></li>
 	                <li class="nav-item"><a class="nav-link text-dark px-4" href="/front/favorite/list">我的收藏</a></li>
-	                <li class="nav-item"><a class="nav-link text-dark px-4" href="#!">客服中心</a></li>
+	                <li class="nav-item"><a class="nav-link text-dark px-4" href="/contact">客服中心</a></li>
 	            </ul>
 	        </div>
 	    </nav>
@@ -338,7 +338,7 @@
 			
 			<div style="margin-top: 10px;">
 				<label style="font-size: 13px; color: gray;">卡號 (16位數字)：</label>
-				<input type="text" id="creditCardNumber" placeholder="1234567812345678" maxlength="16" required style="width: 100%; box-sizing: border-box;">
+				<input type="text" id="creditCardNumber" placeholder="1234-5678-1234-5678" maxlength="19" required style="width: 100%; box-sizing: border-box;">
 			</div>
 			
 			<div style="display: flex; gap: 15px; margin-top: 10px;">
@@ -352,14 +352,22 @@
 				</div>
 			</div>
 		</div>
+		
+		<label style="font-weight: bold; color: red;">「本商品為即時出票，一經訂購即無法手動取消，如需取消訂單請洽客服。」</label>
+		
 		<div class="total-price-box">
 			<span>應付總金額：</span>
 			<strong id="finalAmountText" th:text="'NT$ ' + ${totalAmount}">NT$ 99999999</strong>
 		</div>
 		
+
 		<button type="button" id="submit-payment-btn">
 			🔒 確認付款並送出訂單
 		</button>
+		
+
+		
+		
 	</div>
 	
 	<script th:inline="javascript">
@@ -368,27 +376,50 @@
 		// 讓 JS 接收後端的會員資料物件
 		const currentMember = /*[[${loginCust}]]*/ {};
 		
-		// 如有預設卡號帶入信用卡欄位
-		if (currentMember && currentMember.custCard) {
-		    document.getElementById('creditCardNumber').value = currentMember.custCard;
-		}
-		
 		// 監聽 Checkbox 狀態改變
 		document.getElementById('syncMemberBtn').addEventListener('change', function() {
 		    const nameInput = document.getElementById('receiverName');
 		    const telInput = document.getElementById('receiverTel');
 		    const emailInput = document.getElementById('receiverEmail');
+		    const cardInput = document.getElementById('creditCardNumber');
 		    
 		    if (this.checked) {
 		        // 如果打勾，自動帶入真實會員資料（欄位名稱請對齊你的 CustVO）
 		        nameInput.value = currentMember.custName || '';
 		        telInput.value = currentMember.custTel || '';
 		        emailInput.value = currentMember.custEmail || '';
+		        cardInput.value = currentMember.custCard || '';
 		    } else {
 		        // 取消打勾，自動清空
 		        nameInput.value = '';
 		        telInput.value = '';
 		        emailInput.value = '';
+		        cardInput.value = '';
+		    }
+		});
+		
+		// 監聽信用卡輸入框，自動在每 4 個數字後加上中線
+		document.getElementById('creditCardNumber').addEventListener('input', function (e) {
+		    // 使用者輸入的所有非數字字元（包含原本的中線）移除
+		    let value = this.value.replace(/\D/g, '');
+		    // (/\D/g, '')
+		    // / ... /：固定前後外框
+		    // \D：大寫的 D 代表「非數字」;小寫的 \d 代表數字
+		    // g：代表 Global（全域搜尋）。如果沒有加 g，抓到第一個非數字就會停下來；加了 g，它就會把整串字串從頭到尾所有的非數字統統抓出來
+		    // .replace(..., '')：把抓出來的「非數字」，替換成空字串（也就是直接刪除）
+		    
+		    // 每 4 個數字切開，中間自動補上中線
+		    let formattedValue = value.match(/(\d{1,4})/g);
+		    // (/(\d{1,4})/g)
+		    // \d：小寫的 d，代表「任何數字（0-9）」
+		    // {1,4}：代表數量 「最少 1 個，最多 4 個」
+		    // (...)：小括號代表「群組（Group）」，把符合條件的抓成一組
+		    // .match(...)：把切好的一塊一塊資料，變成一個陣列（List）存起來
+		    
+		    if (formattedValue) {
+		        this.value = formattedValue.join('-');
+		    } else {
+		        this.value = '';
 		    }
 		});
 		
@@ -397,28 +428,28 @@
 			// 抓取聯絡人資料
 			const receiverName = document.getElementById('receiverName').value.trim();
 			const receiverTel = document.getElementById('receiverTel').value.trim();
+			const receiverEmail = document.getElementById('receiverEmail').value.trim();
 			
 			// 抓取信用卡資料
 			const cardNum = document.getElementById('creditCardNumber').value.trim();
 			const cardExpiry = document.getElementById('cardExpiry').value.trim();
 			const cardCVC = document.getElementById('cardCVC').value.trim();
 			
-			// 抓取 Email 數值
-			const receiverEmail = document.getElementById('receiverEmail').value.trim();
-			
-			// 聯絡人防呆
+			// 基本資料防呆
 			if(!receiverName || !receiverTel || !receiverEmail) {
 				alert('請填寫完整的聯絡人姓名與電話與Email！');
 				return;
 			}
 			
-			// 信用卡字數驗證
-			const cardNumReg = /^[0-9]{16}$/; // 必須是 16 位全數字
-			const cvcReg = /^[0-9]{3}$/;     // 必須是 3 位全數字
+			// 移除卡號裡面的中線拔除，轉為純數字進行防呆
+			const cleanCardNum = cardNum.replace(/\D/g, '');
 			
-			if(!cardNumReg.test(cardNum)) {
-				alert('❌ 信用卡號格式錯誤！請輸入 16 位純數字。');
-				return;
+			console.log("原始輸入卡號:", cardNum, "-> 洗乾淨後的卡號:", cleanCardNum, "長度是:", cleanCardNum.length);
+			
+			// 信用卡字數驗證
+			if (!/^\d{16}$/.test(cleanCardNum)) {
+			    alert('❌ 信用卡號格式錯誤！請確認輸入的卡號是否為 16 位數字。');
+			    return;
 			}
 			
 			if(!cardExpiry.includes('/') || cardExpiry.length < 5) {
@@ -426,9 +457,10 @@
 				return;
 			}
 			
-			if(!cvcReg.test(cardCVC)) {
-				alert('❌ 安全碼錯誤！請輸入卡片背面 3 位純數字。');
-				return;
+			// 安全碼字數驗證
+			if (!/^\d{3}$/.test(cardCVC)) {
+			    alert('❌ 安全碼錯誤！請輸入卡片背面 3 位純數字。');
+			    return;
 			}
 			
 			// 驗證都無誤後，動態搜刮畫面上的隱形貼紙

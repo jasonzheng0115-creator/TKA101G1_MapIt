@@ -1,14 +1,17 @@
 package com.cust.controller;
 
 import java.io.File;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.http.ResponseEntity;
+import org.springframework.mail.MailException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -22,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.cust.model.CustService;
 import com.cust.model.CustVO;
+import com.cust.model.MailService;
 import com.ticket.model.TicketItemRepository;
 import com.ticket.model.TicketItemVO;
 
@@ -38,6 +42,13 @@ public class CustController {
 
 	@Autowired
 	TicketItemRepository ticketItemRepository;
+	
+	@Autowired
+	private StringRedisTemplate redisTemplate; 
+	// 購物車
+	
+	@Autowired //會員驗證信
+	private MailService mailService;
 
 	@GetMapping("/login") // 登入功能，指向前端的登入html
 	public String loginPage() {
@@ -66,10 +77,42 @@ public class CustController {
 			model.addAttribute("errorMsg", "帳號或密碼錯誤");
 			return "front-end/customer/login";
 		}
+		// 加入信箱驗證碼阻擋，如果帳號是未啟動，就不准登入
+		if ("未啟動".equals(custVO.getCustUse())) {
+			model.addAttribute("errorMsg", "您的帳號尚未完成信箱驗證，請先完成信箱驗證(測試看後台 Console 拿驗證碼)");
+			return "front-end/customer/login";
+		}
 		// 成功登入後，存入session長期記憶，保持登入狀態
 		session.setAttribute("loginCust", custVO);
 		// 查詢正確就轉向登入成功的畫面
 		model.addAttribute("loginCust", custVO);
+		
+		// ========== 購物車 ========== // 
+		// 未登入的狀態下加入購物車,登入後清單會帶入會員購物車
+		String guestKey = "cart:guest";
+		String memberKey = "cart:member:" + custVO.getCustId();
+		
+		// 取出遊客購物車內的所有欄位與數量
+		Map<Object, Object> guestCart = redisTemplate.opsForHash().entries(guestKey);
+		
+		if (guestCart != null && !guestCart.isEmpty()) {
+			// 逐一將商品與數量累加到會員購物車
+			for (Map.Entry<Object, Object> entry : guestCart.entrySet()) {
+				String productId = (String) entry.getKey();
+				// 轉成 long 是因為 increment 方法需要 long 或 double 類型的增量
+				long quantity = Long.parseLong((String) entry.getValue()); 
+				
+				// 累加數量到會員的 Redis Hash 中
+				redisTemplate.opsForHash().increment(memberKey, productId, quantity);
+			}
+			// 購物車過期指令 30天未登入會清空
+		    redisTemplate.expire(memberKey, Duration.ofDays(30));
+			
+			// 合併完成後，刪除遊客購物車，避免留給下一位遊客
+			redisTemplate.delete(guestKey);
+		}
+		// ========== 購物車 ========== //
+		
 
 		// 檢查是否有被 LoginFilter 記下的原請求路徑 (location)
 		String location = (String) session.getAttribute("location");
@@ -107,19 +150,82 @@ public class CustController {
 	@PostMapping("/register")
 	public String register(
 			@Valid @ModelAttribute("newCust") CustVO custVO,
-			BindingResult result, ModelMap model) {
-		// 如果格式驗證有誤(和BindingResult一起使用)
+			BindingResult result, ModelMap model, HttpSession session) { // 多加一個 HttpSession 參數來記住驗證碼
+		//如果格式驗證有誤
 		if (result.hasErrors()) {
 			return "front-end/customer/register";
 		}
-		// 註冊成功，重新導回登入頁面
 		try {
+			//儲存會員進資料庫(會員啟用狀態預設為未啟動)
 			custService.register(custVO);
-			return "redirect:/customer/login";
-			// 如果Service檢查報錯，把訊息回傳
+			//產生一組 6 位數的隨機亂碼
+			int randomNum = (int)(Math.random() * 900000) + 100000; 
+			//把整數轉換成字串
+			String randomCode = String.valueOf(randomNum);
+			
+			//測試用，把驗證碼印在Console裡，測試時收不到信也能通過
+			System.out.println("======================================");
+			System.out.println("信箱驗證碼是：" + randomCode);
+			System.out.println("======================================");
+			
+			//呼叫寄信功能，把亂碼寄給這個剛註冊的信箱參數給到mailService，把亂碼寄給會員註冊填寫的信箱
+			mailService.sendVerificationCode(custVO.getCustEmail(), randomCode);
+			//要在跳轉到輸入驗證碼的頁面時，還要記得亂碼跟會員註冊的信箱，所以要存進瀏覽器的Session
+			session.setAttribute("verifyCode", randomCode);
+			session.setAttribute("verifyEmail", custVO.getCustEmail());
+			//多存一個帳號，在verify去資料庫撈比較方便
+			session.setAttribute("verifyAccount", custVO.getCustAccount()); 
+			//導向輸入驗證碼的頁面
+			return "redirect:/customer/verify";
+		// 寄信失敗的錯誤
+		} catch (MailException mailException) {
+			model.addAttribute("errorMsg", "驗證信發送失敗！請確認您的電子信箱是否正確");
+			return "front-end/customer/register";
+		//資料庫中會員帳號重複的錯誤
 		} catch (RuntimeException e) {
 			model.addAttribute("errorMsg", e.getMessage());
 			return "front-end/customer/register";
+		}
+	}
+
+	
+	@GetMapping("/verify") // 驗證碼輸入功能
+	public String verifyPage(HttpSession session) {
+		// 防呆，如果Session裡面沒有信箱，代表不是剛註冊完，重導向回到登入頁
+		if (session.getAttribute("verifyEmail") == null) {
+			return "redirect:/customer/login";
+		}
+		return "front-end/customer/verify";
+	}
+	
+	
+	@PostMapping("/verify") //接收網頁的驗證碼
+	public String verifyCode(
+		@RequestParam("code") String code,
+		HttpSession session, ModelMap model) {
+		// 從Session拿出register存的驗證亂碼跟帳號
+		String correctCode = (String) session.getAttribute("verifyCode");
+		String account = (String) session.getAttribute("verifyAccount");
+		
+		//判斷使用者輸入的code是否等於驗證亂碼？
+		if (correctCode != null && correctCode.equals(code)) {
+			//驗證成功，到資料庫撈出該會員，把啟用狀態改成「啟動」
+			CustVO custVO = custService.findByAccount(account);
+			if (custVO != null) {
+				custVO.setCustUse("啟動");
+				custService.updateProfile(custVO); // 儲存回資料庫
+			}
+			//清空Session暫存的資料
+			session.removeAttribute("verifyCode");
+			session.removeAttribute("verifyEmail");
+			session.removeAttribute("verifyAccount");
+			//顯示成功訊息，引導回登入頁面
+			model.addAttribute("successMsg", "信箱驗證成功！帳號已啟用，請重新登入！");
+			return "front-end/customer/login";
+		} else {
+			// 驗證失敗，給錯誤訊息，留在輸入驗證碼頁面
+			model.addAttribute("errorMsg", "驗證碼錯誤，請重新輸入！");
+			return "front-end/customer/verify";
 		}
 	}
 
