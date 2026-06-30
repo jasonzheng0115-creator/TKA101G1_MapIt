@@ -10,16 +10,19 @@
     <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
     <link href="/css/styles.css" rel="stylesheet" />
-    
+
     <!-- 引入 Google Fonts (Outfit & Noto Sans TC) -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
 
     <style>
         body {
             font-family: 'Outfit', 'Noto Sans TC', sans-serif;
             background: #f8fafc;
             color: #334155;
-            padding-top: 140px; /* 避免固定雙導覽列遮擋內容 */
+            padding-top: 140px;
+            /* 避免固定雙導覽列遮擋內容 */
             min-height: 100vh;
             position: relative;
             overflow-x: hidden;
@@ -30,16 +33,20 @@
             display: none;
             margin-top: 8px;
         }
+
         .nav-item.dropdown .dropdown-menu.show {
             display: block;
         }
+
         .dropdown-item {
             transition: all 0.2s;
         }
+
         .dropdown-item:hover {
             background-color: #fff5f2 !important;
             color: #ff5722 !important;
         }
+
         .dropdown-item:hover i {
             color: #ff5722 !important;
         }
@@ -131,7 +138,8 @@
         <!-- 主選單 (Top Bar) -->
         <nav class="navbar navbar-expand-lg navbar-light border-bottom py-2">
             <div class="container px-4 px-lg-5">
-                <a class="navbar-brand fw-bold fs-3" href="/" style="color: #ff5722; font-family: 'Outfit', sans-serif;">旅圖 | MapIt</a>
+                <a class="navbar-brand fw-bold fs-3" href="/"
+                    style="color: #ff5722; font-family: 'Outfit', sans-serif;">旅圖 | MapIt</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
@@ -142,10 +150,12 @@
 
                         <!-- 會員中心 -->
                         <li class="nav-item dropdown" th:if="${userName}">
-                            <a class="nav-link text-secondary px-3 dropdown-toggle" href="#" id="memberDropdown" role="button">
+                            <a class="nav-link text-secondary px-3 dropdown-toggle" href="#" id="memberDropdown"
+                                role="button">
                                 <i class="bi bi-person-circle"></i> <span th:text="${userName} + ' 你好'">會員中心</span>
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2" aria-labelledby="memberDropdown" style="border-radius: 10px;">
+                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2"
+                                aria-labelledby="memberDropdown" style="border-radius: 10px;">
                                 <li>
                                     <a class="dropdown-item py-2" th:href="@{/customer/updateProfile}">
                                         <i class="bi bi-person-lines-fill me-2 text-secondary"></i>修改個人資料
@@ -196,13 +206,104 @@
             <div class="container px-4 px-lg-5">
                 <ul class="nav justify-content-center fw-bold">
                     <li class="nav-item"><a class="nav-link text-dark px-4" href="/">首頁</a></li>
-                    <li class="nav-item"><a class="nav-link text-dark px-4" href="#!">關於我們</a></li>
-                    <li class="nav-item"><a class="nav-link text-dark px-4" th:href="@{/frontend/product/listAll}">商城</a></li>
-                    <li class="nav-item"><a class="nav-link text-dark px-4" href="/front/attr/list">景點探索</a></li>
-                    <li class="nav-item"><a class="nav-link text-dark px-4" href="#!">主題推薦</a></li>
-                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/trip/my-trips}" style="color: #ff5722; border-bottom: 2px solid #ff5722;">我的行程</a></li>
+                    <li class="nav-item"><a class="nav-link text-dark px-4" href="/front/attr/about">關於我們</a></li>
+                    <li class="nav-item"><a class="nav-link text-dark px-4"
+                            th:href="@{/frontend/product/listAll}">商城</a></li>
+
+                    <!-- 景點探索 (地區下拉選單) -->
+                    <li class="nav-item megamenu-nav-item position-relative">
+                        <a class="nav-link text-dark px-4" href="/front/attr/search">景點探索</a>
+
+                        <!-- 觀光景點小型下拉選單 (無地圖版) -->
+                        <div class="megamenu-dropdown"
+                            style="width: 200px !important; left: 50% !important; transform: translateX(-50%) !important; right: auto !important; border-radius: 12px; padding: 20px;">
+                            <h6 class="fw-bold text-dark mb-3" style="font-size: 1.05rem; letter-spacing: 1px;">觀光景點
+                            </h6>
+                            <ul class="list-unstyled ps-3"
+                                style="border-left: 2px solid #ff5722; line-height: 2.2; margin-bottom: 0;">
+                                <li><a href="/front/attr/search?area=北部地區"
+                                        class="text-secondary text-decoration-none region-link">北部地區</a></li>
+                                <li><a href="/front/attr/search?area=中部地區"
+                                        class="text-secondary text-decoration-none region-link">中部地區</a></li>
+                                <li><a href="/front/attr/search?area=南部地區"
+                                        class="text-secondary text-decoration-none region-link">南部地區</a></li>
+                                <li><a href="/front/attr/search?area=東部地區"
+                                        class="text-secondary text-decoration-none region-link">東部地區</a></li>
+                                <li><a href="/front/attr/search?area=離島地區"
+                                        class="text-secondary text-decoration-none region-link">離島地區</a></li>
+                            </ul>
+                        </div>
+                    </li>
+
+                    <!-- 整合後的主題推薦 (帶有 Megamenu 功能) -->
+                    <li class="nav-item megamenu-nav-item">
+                        <a class="nav-link text-dark px-4" href="#!">主題推薦</a>
+                        <div class="megamenu-dropdown">
+                            <div class="container px-4 px-lg-5">
+                                <div class="megamenu-grid">
+                                    <!-- 1. 自然景觀 (categoryId=1) -->
+                                    <a href="/front/attr/search?categoryId=1"
+                                        class="megamenu-card text-decoration-none">
+                                        <div class="megamenu-img-wrapper">
+                                            <img src="/images/nature.jpg" class="megamenu-img" alt="自然景觀">
+                                        </div>
+                                        <div class="megamenu-title">自然景觀</div>
+                                    </a>
+                                    <!-- 2. 歷史古蹟 (categoryId=2) -->
+                                    <a href="/front/attr/search?categoryId=2"
+                                        class="megamenu-card text-decoration-none">
+                                        <div class="megamenu-img-wrapper">
+                                            <img src="/images/history.jpg" class="megamenu-img" alt="歷史古蹟">
+                                        </div>
+                                        <div class="megamenu-title">歷史古蹟</div>
+                                    </a>
+                                    <!-- 3. 主題樂園 (categoryId=3) -->
+                                    <a href="/front/attr/search?categoryId=3"
+                                        class="megamenu-card text-decoration-none">
+                                        <div class="megamenu-img-wrapper">
+                                            <img src="/images/amusement.jpg" class="megamenu-img" alt="主題樂園">
+                                        </div>
+                                        <div class="megamenu-title">主題樂園</div>
+                                    </a>
+                                    <!-- 4. 藝文館所 (categoryId=4) -->
+                                    <a href="/front/attr/search?categoryId=4"
+                                        class="megamenu-card text-decoration-none">
+                                        <div class="megamenu-img-wrapper">
+                                            <img src="/images/gallery.jpg" class="megamenu-img" alt="藝文館所">
+                                        </div>
+                                        <div class="megamenu-title">藝文館所</div>
+                                    </a>
+                                    <!-- 5. 商圈夜市 (categoryId=5) -->
+                                    <a href="/front/attr/search?categoryId=5"
+                                        class="megamenu-card text-decoration-none">
+                                        <div class="megamenu-img-wrapper">
+                                            <img src="/images/market.jpg" class="megamenu-img" alt="商圈夜市">
+                                        </div>
+                                        <div class="megamenu-title">商圈夜市</div>
+                                    </a>
+                                    <!-- 6. 休閒農場 (categoryId=6) -->
+                                    <a href="/front/attr/search?categoryId=6"
+                                        class="megamenu-card text-decoration-none">
+                                        <div class="megamenu-img-wrapper">
+                                            <img src="/images/farm.jpg" class="megamenu-img" alt="休閒農場">
+                                        </div>
+                                        <div class="megamenu-title">休閒農場</div>
+                                    </a>
+                                    <!-- 7. 宗教廟宇 (categoryId=7) -->
+                                    <a href="/front/attr/search?categoryId=7"
+                                        class="megamenu-card text-decoration-none">
+                                        <div class="megamenu-img-wrapper">
+                                            <img src="/images/temple.jpg" class="megamenu-img" alt="宗教廟宇">
+                                        </div>
+                                        <div class="megamenu-title">宗教廟宇</div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="nav-item"><a class="nav-link text-dark px-4" th:href="@{/trip/my-trips}">我的行程</a></li>
                     <li class="nav-item"><a class="nav-link text-dark px-4" href="/front/favorite/list">我的收藏</a></li>
-                    <li class="nav-item"><a class="nav-link text-dark px-4" href="#!">客服中心</a></li>
+                    <li class="nav-item"><a class="nav-link text-dark px-4" href="/contact">客服中心</a></li>
                 </ul>
             </div>
         </nav>
@@ -213,15 +314,18 @@
 
         <!-- 頁面頂部控制列 (對齊設計圖與首頁風格) -->
         <div class="d-flex justify-content-between align-items-center mb-5 pb-3 border-bottom">
-            <h2 class="fw-bold m-0" style="font-family: 'Noto Sans TC', sans-serif; font-size: 2.2rem; color: #212529;">我的行程</h2>
-            <a th:href="@{/trip/create}" class="btn btn-orange rounded-pill px-4 py-2 fw-bold shadow-sm d-flex align-items-center gap-2">
+            <h2 class="fw-bold m-0" style="font-family: 'Noto Sans TC', sans-serif; font-size: 2.2rem; color: #212529;">
+                我的行程</h2>
+            <a th:href="@{/trip/create}"
+                class="btn btn-orange rounded-pill px-4 py-2 fw-bold shadow-sm d-flex align-items-center gap-2">
                 <i class="bi bi-plus-circle-fill"></i> 建立新行程
             </a>
         </div>
 
         <!-- 情況 A：無行程紀錄時 -->
         <div th:if="${#lists.isEmpty(tripList)}" class="empty-msg my-5">
-            <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-light mb-3" style="width: 80px; height: 80px;">
+            <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-light mb-3"
+                style="width: 80px; height: 80px;">
                 <i class="bi bi-compass text-muted" style="font-size: 2.2rem;"></i>
             </div>
             <h4 class="fw-bold text-dark mb-2">踏出探索世界的第一步！</h4>
@@ -235,60 +339,62 @@
         <div class="row row-cols-1 row-cols-md-3 g-4" th:unless="${#lists.isEmpty(tripList)}">
             <div class="col" th:each="trip : ${tripList}">
                 <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden position-relative trip-grid-card">
-                    
+
                     <!-- 行程點擊區區塊 (點擊此區塊皆能進入編輯) -->
                     <a th:href="@{'/trip/edit/' + ${trip.tripId}}" class="card-click-link">
                         <!-- 卡片上層圖片 -->
                         <div class="position-relative overflow-hidden" style="height: 180px;">
                             <!-- 使用 Picsum 動態生成風景照 -->
-                            <img th:src="'https://picsum.photos/seed/' + ${trip.tripId} + '/600/400'" 
-                                 alt="行程封面" class="w-100 h-100 card-zoom-effect">
+                            <img th:src="'https://picsum.photos/seed/' + ${trip.tripId} + '/600/400'" alt="行程封面"
+                                class="w-100 h-100 card-zoom-effect">
                         </div>
 
                         <!-- 下層文字資訊 -->
                         <div class="card-body p-3 bg-white">
-                            <h5 class="card-title fw-bold text-dark mb-1" th:text="${trip.tripName}" style="font-size: 1.05rem; font-family: 'Noto Sans TC', sans-serif;">行程名稱</h5>
+                            <h5 class="card-title fw-bold text-dark mb-1" th:text="${trip.tripName}"
+                                style="font-size: 1.05rem; font-family: 'Noto Sans TC', sans-serif;">行程名稱</h5>
                             <p class="card-text text-secondary small mb-0">
                                 <i class="bi bi-calendar-event text-orange me-1"></i>
                                 <span th:text="${trip.tripDate}">2026-06-01</span>
                             </p>
                         </div>
                     </a>
-                        
+
                     <!-- 浮動頭像與三點選單 (置於 absolute 層級，避免干擾整卡點擊) -->
-                    <div class="position-absolute" style="top: 12px; right: 12px; z-index: 5; display: flex; align-items: center; gap: 8px;">
+                    <div class="position-absolute"
+                        style="top: 12px; right: 12px; z-index: 5; display: flex; align-items: center; gap: 8px;">
                         <!-- 頭像群組 -->
                         <div class="avatar-group d-flex align-items-center">
-                            
+
                             <!-- 擁有者頭像區塊 -->
                             <div class="avatar-item" style="position: relative; width: 28px; height: 28px;">
                                 <!-- 優先載入圖片頭像 (預設隱藏) -->
-                                <img th:if="${trip.custVO.custImg != null && !#strings.isEmpty(trip.custVO.custImg)}" 
-                                     th:src="@{'/customer/avatar/' + ${trip.custVO.custId}}" 
-                                     class="rounded-circle border border-2 border-white shadow-sm" 
-                                     style="width: 28px; height: 28px; object-fit: cover; display: none;"
-                                     onload="this.style.display='block'; this.nextElementSibling.style.display='none';">
+                                <img th:if="${trip.custVO.custImg != null && !#strings.isEmpty(trip.custVO.custImg)}"
+                                    th:src="@{'/customer/avatar/' + ${trip.custVO.custId}}"
+                                    class="rounded-circle border border-2 border-white shadow-sm"
+                                    style="width: 28px; height: 28px; object-fit: cover; display: none;"
+                                    onload="this.style.display='block'; this.nextElementSibling.style.display='none';">
                                 <!-- 文字首字頭像 (當載入失敗或無頭像時顯示) -->
                                 <div class="rounded-circle border border-2 border-white d-flex align-items-center justify-content-center text-white fw-bold shadow-sm"
-                                     th:style="'width: 28px; height: 28px; font-size: 11px; background-color: #ff5722;'"
-                                     th:text="${trip.custVO.custName != null && !#strings.isEmpty(trip.custVO.custName) ? #strings.substring(trip.custVO.custName, 0, 1) : '👤'}">
+                                    th:style="'width: 28px; height: 28px; font-size: 11px; background-color: #ff5722;'"
+                                    th:text="${trip.custVO.custName != null && !#strings.isEmpty(trip.custVO.custName) ? #strings.substring(trip.custVO.custName, 0, 1) : '👤'}">
                                     森
                                 </div>
                             </div>
-                            
+
                             <!-- 協作者頭像區塊 -->
                             <th:block th:each="collab : ${trip.collaborators}">
                                 <div class="avatar-item" style="position: relative; width: 28px; height: 28px;">
                                     <!-- 優先載入圖片頭像 (預設隱藏) -->
-                                    <img th:if="${collab.custImg != null && !#strings.isEmpty(collab.custImg)}" 
-                                         th:src="@{'/customer/avatar/' + ${collab.custId}}" 
-                                         class="rounded-circle border border-2 border-white shadow-sm" 
-                                         style="width: 28px; height: 28px; object-fit: cover; display: none;"
-                                         onload="this.style.display='block'; this.nextElementSibling.style.display='none';">
+                                    <img th:if="${collab.custImg != null && !#strings.isEmpty(collab.custImg)}"
+                                        th:src="@{'/customer/avatar/' + ${collab.custId}}"
+                                        class="rounded-circle border border-2 border-white shadow-sm"
+                                        style="width: 28px; height: 28px; object-fit: cover; display: none;"
+                                        onload="this.style.display='block'; this.nextElementSibling.style.display='none';">
                                     <!-- 文字首字頭像 (當載入失敗或無頭像時顯示) -->
                                     <div class="rounded-circle border border-2 border-white d-flex align-items-center justify-content-center text-white fw-bold shadow-sm"
-                                         th:style="'width: 28px; height: 28px; font-size: 11px; background-color: #ffb300;'"
-                                         th:text="${collab.custName != null && !#strings.isEmpty(collab.custName) ? #strings.substring(collab.custName, 0, 1) : '👤'}">
+                                        th:style="'width: 28px; height: 28px; font-size: 11px; background-color: #ffb300;'"
+                                        th:text="${collab.custName != null && !#strings.isEmpty(collab.custName) ? #strings.substring(collab.custName, 0, 1) : '👤'}">
                                         友
                                     </div>
                                 </div>
@@ -297,32 +403,34 @@
 
                         <!-- 三點控制下拉選單 -->
                         <div class="dropdown">
-                            <button class="btn btn-light rounded-circle shadow-sm p-0 d-flex align-items-center justify-content-center border-0" 
-                                    style="width: 28px; height: 28px; background: rgba(255,255,255,0.9);" 
-                                    type="button" 
-                                    data-bs-toggle="dropdown" 
-                                    aria-expanded="false">
+                            <button
+                                class="btn btn-light rounded-circle shadow-sm p-0 d-flex align-items-center justify-content-center border-0"
+                                style="width: 28px; height: 28px; background: rgba(255,255,255,0.9);" type="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="bi bi-three-dots text-dark" style="font-size: 14px;"></i>
                             </button>
-                            <ul class="dropdown-menu dropdown-menu-end shadow border-0 py-2" style="border-radius: 12px; font-size: 13px;">
+                            <ul class="dropdown-menu dropdown-menu-end shadow border-0 py-2"
+                                style="border-radius: 12px; font-size: 13px;">
                                 <li>
-                                    <a class="dropdown-item py-2 fw-bold text-dark" th:href="@{'/trip/edit/' + ${trip.tripId}}">
+                                    <a class="dropdown-item py-2 fw-bold text-dark"
+                                        th:href="@{'/trip/edit/' + ${trip.tripId}}">
                                         <i class="bi bi-pencil-square me-2 text-primary"></i> 編輯行程
                                     </a>
                                 </li>
                                 <li class="dropdown-divider m-1"></li>
                                 <li>
                                     <!-- 刪除行程 Form -->
-                                    <form th:if="${trip.custVO.custId == loginCustId}" th:action="@{/trip/delete}" method="post" class="m-0"
-                                          onsubmit="return confirm('確定要完全刪除這個行程嗎？此動作將無法復原！');">
+                                    <form th:if="${trip.custVO.custId == loginCustId}" th:action="@{/trip/delete}"
+                                        method="post" class="m-0" onsubmit="return confirm('確定要完全刪除這個行程嗎？此動作將無法復原！');">
                                         <input type="hidden" name="tripId" th:value="${trip.tripId}" />
                                         <button type="submit" class="dropdown-item py-2 fw-bold text-danger">
                                             <i class="bi bi-trash-fill me-2"></i> 刪除行程
                                         </button>
                                     </form>
                                     <!-- 退出協作 Form -->
-                                    <form th:unless="${trip.custVO.custId == loginCustId}" th:action="@{/trip/exit-collab}" method="post" class="m-0"
-                                          onsubmit="return confirm('確定要退出這個行程協作嗎？');">
+                                    <form th:unless="${trip.custVO.custId == loginCustId}"
+                                        th:action="@{/trip/exit-collab}" method="post" class="m-0"
+                                        onsubmit="return confirm('確定要退出這個行程協作嗎？');">
                                         <input type="hidden" name="tripId" th:value="${trip.tripId}" />
                                         <button type="submit" class="dropdown-item py-2 fw-bold text-warning">
                                             <i class="bi bi-box-arrow-right me-2"></i> 退出行程
@@ -343,18 +451,18 @@
 
     <!-- JavaScript：下拉選單控制 -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const memberDropdownToggle = document.getElementById('memberDropdown');
             if (memberDropdownToggle) {
                 const dropdownMenu = memberDropdownToggle.nextElementSibling;
-                
-                memberDropdownToggle.addEventListener('click', function(e) {
+
+                memberDropdownToggle.addEventListener('click', function (e) {
                     e.preventDefault();
                     e.stopPropagation();
                     dropdownMenu.classList.toggle('show');
                 });
-                
-                document.addEventListener('click', function(e) {
+
+                document.addEventListener('click', function (e) {
                     if (dropdownMenu.classList.contains('show')) {
                         if (!dropdownMenu.contains(e.target) && e.target !== memberDropdownToggle && !memberDropdownToggle.contains(e.target)) {
                             dropdownMenu.classList.remove('show');
