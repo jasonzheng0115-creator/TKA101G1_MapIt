@@ -49,13 +49,13 @@ INSERT INTO CUSTOMER (
     CUST_ACCOUNT, CUST_PASSWORD, CUST_RIGHT, CUST_USE, 
     CUST_NAME, CUST_SEX, CUST_TEL, CUST_EMAIL, CUST_IMG, 
     CUST_ID_CARD, CUST_BIRTHDAY, CUST_CARD, CUST_ADDRESS
-) VALUES 
-('user01', 'pass123', 'U', 'Y', '杜子騰', '男', '0912345671', 'wang@example.com', '/img/user01.jpg', 'A123456789', '1990-05-12', '1111222233334444', '台北市中山區南京東路一段1號'),
-('user02', 'pass456', 'A', 'Y', '魏笙芷', '女', '0923456782', 'chen@example.com', NULL, 'B223456789', '1988-11-23', NULL, '新北市板橋區文化路一段2號'),
-('user03', 'pass789', 'U', 'Y', '陸仁賈', '男', '0934567893', 'lin@example.com', '/img/user03.png', 'C134567890', '1995-02-15', '5555666677778888', '台中市西屯區台灣大道三段3號'),
-('user04', 'pass321', 'U', 'N', '曾陶燕', '女', '0945678904', 'chang@example.com', NULL, 'D245678901', '1992-08-08', '9999888877776666', '台南市東區大學路4號'),
-('user05', 'pass654', 'U', 'Y', '尤勇池', '男', '0956789015', 'huang@example.com', '/img/user05.jpg', 'E156789012', '1980-12-31', NULL, '高雄市三民區建國二路5號'),
-('user06', 'pass098', 'U', 'Y', '甄有錢', '女', '0967890126', 'wu@example.com', '/img/user06.jpg', 'F267890123', '1998-07-20', '4444555566667777', '桃園市中壢區中大路6號');
+) VALUES
+(1,'alan99','Alan9999','正常','啟動','李好','M','0912345678','alan@example.com','/Users/e0/upload/custAvatar/avatar_03.jpg','A123456789','1996-03-15','1234-5678-9012-3456','台北市中山區南京東路二段100號'),
+(2,'cherry88','Cherry88','正常','啟動','武不豪','F','0923456789','cherry@example.com','/Users/e0/upload/custAvatar/avatar_01.jpg','F234567890','1998-07-22','5678-1234-9012-3456','新北市板橋區文化路一段50號'),
+(3,'vince_77','Vince_77','正常','啟動','穗道忠武','M','0934567890','vince@example.com','/Users/e0/upload/custAvatar/avatar_05.jpg','H123456789','1992-11-05',NULL,'桃園市桃園區成功路三段12號'),
+(4,'emily66','Emily666','正常','啟動','李美送','F','0945678901','emily@example.com','/Users/e0/upload/custAvatar/avatar_06.jpg','B234567891','2000-01-30','9012-3456-1234-5678','台中市西屯區台灣大道三段99號'),
+(5,'reoreo55','Reoreo55','停權','未啟動','難波灣','M','0956789012','reoreo@example.com','/Users/e0/upload/custAvatar/avatar_04.jpg','E123456789','1988-05-12',NULL,'高雄市苓雅區四維三路2號'),
+(6,'admin_test','Admin_test1','正常','啟動','測試員','不透露','0956789033','admin@example.com','/Users/e0/upload/custAvatar/avatar_02.jpg','E287654321','1988-05-12',NULL,'高雄市三民區建工路5號');
 
 
 -- =======================================================

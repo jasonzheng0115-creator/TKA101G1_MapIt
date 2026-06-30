@@ -10,6 +10,28 @@
     <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
     <link href="/css/styles.css" rel="stylesheet" />
+    <style>
+        /* 手動控制下拉選單 */
+        .nav-item.dropdown .dropdown-menu {
+            display: none;
+            margin-top: 8px;
+        }
+        /* 當 JS 加上 .show 類別時展開選單 */
+        .nav-item.dropdown .dropdown-menu.show {
+            display: block;
+        }
+        /* 替下拉選單的選項加上 MapIt 專屬的 Hover 效果 */
+        .dropdown-item {
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .dropdown-item:hover {
+            background-color: #fff5f2 !important;
+            color: #ff5722 !important;
+        }
+        .dropdown-item:hover i {
+            color: #ff5722 !important;
+        }
+    </style>
 </head>
 
 <body>
@@ -18,7 +40,7 @@
         <!-- 主選單 (Top Bar) -->
         <nav class="navbar navbar-expand-lg navbar-light border-bottom py-2">
             <div class="container px-4 px-lg-5">
-                <a class="navbar-brand fw-bold fs-3" href="/" style="color: #ff5722;">MapIt</a>
+                <a class="navbar-brand fw-bold fs-3" href="/" style="color: #ff5722;">旅圖 | MapIt</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
@@ -27,11 +49,33 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center" style="font-size: 0.9rem;">
 
-                        <!-- 1. 會員中心：已登入才顯示，並點擊進入修改個人資料 -->
-                        <li class="nav-item" th:if="${userName}">
-                            <a class="nav-link text-secondary px-3" th:href="@{/customer/updateProfile}">
+                        <!-- 1. 會員中心：已登入才顯示，並點擊展開選單 -->
+                        <li class="nav-item dropdown" th:if="${userName}">
+                            <a class="nav-link text-secondary px-3 dropdown-toggle" href="#" id="memberDropdown" role="button">
                                 <i class="bi bi-person-circle"></i> <span th:text="${userName} + ' 你好'">會員中心</span>
                             </a>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2" aria-labelledby="memberDropdown" style="border-radius: 10px;">
+                                <li>
+                                    <a class="dropdown-item py-2" th:href="@{/customer/updateProfile}">
+                                        <i class="bi bi-person-lines-fill me-2 text-secondary"></i>修改個人資料
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item py-2" th:href="@{/customer/ticket}">
+                                        <i class="bi bi-tags me-2 text-secondary"></i>我的票券夾
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item py-2" th:href="@{/orders/my-orders}">
+                                        <i class="bi bi-file-earmark-text me-2 text-secondary"></i>我的訂單紀錄
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item py-2" th:href="@{/customer/message}">
+                                        <i class="bi bi-bell me-2 text-secondary"></i>我的通知
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
 
                         <li class="nav-item">
@@ -50,8 +94,6 @@
                         <li class="nav-item ms-lg-2" th:unless="${userName}">
                             <a class="btn btn-warning btn-sm rounded-pill px-3 fw-bold shadow-sm"
                                 th:href="@{/customer/login}">註冊 / 登入</a>
-                        </li>
-
                         </li>
                     </ul>
                 </div>
@@ -454,6 +496,31 @@
                         item.style.display = 'block';
                     } else {
                         item.style.display = 'none';
+                    }
+                });
+            }
+        });
+
+        // 會員選單的專屬點擊控制
+        document.addEventListener('DOMContentLoaded', function() {
+            const memberDropdownToggle = document.getElementById('memberDropdown');
+            if (memberDropdownToggle) {
+                const dropdownMenu = memberDropdownToggle.nextElementSibling;
+                
+                // 點擊按鈕切換展開/收合
+                memberDropdownToggle.addEventListener('click', function(e) {
+                    e.preventDefault(); // 防止預設連結跳轉
+                    e.stopPropagation(); // 阻止事件往上傳遞
+                    dropdownMenu.classList.toggle('show');
+                });
+                
+                // 點擊頁面其他地方自動關閉選單
+                document.addEventListener('click', function(e) {
+                    if (dropdownMenu.classList.contains('show')) {
+                        // 如果點擊的地方不在選單內部，也不是按鈕本身，就關掉它
+                        if (!dropdownMenu.contains(e.target) && e.target !== memberDropdownToggle && !memberDropdownToggle.contains(e.target)) {
+                            dropdownMenu.classList.remove('show');
+                        }
                     }
                 });
             }

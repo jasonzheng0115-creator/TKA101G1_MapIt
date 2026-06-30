@@ -3,34 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <title>修改個人資料</title>
+    <!-- 同首頁的導覽列 -->
+	<link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+	<link href="/css/styles.css" rel="stylesheet" />
+	<!-- ========== -->
     <style>
-        body { 
-        font-family: 'Segoe UI', Tahoma, sans-serif; 
-        background-color: #f4f7f6; 
-        display: flex; 
-        justify-content: center; 
-        align-items: center; 
-        height: 100vh; 
-        margin: 0; }
-        
-        .profile-card {
-        background: white;
-        padding: 40px;
-        border-radius: 12px;
-        box-shadow: 0 8px 24px rgba(0,0,0,0.05);
-        width: 100%;
-        max-width: 400px; 
+        :root {
+            --primary-color: #ff5722;
+            --primary-hover: #e64a19;
+            --bg-gradient: linear-gradient(135deg, #fff5f2 0%, #f4f7f6 100%);
+            --card-bg: #ffffff;
+            --error-color: #ef4444;
         }
-        h2 { text-align: center; color: #333; margin-bottom: 30px; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, sans-serif; 
+            background: var(--bg-gradient);
+            display: flex; 
+            justify-content: center; 
+            /* 預留高度給未來可能加入的導覽列，並取消 align-items: center 避免長表單被裁切 */
+            padding: 120px 20px 40px;
+            min-height: 100vh; 
+            margin: 0; 
+            box-sizing: border-box;
+        }
         
-        .form-group { margin-bottom: 20px; }
-        label {  display: block;  margin-bottom: 8px; color: #555; font-weight: bold; }
-        input { 
-        width: 100%; 
-        padding: 12px; 
-        border: 1px solid #ddd; 
-        border-radius: 6px; 
-        box-sizing: border-box; }
+        /* 手動控制下拉選單 */
+        .nav-item.dropdown .dropdown-menu {
+            display: none;
+            margin-top: 8px;
+        }
+        .nav-item.dropdown .dropdown-menu.show {
+            display: block;
+        }
+        .dropdown-item {
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .dropdown-item:hover {
+            background-color: #fff5f2 !important;
+            color: #ff5722 !important;
+        }
+        .dropdown-item:hover i {
+            color: #ff5722 !important;
+        }
+
+        .profile-card {
+            background: var(--card-bg);
+            padding: 3rem 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(255, 87, 34, 0.08);
+            border: 1px solid #feede8;
+            width: 100%;
+            max-width: 520px; 
+            margin: auto;
+        }
+        h2 { text-align: center; color: #1f2937; margin-bottom: 2rem; font-size: 2.2rem; font-weight: 700; }
+        
+        .form-group { margin-bottom: 1.5rem; }
+        label {  display: block;  margin-bottom: 0.6rem; color: #4b5563; font-weight: 600; font-size: 1.1rem; }
+        input[type="text"], input[type="file"], input[type="password"] { 
+            width: 100%; 
+            padding: 1rem; 
+            border: 1px solid #d1d5db; 
+            border-radius: 10px; 
+            font-size: 1.1rem;
+            box-sizing: border-box; 
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        input[type="text"]:focus, input[type="file"]:focus, input[type="password"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(255, 87, 34, 0.15);
+        }
         
         .radio-group {
             display: flex;
@@ -50,27 +94,53 @@
         }
         
         .btn-submit { 
-        width: 100%; 
-        padding: 14px; 
-        background-color: #4a90e2; 
-        color: white; border: none; 
-        border-radius: 6px; 
-        font-weight: bold; 
-        cursor: pointer; }
+            width: 100%; 
+            padding: 1rem; 
+            background-color: var(--primary-color); 
+            color: white; 
+            border: none; 
+            border-radius: 10px; 
+            font-size: 1.2rem;
+            font-weight: 600; 
+            cursor: pointer; 
+            transition: background-color 0.3s, transform 0.1s;
+            margin-top: 2rem;
+            letter-spacing: 1px;
+        }
+        .btn-submit:hover { background-color: var(--primary-hover); }
+        .btn-submit:active { transform: scale(0.98); }
         
         .btn-cancel { 
-        width: 100%; 
-        padding: 14px; 
-        background-color: #f1f1f1; 
-        color: #333; border: none; 
-        border-radius: 6px; 
-        font-weight: bold; 
-        cursor: pointer; 
-        margin-top: 10px; 
-        display: block; 
-        text-align: center; 
-        text-decoration: none; 
-        box-sizing: border-box;}
+            width: 100%; 
+            padding: 1rem; 
+            background-color: #f1f1f1; 
+            color: #333; border: none; 
+            border-radius: 10px; 
+            font-size: 1.2rem;
+            font-weight: 600; 
+            cursor: pointer; 
+            margin-top: 15px; 
+            display: block; 
+            text-align: center; 
+            text-decoration: none; 
+            box-sizing: border-box;
+            transition: background-color 0.3s;
+        }
+        .btn-cancel:hover { background-color: #e5e7eb; }
+        
+        #btnDeleteAvatar {
+            padding: 8px 20px;
+            background-color: #fee2e2;
+            color: #dc2626;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            margin-top: 0; /* 移除先前的 margin-top */
+            transition: background-color 0.3s;
+        }
+        #btnDeleteAvatar:hover { background-color: #fca5a5; }
         
         .field-error {color: #d9534f; font-size: 12px; margin-top: 5px;display: block;}
 		
@@ -82,23 +152,117 @@
 		margin-bottom: 20px; 
 		text-align: center; 
 		font-size: 14px;}
-		/* 會員頭貼 */
+		/* 會員頭貼與按鈕排版 */
 		.avatar-container {
-		 margin-bottom: 15px;
-		 text-align: center;
+		    margin-bottom: 1rem;
+		    text-align: center;
 		}
-		.avatar-preview{
-    	width: 100px;
-    	height: 100px;
-    	border-radius: 50%;
-    	object-fit: cover;
-    	border: 2px solid #ddd;		
+		.avatar-preview {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);		
 		}
+        .avatar-actions {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .btn-upload {
+            padding: 8px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+            margin-bottom: 0; /* Override any global label margin */
+            display: flex;
+            align-items: center;
+        }
+        .btn-upload:hover { background-color: var(--primary-hover); }
 		
     </style>
     
 </head>
 <body>
+	<!-- 修改個人資料專屬導覽列 (已登入狀態) -->
+	<header class="fixed-top bg-white shadow-sm" style="z-index: 1030;">
+	    <nav class="navbar navbar-expand-lg navbar-light border-bottom py-2">
+	        <div class="container px-4 px-lg-5">
+	            <a class="navbar-brand fw-bold fs-3" href="/" style="color: #ff5722;">旅圖 | MapIt</a>
+	            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+	                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+	                aria-expanded="false" aria-label="Toggle navigation">
+	                <span class="navbar-toggler-icon"></span>
+	            </button>
+	            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+	                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center" style="font-size: 0.9rem;">
+	
+                        <!-- 會員中心下拉選單 (強制顯示已登入狀態) -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link text-secondary px-3 dropdown-toggle" href="#" id="memberDropdown" role="button">
+                                <i class="bi bi-person-circle"></i> <span th:text="${loginCust.custName} + ' 你好'">會員中心</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2" aria-labelledby="memberDropdown" style="border-radius: 10px;">
+                                <li>
+                                    <a class="dropdown-item py-2" th:href="@{/customer/updateProfile}">
+                                        <i class="bi bi-person-lines-fill me-2 text-secondary"></i>修改個人資料
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item py-2" th:href="@{/customer/ticket}">
+                                        <i class="bi bi-tags me-2 text-secondary"></i>我的票券夾
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item py-2" th:href="@{/orders/my-orders}">
+                                        <i class="bi bi-file-earmark-text me-2 text-secondary"></i>我的訂單紀錄
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item py-2" th:href="@{/customer/message}">
+                                        <i class="bi bi-bell me-2 text-secondary"></i>我的通知
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
+	                    <li class="nav-item">
+	                        <a class="nav-link text-secondary px-3" th:href="@{/cart/show}">
+	                            <i class="bi bi-cart3"></i> 購物車
+	                        </a>
+	                    </li>
+	
+	                    <li class="nav-item ms-lg-2">
+	                        <a class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-bold shadow-sm"
+	                            th:href="@{/customer/logout}">登出</a>
+	                    </li>
+	                </ul>
+	            </div>
+	        </div>
+	    </nav>
+	
+	    <nav class="sub-navbar bg-white py-1">
+	        <div class="container px-4 px-lg-5">
+	            <ul class="nav justify-content-center fw-bold">
+	                <li class="nav-item"><a class="nav-link text-dark px-4" href="/">首頁</a></li>
+	                <li class="nav-item"><a class="nav-link text-dark px-4" href="#!">關於我們</a></li>
+	                <li class="nav-item"><a class="nav-link text-dark px-4" th:href="@{/frontend/product/listAll}">商城</a></li>
+	                <li class="nav-item"><a class="nav-link text-dark px-4" href="/front/attr/list">景點探索</a></li>
+	                <li class="nav-item"><a class="nav-link text-dark px-4" href="#!">主題推薦</a></li>
+	                <li class="nav-item"><a class="nav-link text-dark px-4" th:href="@{/trip/my-trips}">我的行程</a></li>
+	                <li class="nav-item"><a class="nav-link text-dark px-4" href="/front/favorite/list">我的收藏</a></li>
+	                <li class="nav-item"><a class="nav-link text-dark px-4" href="#!">客服中心</a></li>
+	            </ul>
+	        </div>
+	    </nav>
+	</header>
+
     <div class="profile-card">
         <h2>✏️ 修改個人資料</h2>
 
@@ -109,21 +273,22 @@
 			<input type="hidden" th:field="*{custPassword}">     
             <div class="error-message" th:if="${errorMsg != null}" th:text="${errorMsg}"></div>
          	
-         	<div class="form-group">
-         	<label>上傳頭像：</label>
-         	<div class="avatar-container">
-         		<!-- 靠th:src判斷，如果資料庫裡有路徑就顯示，否則顯示預設頭像 -->
-         		<img id="avatarPreview" class="avatar-preview"
-         			 th:src="${loginCust.custImg != null ? loginCust.custImg:'/images/default_custAvatar.jpg'}">
-         	</div>
-         	<!-- 檔案上傳按鈕 
-	   		accept="image/*":限制只能選取圖片檔案
-			onchange:瀏覽器事件，選好照片按下確定，值改變後觸發
-			previewImage(this):觸發後去呼叫JS函數(previewImage)，並把this(上傳按鈕本身)當作硬幣投入函數中，讓JS知道要去讀取圖片檔案 -->
-         	<input type="file" name="cust_img_file" id="cust_img_file" accept="image/*" onchange="previewImage(this)">
-         	<input type="hidden" id="remove_img_flag" name="remove_img_flag" value="false">
-         	<button type="button" id="btnDeleteAvatar" onclick="removeAvatar()">刪除頭像</button>
-         	</div>
+          	<div class="form-group" style="text-align: center;">
+                <label style="text-align: left;">會員頭像：</label>
+                <div class="avatar-container">
+                    <img id="avatarPreview" class="avatar-preview"
+                         th:src="@{${#strings.isEmpty(loginCust.custImg) ? '/custDefaultAvatar/default_custAvatar.jpg' : '/customer/avatar'}}">
+                </div>
+                
+                <div class="avatar-actions">
+                    <input type="file" name="cust_img_file" id="cust_img_file" accept="image/*" onchange="previewImage(this)" style="display: none;">
+                    <!-- 利用 label 的特性，點擊它就等於點擊被隱藏的 input -->
+                    <label for="cust_img_file" class="btn-upload">更換照片</label>
+                    
+                    <input type="hidden" id="remove_img_flag" name="remove_img_flag" value="false">
+                    <button type="button" id="btnDeleteAvatar" onclick="removeAvatar()">刪除</button>
+                </div>
+          	</div>
 				
             <div class="form-group">
                 <label>姓名：</label>
@@ -180,7 +345,7 @@
 			
 			
             <button type="submit" class="btn-submit">💾 儲存修改</button>
-            <a th:href="@{/customer/loginSuccess}" class="btn-cancel">取消返回</a>
+            <a th:href="@{/}" class="btn-cancel">取消返回</a>
         </form>
     </div>
     
@@ -211,5 +376,26 @@
     	}
     </script>
     
+    <!-- 下拉選單點擊控制 JS -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const memberDropdownToggle = document.getElementById('memberDropdown');
+            if (memberDropdownToggle) {
+                const dropdownMenu = memberDropdownToggle.nextElementSibling;
+                memberDropdownToggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropdownMenu.classList.toggle('show');
+                });
+                document.addEventListener('click', function(e) {
+                    if (dropdownMenu.classList.contains('show')) {
+                        if (!dropdownMenu.contains(e.target) && e.target !== memberDropdownToggle && !memberDropdownToggle.contains(e.target)) {
+                            dropdownMenu.classList.remove('show');
+                        }
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>

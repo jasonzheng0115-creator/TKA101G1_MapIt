@@ -2,35 +2,236 @@
 <html lang="zh-TW" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <title>我的票券匣</title>
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+    <link href="/css/styles.css" rel="stylesheet" />
     <style>
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; }
-        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.05); }
-        h2 { color: #333; border-bottom: 2px solid #10b981; padding-bottom: 10px; }
-        .ticket-card { border: 2px dashed #10b981; border-radius: 8px; padding: 20px; margin-bottom: 15px; display: flex; align-items: center; background-color: #f0fdf4; }
+        :root {
+            --primary-color: #ff5722;
+            --primary-hover: #e64a19;
+            --bg-light: #f8f9fa;
+        }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: var(--bg-light); margin: 0; padding-top: 120px; }
+        
+        /* 手動控制下拉選單 */
+        .nav-item.dropdown .dropdown-menu {
+            display: none;
+            margin-top: 8px;
+        }
+        .nav-item.dropdown .dropdown-menu.show {
+            display: block;
+        }
+        .dropdown-item {
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .dropdown-item:hover {
+            background-color: #fff5f2 !important;
+            color: #ff5722 !important;
+        }
+        .dropdown-item:hover i {
+            color: #ff5722 !important;
+        }
+
+        .container-content { max-width: 900px; margin: 0 auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .page-title { color: #333; border-bottom: 2px solid var(--primary-color); padding-bottom: 10px; margin-bottom: 30px; font-weight: bold; }
+        
+        .ticket-card { border: 1px solid #e0e0e0; border-left: 6px solid var(--primary-color); border-radius: 8px; padding: 20px; margin-bottom: 20px; display: flex; align-items: center; background-color: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.02); transition: transform 0.2s; }
+        .ticket-card:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.08); }
         .ticket-info { flex: 1; }
-        .ticket-info h3 { margin: 0 0 10px 0; color: #059669; }
-        .ticket-info p { margin: 5px 0; color: #555; }
-        .qr-placeholder { width: 80px; height: 80px; background-color: white; border: 1px solid #ccc; display: flex; justify-content: center; align-items: center; font-size: 12px; color: #999; }
-        .btn-back { display: inline-block; margin-top: 20px; padding: 10px 20px; background-color: #f1f1f1; color: #333; text-decoration: none; border-radius: 6px; font-weight: bold; }
+        .ticket-info h3 { margin: 0 0 10px 0; color: #333; font-size: 1.25rem; font-weight: bold; }
+        .ticket-info p { margin: 5px 0; color: #666; font-size: 0.95rem; }
+        
+        /* 空白狀態設計 */
+        .empty-state { text-align: center; padding: 60px 20px; background-color: #f8f9fa; border-radius: 12px; border: 2px dashed #dee2e6; margin-top: 20px; }
+        .empty-state i { color: #ced4da; }
+        .empty-state h4 { margin-top: 15px; color: #6c757d; font-weight: bold; }
+        .empty-state h4 { margin-top: 15px; color: #6c757d; font-weight: bold; }
+        .btn-custom-primary { background-color: var(--primary-color); color: white; padding: 10px 25px; border-radius: 25px; text-decoration: none; display: inline-block; transition: background-color 0.2s; }
+        .btn-custom-primary:hover { background-color: var(--primary-hover); color: white; }
+
+        /* QR Code Modal Overlay */
+        .qr-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.85);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            cursor: pointer;
+        }
+        .qr-modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+            text-align: center;
+            cursor: default;
+        }
+        .qr-modal-content img {
+            max-width: 90vw;
+            max-height: 80vh;
+        }
+        .qr-thumbnail {
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .qr-thumbnail:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h2>🎟️ 我的票券匣-未完成僅預覽</h2>
-        
-        <!-- 這裡之後會用 th:each 來跑迴圈顯示票券 -->
-        <div class="ticket-card">
-            <div class="ticket-info">
-                <h3>高雄兩天一夜觀光套票</h3>
-                <p><strong>票券代碼：</strong> TK-99887766</p>
-                <p><strong>有效期限：</strong> 2026-12-31 前有效</p>
-                <p><strong>狀態：</strong> <span style="color: #059669; font-weight: bold;">可使用</span></p>
-            </div>
-            <div class="qr-placeholder">QR Code<br>佔位圖</div>
-        </div>
+    <!-- 組合式固定導覽列 -->
+    <header class="fixed-top bg-white shadow-sm" style="z-index: 1030;">
+        <nav class="navbar navbar-expand-lg navbar-light border-bottom py-2">
+            <div class="container px-4 px-lg-5">
+                <a class="navbar-brand fw-bold fs-3" href="/" style="color: #ff5722;">旅圖 | MapIt</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center" style="font-size: 0.9rem;">
 
-        <a th:href="@{/customer/loginSuccess}" class="btn-back">返回會員中心</a>
+                        <!-- 會員中心下拉選單 (強制顯示已登入狀態) -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link text-secondary px-3 dropdown-toggle" href="#" id="memberDropdown" role="button">
+                                <i class="bi bi-person-circle"></i> <span th:text="${loginCust.custName} + ' 你好'">會員中心</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2" aria-labelledby="memberDropdown" style="border-radius: 10px;">
+                                <li>
+                                    <a class="dropdown-item py-2" th:href="@{/customer/updateProfile}">
+                                        <i class="bi bi-person-lines-fill me-2 text-secondary"></i>修改個人資料
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item py-2" th:href="@{/customer/ticket}">
+                                        <i class="bi bi-tags me-2 text-secondary"></i>我的票券夾
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item py-2" th:href="@{/orders/my-orders}">
+                                        <i class="bi bi-file-earmark-text me-2 text-secondary"></i>我的訂單紀錄
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item py-2" th:href="@{/customer/message}">
+                                        <i class="bi bi-bell me-2 text-secondary"></i>我的通知
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link text-secondary px-3" th:href="@{/cart/show}">
+                                <i class="bi bi-cart3"></i> 購物車
+                            </a>
+                        </li>
+
+                        <!-- 登出按鈕 (強制顯示已登入狀態) -->
+                        <li class="nav-item ms-lg-2">
+                            <a class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-bold shadow-sm"
+                                th:href="@{/customer/logout}">登出</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <nav class="sub-navbar bg-white py-1">
+            <div class="container px-4 px-lg-5">
+                <ul class="nav justify-content-center fw-bold">
+                    <li class="nav-item"><a class="nav-link text-dark px-4" href="/">首頁</a></li>
+                    <li class="nav-item"><a class="nav-link text-dark px-4" href="#!">關於我們</a></li>
+                    <li class="nav-item"><a class="nav-link text-dark px-4" th:href="@{/frontend/product/listAll}">商城</a></li>
+                    <li class="nav-item"><a class="nav-link text-dark px-4" href="/front/attr/list">景點探索</a></li>
+                    <li class="nav-item"><a class="nav-link text-dark px-4" href="#!">主題推薦</a></li>
+                    <li class="nav-item"><a class="nav-link text-dark px-4" th:href="@{/trip/my-trips}">我的行程</a></li>
+                    <li class="nav-item"><a class="nav-link text-dark px-4" href="/front/favorite/list">我的收藏</a></li>
+                    <li class="nav-item"><a class="nav-link text-dark px-4" href="#!">客服中心</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container px-4 my-5">
+        <div class="container-content">
+            <h2 class="page-title"><i class="bi bi-tags me-2"></i>我的票券匣</h2>
+            
+            <!-- 空白狀態 (當票券列表為空時顯示) -->
+            <div th:if="${#lists.isEmpty(ticketList)}" class="empty-state">
+                <i class="bi bi-inbox" style="font-size: 4rem;"></i>
+                <h4>尚未有任何票券</h4>
+                <p>目前您的票券匣空空如也，快去尋找下一個旅行的靈感吧！</p>
+                <a th:href="@{/frontend/product/listAll}" class="btn-custom-primary mt-3">去商城逛逛</a>
+            </div>
+
+            <!-- 票券列表 (當有票券時顯示) -->
+            <div th:unless="${#lists.isEmpty(ticketList)}">
+                <div class="ticket-card" th:each="ticketItem : ${ticketList}">
+                    <div class="ticket-info">
+                        <h3 th:text="${ticketItem.ticketId.productVO.productName}">商品名稱</h3>
+                        <p><i class="bi bi-upc-scan me-1"></i><strong>票券代碼：</strong> <span th:text="${ticketItem.ticketId.tktId}" class="text-secondary">TK-000</span></p>
+                        <p><i class="bi bi-calendar-event me-1"></i><strong>有效期限：</strong> <span th:text="${#temporals.format(ticketItem.endDate, 'yyyy-MM-dd')}">2026-12-31</span> 前有效</p>
+                        <p><i class="bi bi-check-circle me-1"></i><strong>狀態：</strong> <span style="color: #ff5722; font-weight: bold;">可使用</span></p>
+                    </div>
+                    
+                    <div class="ms-3 text-center">
+                        <img th:src="@{/ticket/qrcode/{tktId}(tktId=${ticketItem.ticketId.tktId})}" alt="QR Code" class="img-fluid rounded border p-1 qr-thumbnail" style="width: 100px; height: 100px;" onclick="openQrModal(this.src)" title="點擊放大顯示">
+                        <div class="mt-1 small text-muted" style="cursor: pointer;" onclick="openQrModal(this.previousElementSibling.src)">點擊放大</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JS for dropdown -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const memberDropdownToggle = document.getElementById('memberDropdown');
+            if (memberDropdownToggle) {
+                const dropdownMenu = memberDropdownToggle.nextElementSibling;
+                memberDropdownToggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropdownMenu.classList.toggle('show');
+                });
+                document.addEventListener('click', function(e) {
+                    if (dropdownMenu.classList.contains('show')) {
+                        if (!dropdownMenu.contains(e.target) && e.target !== memberDropdownToggle && !memberDropdownToggle.contains(e.target)) {
+                            dropdownMenu.classList.remove('show');
+                        }
+                    }
+                });
+            }
+        });
+
+        // QR Code Modal 控制
+        function openQrModal(src) {
+            document.getElementById('qrModalImg').src = src;
+            document.getElementById('qrModal').style.display = 'flex';
+        }
+        function closeQrModal() {
+            document.getElementById('qrModal').style.display = 'none';
+        }
+    </script>
+    
+    <!-- QR Code 全螢幕顯示 Modal -->
+    <div id="qrModal" class="qr-modal-overlay" onclick="closeQrModal()">
+        <div class="qr-modal-content" onclick="event.stopPropagation()">
+            <img id="qrModalImg" src="" alt="Full Screen QR Code">
+        </div>
+        <div class="mt-3 text-white fw-bold fs-5">點擊空白處即可關閉</div>
     </div>
 </body>
 </html>
