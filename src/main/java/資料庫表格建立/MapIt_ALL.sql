@@ -55,36 +55,13 @@ INSERT INTO CUSTOMER (
     CUST_NAME, CUST_SEX, CUST_TEL, CUST_EMAIL, CUST_IMG, 
     CUST_ID_CARD, CUST_BIRTHDAY, CUST_CARD, CUST_ADDRESS
 ) VALUES 
-(
-    1, 'alan99', 'Alan9999', '正常', '啟動', 
-    '李好', 'M', '0912345678', 'alan@example.com', 'avatar_01.jpg', 
-    'A123456789', '1996-03-15', '1234-5678-9012-3456', '台北市中山區南京東路二段100號'
-),
-(
-    2, 'cherry88', 'Cherry88', '正常', '啟動', 
-    '武不豪', 'F', '0923456789', 'cherry@example.com', 'avatar_02.jpg', 
-    'F234567890', '1998-07-22', '5678-1234-9012-3456', '新北市板橋區文化路一段50號'
-),
-(
-    3, 'vince_77', 'Vince_77', '正常', '啟動', 
-    '穗道忠武', 'M', '0934567890', 'vince@example.com', NULL, 
-    'H123456789', '1992-11-05', NULL, '桃園市桃園區成功路三段12號'
-),
-(
-    4, 'emily66', 'Emily666', '正常', '啟動', 
-    '李美送', 'F', '0945678901', 'emily@example.com', 'avatar_03.jpg', 
-    'B234567891', '2000-01-30', '9012-3456-1234-5678', '台中市西屯區台灣大道三段99號'
-),
-(
-    5, 'reoreo55', 'Reoreo55', '停權', '未啟動', 
-    '難波灣', 'M', '0956789012', 'reoreo@example.com', 'avatar_04.jpg', 
-    'E123456789', '1988-05-12', NULL, '高雄市苓雅區四維三路2號'
-), 
-(
-    6, 'admin_test', 'Admin_test1', '正常', '啟動', 
-    '測試員', '不透露', '0956789033', 'admin@example.com', 'admin.jpg', 
-    'E287654321', '1988-05-12', NULL, '高雄市三民區建工路5號'
-);
+(1,'alan99','Alan9999','正常','啟動','李好','M','0912345678','alan@example.com','/Users/e0/upload/custAvatar/avatar_03.jpg','A123456789','1996-03-15','1234-5678-9012-3456','台北市中山區南京東路二段100號'),
+(2,'cherry88','Cherry88','正常','啟動','武不豪','F','0923456789','cherry@example.com','/Users/e0/upload/custAvatar/avatar_01.jpg','F234567890','1998-07-22','5678-1234-9012-3456','新北市板橋區文化路一段50號'),
+(3,'vince_77','Vince_77','正常','啟動','穗道忠武','M','0934567890','vince@example.com','/Users/e0/upload/custAvatar/avatar_05.jpg','H123456789','1992-11-05',NULL,'桃園市桃園區成功路三段12號'),
+(4,'emily66','Emily666','正常','啟動','李美送','F','0945678901','emily@example.com','/Users/e0/upload/custAvatar/avatar_06.jpg','B234567891','2000-01-30','9012-3456-1234-5678','台中市西屯區台灣大道三段99號'),
+(5,'reoreo55','Reoreo55','停權','未啟動','難波灣','M','0956789012','reoreo@example.com','/Users/e0/upload/custAvatar/avatar_04.jpg','E123456789','1988-05-12',NULL,'高雄市苓雅區四維三路2號'),
+(6,'admin_test','Admin_test1','正常','啟動','測試員','不透露','0956789033','admin@example.com','/Users/e0/upload/custAvatar/avatar_02.jpg','E287654321','1988-05-12',NULL,'高雄市三民區建工路5號');
+
 
 -- =======================================================
 -- 2. 建立廠商表 (SUPPLIER)
