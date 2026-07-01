@@ -78,53 +78,90 @@
             <div class="container-fluid px-4 px-lg-5">
                 <ul class="nav justify-content-center fw-bold">
                     <li class="nav-item">
-                        <a class="nav-link px-4" th:classappend="${activeTab == 'attr'} ? 'active'"
-                            th:href="@{/attr/listAll}">景點管理</a>
+                        <a class="nav-link px-4" th:href="@{/attr/listAll}">景點管理</a>
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link px-4" th:classappend="${activeTab == 'product'} ? 'active'"
-                            th:href="@{/product/select_page}">商品管理</a>
+                        <a class="nav-link px-4" th:href="@{/product/select_page}">商品管理</a>
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link px-4" th:classappend="${activeTab == 'orders'} ? 'active'"
-                            th:href="@{/orders/backend-list}">訂單管理</a>
+                        <a class="nav-link px-4" th:href="@{/orders/backend-list}">訂單管理</a>
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link px-4" th:classappend="${activeTab == 'customer'} ? 'active'"
-                            th:href="@{/customer/empCustomerList}">會員管理</a>
-                    </li>
-
-
-
-                    <li class="nav-item"><a class="nav-link px-4" th:classappend="${activeTab == 'supplier'} ? 'active'"
-                            th:href="@{/supplier/select_page}">廠商管理</a>
+                        <a class="nav-link px-4" th:href="@{/customer/empCustomerList}">會員管理</a>
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link px-4" th:classappend="${activeTab == 'ap'} ? 'active'"
-                            th:href="@{/ap/select_page}">應付帳款</a>
+                        <a class="nav-link px-4" th:href="@{/supplier/select_page}">廠商管理</a>
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link px-4" th:classappend="${activeTab == 'emp'} ? 'active'"
-                            th:href="@{/emp/select_page}">員工管理</a>
+                        <a class="nav-link px-4" th:href="@{/ap/select_page}">應付帳款</a>
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link px-4" th:classappend="${activeTab == 'dept'} ? 'active'"
-                            th:href="@{/dept/listAllDept}">部門管理</a>
+                        <a class="nav-link px-4" th:href="@{/emp/select_page}">員工管理</a>
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link px-4" th:classappend="${activeTab == 'message'} ? 'active'"
-                            th:href="@{/emp/message/send}">通知發送</a>
+                        <a class="nav-link px-4" th:href="@{/dept/listAllDept}">部門管理</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link px-4" th:href="@{/emp/message/send}">通知發送</a>
                     </li>
                 </ul>
             </div>
         </nav>
+
+        <!-- JS 自動偵測瀏覽器網址，動態點亮對應分頁的底線 -->
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const path = window.location.pathname; // 取得當前網址路徑 (例如: /emp/select_page)
+                const navLinks = document.querySelectorAll(".sub-navbar-backend .nav-link");
+
+                let activeKey = "";
+
+                // 優先判定長路徑前綴，防呆區分 /emp/message 與 /emp
+                if (path.includes("/emp/message")) {
+                    activeKey = "message";
+                } else if (path.includes("/emp")) {
+                    activeKey = "emp";
+                } else if (path.includes("/dept")) {
+                    activeKey = "dept";
+                } else if (path.includes("/attr")) {
+                    activeKey = "attr";
+                } else if (path.includes("/product")) {
+                    activeKey = "product";
+                } else if (path.includes("/orders")) {
+                    activeKey = "orders";
+                } else if (path.includes("/customer")) {
+                    activeKey = "customer";
+                } else if (path.includes("/supplier")) {
+                    activeKey = "supplier";
+                } else if (path.includes("/ap")) {
+                    activeKey = "ap";
+                }
+
+                // 遍歷所有選單按鈕，將匹配的按鈕加上 active 樣式
+                navLinks.forEach(link => {
+                    const href = link.getAttribute("href");
+                    if (!href) return;
+
+                    // 防呆：如果是員工管理，但該連結本身是通知發送，則不給予高亮
+                    if (activeKey === "emp" && href.includes("/message")) {
+                        return;
+                    }
+
+                    // 比對 href 中是否包含該關鍵字
+                    if (activeKey && href.includes("/" + activeKey)) {
+                        link.classList.add("active");
+                    }
+                });
+            });
+        </script>
     </header>
 
 </body>
