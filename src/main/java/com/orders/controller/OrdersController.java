@@ -191,7 +191,13 @@ public class OrdersController {
 	@GetMapping("/success")
 	public String showSuccess(
 			@RequestParam("orderId") Integer orderId,
+			HttpSession session,
 			ModelMap model) {
+		
+		CustVO loginCust = (CustVO) session.getAttribute("loginCust");
+		if (loginCust != null) {
+			model.addAttribute("userName", loginCust.getCustName());
+		}
 
 		// 用ID去資料庫拿出訂單主檔
 		OrdersVO order = ordersSvc.getOneOrders(orderId); // 對齊 OrdersService 撈單筆的方法名稱

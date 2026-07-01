@@ -1,491 +1,316 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
-<meta charset="UTF-8">
-<title>精選旅遊商品</title>
+	<meta charset="UTF-8">
+	<title>精選旅遊商品</title>
 
-<!-- 同首頁的導覽列 -->
-<link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
-<link href="/css/styles.css" rel="stylesheet" />
-<!-- ========== -->
+	<th:block th:replace="~{layouts/frontend :: head}"></th:block>
 
-<style>
-	body {
-		background-color: whitesmoke;
-		font-family: sans-serif; /* 規定網頁的字體家族,sans-serif(黑體-無襯線字體) */
-		padding: 20px;
-	}
-	
-	/* ========================================================
-   		舊導覽列css : 選擇器名稱後面加上「_OLD」
-   		如需要改回舊導覽列把「_OLD」刪除
-       ======================================================== */
-	/* 頂部導覽列外殼 */
-	.front-navbar_OLD {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		background-color: white;
-		padding: 15px 40px;
-		box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-		position: sticky; /* 鎖定在頂端，往下捲動時會跟著走 */
-		top: 0;
-		z-index: 100;
-		margin: -20px -20px 25px -20px; /* 破開 body 的內距，讓導覽列吃滿左右兩側 */
-	}
-	
-	.front-logo_OLD {
-		font-size: 22px;
-		font-weight: bold;
-		color: #ff5722;  /* 符合首頁的顏色 */
-		text-decoration: none;
-	}
-	
-	/* 右上角組員聯動：會員狀態區 */
-	.member-status-box_OLD {
-		display: flex;
-		align-items: center;
-		gap: 15px;
-	}
-	
-	.member-link_OLD {
-		font-size: 14px;
-		color: #555;
-		text-decoration: none;
-		font-weight: 500;
-		transition: color 0.2s;
-	}
-	
-	.member-link_OLD:hover {
-		color: dodgerblue;
-	}
-	
-	.btn-login_OLD {
-		background-color: orange;
-		color: white !important;
-		padding: 6px 16px;
-		border-radius: 20px;
-	}
-	
-	.btn-login_OLD:hover {
-		background-color: darkorange;
-	}
-	/* ----------------------------------------------------
-       舊導覽列到這
-       ---------------------------------------------------- */
-       
-       
-	
-	/* 加上滑鼠懸停浮起特效 */
-	.product-card {
-		background-color: white;
-		border: 1px solid #eaeaea;
-		border-radius: 12px;
-		padding: 15px;
-		width: calc(25% - 20px);
-		box-sizing: border-box;
-		transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); /* 物理回彈波動 */
-		display: flex;
-		flex-direction: column;
-	}
-	
-	/* 當滑鼠移到卡片上時，卡片會立體浮起、邊框變亮 */
-	.product-card:hover {
-		transform: translateY(-6px); /* 向上浮起 6 像素 */
-		box-shadow: 0 12px 20px rgba(255, 140, 0, 0.15); /* 橘色陰影 */
-		border-color: rgba(30, 144, 255, 0.3);
-	}
-	
-	/* 圖片圓角同步加大 */
-	.prod-img {
-		width: 100%;
-		height: 180px;
-		object-fit: cover;
-		border-radius: 8px;
-	}
-	
-	.banner {
-		position: relative;       /* 讓banner裡的文字與搜尋框可以絕對定位疊在上面 */
-		width: 100%;
-		height: 380px;
-		background-size: cover;   /* 圖片比例自動縮放裁切，不變形、不拉伸 */
-		background-position: center center; /* 讓圖片上下左右精準置中 */
-		border-radius: 12px;      /* 讓大圖邊角帶有一點現代感的圓弧 */
-		overflow: hidden;         /* 確保遮罩薄紗不會超出圓角邊界 */
-		margin-bottom: 35px;      /* 拉開與下方商品卡片的距離 */
-	}
-	
-	/* 鋪在圖片上面的半透明遮罩（降低背景亮度，確保白色大字100%清晰） */
-	.banner-overlay {
-		position: absolute;
-		top: 0; left: 0; width: 100%; height: 100%;
-		background-color: rgba(0, 0, 0, 0.3); /* 30% 透明度的黑，兼顧畫面質感與文字辨識度 */
-	}
-	
-	/* 讓文字與搜尋框在 Banner 正中央絕對置中 */
-	.banner-content {
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%); /* 上下左右置中 */
-		text-align: center;
-		width: 100%;
-		max-width: 550px;           /* 限制搜尋框的最大寬度 */
-		padding: 0 20px;
-		box-sizing: border-box;     /* 防止內距把容器撐大 */
-		z-index: 2;                 /* 確保站在遮罩薄紗的最前面 */
-	}
-	
-	/* 大標題字體樣式 */
-	.banner-content h2 {
-		color: white;
-		font-size: 32px;
-		font-weight: bold;
-		margin: 0 0 20px 0;
-		text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6); /* 幫白色文字貼上黑陰影 */
-		letter-spacing: 2px;      /* 讓中文單字之間有微小空隙 */
-	}
-	
-	/* 膠囊造型搜尋框的整體外殼 */
-	.search-input-wrapper {
-		display: flex;
-		background-color: white;
-		border-radius: 30px;       /* 半圓角膠囊外觀 */
-		padding: 6px 8px 6px 20px; /* 內部留白，讓左邊文字有空間 */
-		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2); /* 加上立體陰影，讓搜尋框「浮」在圖片之上 */
-		align-items: center;       /* 讓輸入框跟按鈕上下置中對齊 */
-	}
-	
-	/* 搜尋輸入框本體 */
-	.search-input-wrapper input {
-		flex: 1;                  /* 吃滿左邊剩下的所有寬度 */
-		border: none;
-		outline: none;            /* 拔掉滑鼠點擊時瀏覽器內建的黑邊框 */
-		font-size: 15px;
-		color: #333;
-		background: transparent;  /* 透明底，融合外殼的白色 */
-	}
-	
-	/* 搜尋按鈕的 */
-	.search-btn {
-		background-color: orange;
-		color: white;
-		border: none;
-		padding: 10px 26px;
-		border-radius: 25px;
-		font-size: 14px;
-		font-weight: bold;
-		cursor: pointer;
-		transition: background-color 0.2s;
-	}
-	
-	.search-btn:hover {
-		background-color: darkorange;   /* 滑鼠移上去時橘色變深 */
-	}
-	
-	.product-container {
-		display: flex;   /* 讓原本的div由上到下排列,變成左到右排列 */
-		flex-wrap: wrap; /* 允許自動換行 */
-        gap: 20px;
-	}
-	
-	.product-card {
-		background-color: white;
-		border: 1px solid lightgray;
-		border-radius: 8px; /* 讓卡片邊角帶一點圓弧 */
-		padding: 15px;
-		width: calc(25% - 20px); /* 四分之一寬度 扣掉 gap 的距離 */
-		box-sizing: border-box;  /* 確保 padding 不會把卡片撐大 */
-	}
-	
-	.product-card h3 {
-		font-size: 20px;
-		color: dimgray;
-		margin: 10px 0 5px 0;
-	}
-	
-	.product-card p {
-		font-size: 15px;
-		color: gray;
-		margin-bottom: 15px;
-		height: 40px;     /* 限制描述的高度 確保每張卡片文字一樣多 不會高低不一 */
-		overflow: hidden; /* 如果文字太多 自動隱藏 不撐爆卡片 */
-	}
-	
-	.prod-img {
-		width: 100%;
-		height: 180px;
-		object-fit: cover; /* 核心:圖片如果比例不對 自動裁切 絕不變形拉伸 */
-		border-radius: 4px;
-	}
-	
-	.price-box {
-		display: flex;
-		justify-content: space-between; /* 核心:把兩樣東西推到最左與最右 */
-		align-items: center;            /* 上下對齊置中 */
-		margin-top: auto;               /* 自動推到卡片的最底部 */
-	}
-	
-	.but-btn {
-		background-color: dodgerblue;
-		color: white;
-		border: none;
-		padding: 8px 16px;
-		border-radius: 20px;
-		cursor: pointer;       /* 當滑鼠移上去時 自動變成「一隻手」的形狀 */
-		font-size: 14px;
-		transition: background-color 0.2s;  /* 讓顏色變化時有 0.2 秒的溫柔過渡 */
-	}
-	
-	.but-btn:hover {
-		background-color: navy; /* 藍色瞬間變深一點點,讓使用者知道自己點到了 */
-	}
-	
-	/* --- 分頁外層容器 --- */
-	.pagination-container {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		gap: 0;
-		margin: 40px 0 20px 0;
-		font-family: sans-serif;
-		color: #333;
-	}
-	
-	/* 左側的「頁面 1 / 12」文字樣式 */
-	.page-info-text {
-		font-size: 14px;
-		color: #666;
-		margin-right: 15px; /* 與後續按鈕拉開呼吸距離 */
-	}
-	
-	/* 頁碼按鈕的平常狀態 */
-	.page-item {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		height: 34px;
-		padding: 0 14px;
-		border: 1px solid #ddd;
-		background-color: white;
-		color: dimgray;
-		text-decoration: none;
-		font-size: 14px;
-		cursor: pointer;
-		margin-left: -1px; /* 消除連續雙邊框，讓按鈕完美相連 */
-		transition: all 0.15s ease-in-out;
-	}
-	
-	/* 第一個按鈕與最後一個按鈕的圓角 */
-	.page-item:first-of-type {
-		border-top-left-radius: 4px;
-		border-bottom-left-radius: 4px;
-	}
-	.page-item:last-of-type {
-		border-top-right-radius: 4px;
-		border-bottom-right-radius: 4px;
-	}
-	
-	/* 當滑鼠懸停 (:hover) 時變色 */
-	.page-item:hover:not(.active):not(.disabled) {
-		background-color: #eee;
-		border-color: #ddd;
-		color: #0056b3;
-		z-index: 2; /* 確保懸停時的邊框能亮在最上面 */
-	}
-	
-	/* 當前所在頁數（Active）變色 */
-	.page-item.active {
-		background-color: orange;
-		border-color: orange;
-		color: white !important;
-		cursor: default;
-		z-index: 3;
-	}
-	
-	/* 停用狀態（Disabled，例如第一頁的上一頁） */
-	.page-item.disabled {
-		background-color: white;
-		color: #bbb;
-		border-color: #ddd;
-		pointer-events: none; /* 取消所有點擊與滑鼠事件 */
-		cursor: not-allowed;
-	}
-	
-</style>
+	<style>
+		body {
+			background-color: whitesmoke;
+			font-family: sans-serif;
+			/* 規定網頁的字體家族,sans-serif(黑體-無襯線字體) */
+			padding: 20px;
+		}
+
+		/* 加上滑鼠懸停浮起特效 */
+		.product-card {
+			background-color: white;
+			border: 1px solid #eaeaea;
+			border-radius: 12px;
+			padding: 15px;
+			width: calc(25% - 20px);
+			box-sizing: border-box;
+			transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+			/* 物理回彈波動 */
+			display: flex;
+			flex-direction: column;
+		}
+
+		/* 當滑鼠移到卡片上時，卡片會立體浮起、邊框變亮 */
+		.product-card:hover {
+			transform: translateY(-6px);
+			/* 向上浮起 6 像素 */
+			box-shadow: 0 12px 20px rgba(255, 140, 0, 0.15);
+			/* 橘色陰影 */
+			border-color: rgba(30, 144, 255, 0.3);
+		}
+
+		/* 圖片圓角同步加大 */
+		.prod-img {
+			width: 100%;
+			height: 180px;
+			object-fit: cover;
+			border-radius: 8px;
+		}
+
+		.banner {
+			position: relative;
+			/* 讓banner裡的文字與搜尋框可以絕對定位疊在上面 */
+			width: 100%;
+			height: 380px;
+			background-size: cover;
+			/* 圖片比例自動縮放裁切，不變形、不拉伸 */
+			background-position: center center;
+			/* 讓圖片上下左右精準置中 */
+			border-radius: 12px;
+			/* 讓大圖邊角帶有一點現代感的圓弧 */
+			overflow: hidden;
+			/* 確保遮罩薄紗不會超出圓角邊界 */
+			margin-bottom: 35px;
+			/* 拉開與下方商品卡片的距離 */
+		}
+
+		/* 鋪在圖片上面的半透明遮罩（降低背景亮度，確保白色大字100%清晰） */
+		.banner-overlay {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background-color: rgba(0, 0, 0, 0.3);
+			/* 30% 透明度的黑，兼顧畫面質感與文字辨識度 */
+		}
+
+		/* 讓文字與搜尋框在 Banner 正中央絕對置中 */
+		.banner-content {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			/* 上下左右置中 */
+			text-align: center;
+			width: 100%;
+			max-width: 550px;
+			/* 限制搜尋框的最大寬度 */
+			padding: 0 20px;
+			box-sizing: border-box;
+			/* 防止內距把容器撐大 */
+			z-index: 2;
+			/* 確保站在遮罩薄紗的最前面 */
+		}
+
+		/* 大標題字體樣式 */
+		.banner-content h2 {
+			color: white;
+			font-size: 32px;
+			font-weight: bold;
+			margin: 0 0 20px 0;
+			text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+			/* 幫白色文字貼上黑陰影 */
+			letter-spacing: 2px;
+			/* 讓中文單字之間有微小空隙 */
+		}
+
+		/* 膠囊造型搜尋框的整體外殼 */
+		.search-input-wrapper {
+			display: flex;
+			background-color: white;
+			border-radius: 30px;
+			/* 半圓角膠囊外觀 */
+			padding: 6px 8px 6px 20px;
+			/* 內部留白，讓左邊文字有空間 */
+			box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+			/* 加上立體陰影，讓搜尋框「浮」在圖片之上 */
+			align-items: center;
+			/* 讓輸入框跟按鈕上下置中對齊 */
+		}
+
+		/* 搜尋輸入框本體 */
+		.search-input-wrapper input {
+			flex: 1;
+			/* 吃滿左邊剩下的所有寬度 */
+			border: none;
+			outline: none;
+			/* 拔掉滑鼠點擊時瀏覽器內建的黑邊框 */
+			font-size: 15px;
+			color: #333;
+			background: transparent;
+			/* 透明底，融合外殼的白色 */
+		}
+
+		/* 搜尋按鈕的 */
+		.search-btn {
+			background-color: orange;
+			color: white;
+			border: none;
+			padding: 10px 26px;
+			border-radius: 25px;
+			font-size: 14px;
+			font-weight: bold;
+			cursor: pointer;
+			transition: background-color 0.2s;
+		}
+
+		.search-btn:hover {
+			background-color: darkorange;
+			/* 滑鼠移上去時橘色變深 */
+		}
+
+		.product-container {
+			display: flex;
+			/* 讓原本的div由上到下排列,變成左到右排列 */
+			flex-wrap: wrap;
+			/* 允許自動換行 */
+			gap: 20px;
+		}
+
+		.product-card {
+			background-color: white;
+			border: 1px solid lightgray;
+			border-radius: 8px;
+			/* 讓卡片邊角帶一點圓弧 */
+			padding: 15px;
+			width: calc(25% - 20px);
+			/* 四分之一寬度 扣掉 gap 的距離 */
+			box-sizing: border-box;
+			/* 確保 padding 不會把卡片撐大 */
+		}
+
+		.product-card h3 {
+			font-size: 20px;
+			color: dimgray;
+			margin: 10px 0 5px 0;
+		}
+
+		.product-card p {
+			font-size: 15px;
+			color: gray;
+			margin-bottom: 15px;
+			height: 40px;
+			/* 限制描述的高度 確保每張卡片文字一樣多 不會高低不一 */
+			overflow: hidden;
+			/* 如果文字太多 自動隱藏 不撐爆卡片 */
+		}
+
+		.prod-img {
+			width: 100%;
+			height: 180px;
+			object-fit: cover;
+			/* 核心:圖片如果比例不對 自動裁切 絕不變形拉伸 */
+			border-radius: 4px;
+		}
+
+		.price-box {
+			display: flex;
+			justify-content: space-between;
+			/* 核心:把兩樣東西推到最左與最右 */
+			align-items: center;
+			/* 上下對齊置中 */
+			margin-top: auto;
+			/* 自動推到卡片的最底部 */
+		}
+
+		.but-btn {
+			background-color: dodgerblue;
+			color: white;
+			border: none;
+			padding: 8px 16px;
+			border-radius: 20px;
+			cursor: pointer;
+			/* 當滑鼠移上去時 自動變成「一隻手」的形狀 */
+			font-size: 14px;
+			transition: background-color 0.2s;
+			/* 讓顏色變化時有 0.2 秒的溫柔過渡 */
+		}
+
+		.but-btn:hover {
+			background-color: navy;
+			/* 藍色瞬間變深一點點,讓使用者知道自己點到了 */
+		}
+
+		/* --- 分頁外層容器 --- */
+		.pagination-container {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			gap: 0;
+			margin: 40px 0 20px 0;
+			font-family: sans-serif;
+			color: #333;
+		}
+
+		/* 左側的「頁面 1 / 12」文字樣式 */
+		.page-info-text {
+			font-size: 14px;
+			color: #666;
+			margin-right: 15px;
+			/* 與後續按鈕拉開呼吸距離 */
+		}
+
+		/* 頁碼按鈕的平常狀態 */
+		.page-item {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			height: 34px;
+			padding: 0 14px;
+			border: 1px solid #ddd;
+			background-color: white;
+			color: dimgray;
+			text-decoration: none;
+			font-size: 14px;
+			cursor: pointer;
+			margin-left: -1px;
+			/* 消除連續雙邊框，讓按鈕完美相連 */
+			transition: all 0.15s ease-in-out;
+		}
+
+		/* 第一個按鈕與最後一個按鈕的圓角 */
+		.page-item:first-of-type {
+			border-top-left-radius: 4px;
+			border-bottom-left-radius: 4px;
+		}
+
+		.page-item:last-of-type {
+			border-top-right-radius: 4px;
+			border-bottom-right-radius: 4px;
+		}
+
+		/* 當滑鼠懸停 (:hover) 時變色 */
+		.page-item:hover:not(.active):not(.disabled) {
+			background-color: #eee;
+			border-color: #ddd;
+			color: #0056b3;
+			z-index: 2;
+			/* 確保懸停時的邊框能亮在最上面 */
+		}
+
+		/* 當前所在頁數（Active）變色 */
+		.page-item.active {
+			background-color: orange;
+			border-color: orange;
+			color: white !important;
+			cursor: default;
+			z-index: 3;
+		}
+
+		/* 停用狀態（Disabled，例如第一頁的上一頁） */
+		.page-item.disabled {
+			background-color: white;
+			color: #bbb;
+			border-color: #ddd;
+			pointer-events: none;
+			/* 取消所有點擊與滑鼠事件 */
+			cursor: not-allowed;
+		}
+	</style>
 
 </head>
+
 <body>
-	
-	<!-- 同首頁的導覽列 -->
-	<header class="fixed-top bg-white shadow-sm" style="z-index: 1030;">
-	    <nav class="navbar navbar-expand-lg navbar-light border-bottom py-2">
-	        <div class="container px-4 px-lg-5">
-	            <a class="navbar-brand fw-bold fs-3" href="/" style="color: #ff5722; ">旅圖 | MapIt</a>
-	            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-	                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-	                aria-expanded="false" aria-label="Toggle navigation">
-	                <span class="navbar-toggler-icon"></span>
-	            </button>
-	            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-	                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center" style="font-size: 0.9rem;">
-	
-	                    <li class="nav-item" th:if="${userName}">
-	                        <a class="nav-link text-secondary px-3" th:href="@{/customer/updateProfile}">
-	                            <i class="bi bi-person-circle"></i> <span th:text="${userName} + ' 你好'">會員中心</span>
-	                        </a>
-	                    </li>
-	
-	                    <li class="nav-item">
-	                        <a class="nav-link text-secondary px-3" th:href="@{/cart/show}">
-	                            <i class="bi bi-cart3"></i> 購物車
-	                        </a>
-	                    </li>
-	
-	                    <li class="nav-item ms-lg-2" th:if="${userName}">
-	                        <a class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-bold shadow-sm"
-	                            th:href="@{/customer/logout}">登出</a>
-	                    </li>
-	
-	                    <li class="nav-item ms-lg-2" th:unless="${userName}">
-	                        <a class="btn btn-warning btn-sm rounded-pill px-3 fw-bold shadow-sm"
-	                            th:href="@{/customer/login}">註冊 / 登入</a>
-	                    </li>
-	                </ul>
-	            </div>
-	        </div>
-	    </nav>
-	
-	    <nav class="sub-navbar bg-white py-1">
-	        <div class="container px-4 px-lg-5">
-	            <ul class="nav justify-content-center fw-bold">
-	                <li class="nav-item"><a class="nav-link text-dark px-4" href="/">首頁</a></li>
-	                <li class="nav-item"><a class="nav-link text-dark px-4" href="/front/attr/about">關於我們</a></li>
-	                
-	                <li class="nav-item">
-	                	<a class="nav-link active px-4" 
-	                		style="color: #ff5722 !important; 
-	                				font-weight: bold;
-	                				border-bottom: 3px solid #ff5722;
-	                				padding-bottom: 8px;
-	                				margin-bottom: -1px;"
-	                		th:href="@{/frontend/product/listAll}">
-	                		商城
-	                	</a>
-	                </li>
-	                
-	                <li class="nav-item"><a class="nav-link text-dark px-4" href="/front/attr/search">景點探索</a></li>
-	                
-	                <!-- 整合後的主題推薦 (帶有 Megamenu 功能) -->
-                    <li class="nav-item megamenu-nav-item">
-                       <a class="nav-link text-dark px-4" href="#!">主題推薦</a>
-                       <div class="megamenu-dropdown">
-                           <div class="container px-4 px-lg-5">
-                               <div class="megamenu-grid">
-                                   <!-- 1. 自然景觀 (categoryId=1) -->
-                                   <a href="/front/attr/search?categoryId=1" class="megamenu-card text-decoration-none">
-                                       <div class="megamenu-img-wrapper">
-                                           <img src="/images/nature.jpg" class="megamenu-img" alt="自然景觀">
-                                       </div>
-                                       <div class="megamenu-title">自然景觀</div>
-                                   </a>
-                                   <!-- 2. 歷史古蹟 (categoryId=2) -->
-                                   <a href="/front/attr/search?categoryId=2" class="megamenu-card text-decoration-none">
-                                       <div class="megamenu-img-wrapper">
-                                           <img src="/images/history.jpg" class="megamenu-img" alt="歷史古蹟">
-                                       </div>
-                                       <div class="megamenu-title">歷史古蹟</div>
-                                   </a>
-                                   <!-- 3. 主題樂園 (categoryId=3) -->
-                                   <a href="/front/attr/search?categoryId=3" class="megamenu-card text-decoration-none">
-                                       <div class="megamenu-img-wrapper">
-                                           <img src="/images/amusement.jpg" class="megamenu-img" alt="主題樂園">
-                                       </div>
-                                       <div class="megamenu-title">主題樂園</div>
-                                   </a>
-                                   <!-- 4. 藝文館所 (categoryId=4) -->
-                                   <a href="/front/attr/search?categoryId=4" class="megamenu-card text-decoration-none">
-                                       <div class="megamenu-img-wrapper">
-                                           <img src="/images/gallery.jpg" class="megamenu-img" alt="藝文館所">
-                                       </div>
-                                       <div class="megamenu-title">藝文館所</div>
-                                   </a>
-                                   <!-- 5. 商圈夜市 (categoryId=5) -->
-                                   <a href="/front/attr/search?categoryId=5" class="megamenu-card text-decoration-none">
-                                       <div class="megamenu-img-wrapper">
-                                           <img src="/images/market.jpg" class="megamenu-img" alt="商圈夜市">
-                                       </div>
-                                       <div class="megamenu-title">商圈夜市</div>
-                                   </a>
-                                   <!-- 6. 休閒農場 (categoryId=6) -->
-                                   <a href="/front/attr/search?categoryId=6" class="megamenu-card text-decoration-none">
-                                       <div class="megamenu-img-wrapper">
-                                           <img src="/images/farm.jpg" class="megamenu-img" alt="休閒農場">
-                                       </div>
-                                       <div class="megamenu-title">休閒農場</div>
-                                   </a>
-                                   <!-- 7. 宗教廟宇 (categoryId=7) -->
-                                   <a href="/front/attr/search?categoryId=7" class="megamenu-card text-decoration-none">
-                                       <div class="megamenu-img-wrapper">
-                                           <img src="/images/temple.jpg" class="megamenu-img" alt="宗教廟宇">
-                                       </div>
-                                       <div class="megamenu-title">宗教廟宇</div>
-                                   </a>
-                               </div>
-                           </div>
-                       </div>
-                    </li>
-	                
-	                <li class="nav-item"><a class="nav-link text-dark px-4" th:href="@{/trip/my-trips}">我的行程</a></li>
-	                <li class="nav-item"><a class="nav-link text-dark px-4" href="/front/favorite/list">我的收藏</a></li>
-	                <li class="nav-item"><a class="nav-link text-dark px-4" href="/contact">客服中心</a></li>
-	            </ul>
-	        </div>
-	    </nav>
-	</header>
-	<!-- ================= -->
-	
-	
-<!-- ======= 舊導覽列 ======= -->
-<!-- 	<nav class="front-navbar"> -->
-<!-- 		<a th:href="@{/}" class="front-logo">旅圖 | MapIt</a> -->
-		
-<!-- 		<div class="member-status-box"> -->
-<!-- 			<th:block th:if="${session.loginCust == null}"> -->
-<!-- 		        <span style="font-size: 13px; color: gray;">歡迎光臨，旅客!</span> -->
-		        
-<!-- 		        <a th:href="@{/customer/register}" class="member-link">📝 註冊新會員</a> -->
-<!-- 		        <a th:href="@{/customer/login}" class="member-link btn-login">🔐 會員登入</a> -->
-<!-- 		    </th:block> -->
-		    
-		    
-<!-- 		    <th:block th:unless="${session.loginCust == null}"> -->
-<!-- 		        <span style="font-size: 13px; color: dimgray; font-weight: bold;"> -->
-<!-- 		            👋 哈囉，<span th:text="${session.loginCust.custName}">會員姓名</span> -->
-<!-- 		        </span> -->
-		        
-<!-- 		        <a th:href="@{/customer/updateProfile}" class="member-link">👤 個人中心</a> -->
-<!-- 		        <a th:href="@{/customer/orderHistory}" class="member-link">📜 我的訂單</a> -->
-		        
-<!-- 		        <a th:href="@{/customer/logout}" class="member-link" style="color: darkred;">🚪 登出</a> -->
-<!-- 		    </th:block> -->
-			
-<!-- 			<span style="color: lightgray;">|</span> -->
-<!-- 			<a th:href="@{/cart/show}" class="member-link" style="font-size: 16px;">🛒 購物車</a> -->
-		
-<!-- 		</div> -->
-<!-- 	</nav> -->
-<!-- ========================================= -->
 
-
+	<!-- 引入共同導覽列 -->
+	<header th:replace="~{layouts/frontend :: navbar}"></header>
 
 	<div class="banner" th:style=" 'background-image: url(' + @{/images/banner.png} + '); margin-top: 130px;'">
 		<div class="banner-overlay"></div>
-		
+
 		<div class="banner-content">
 			<h2>探索下一站，開啟你的專屬旅程</h2>
-			
+
 			<form th:action="@{/frontend/product/listAll}" method="GET">
 				<div class="search-input-wrapper">
 					<input type="text" name="keyword" th:value="${keyword}" placeholder="搜尋旅遊商品...">
@@ -494,10 +319,10 @@
 			</form>
 		</div>
 	</div>
-	
+
 	<div class="product-container">
-	
-<!-- 原本商品列有商品資訊
+
+		<!-- 原本商品列有商品資訊
 		<div class="product-card" th:each="prodVO : ${frontProdList}">
 			
 			原本用專案路徑
@@ -519,81 +344,79 @@
 			</div>
 		</div>
 		
- -->	
- 		<!-- 商品列表改成只顯示圖片.大標.價錢 -->
+ -->
+		<!-- 商品列表改成只顯示圖片.大標.價錢 -->
 		<div class="product-card" th:each="prodVO : ${frontProdList}">
-			
-			<form th:action="@{/frontend/product/getOne_For_Display}" method="post" style="margin:0; padding:0; cursor: pointer;">
-				<input type="hidden" name="productId" th:value="${prodVO.productId}"/>
-				
-				<button type="submit" style="background: none; border: none; padding: 0; margin: 0; width: 100%; text-align: left; cursor: pointer;">
-					
+
+			<form th:action="@{/frontend/product/getOne_For_Display}" method="post"
+				style="margin:0; padding:0; cursor: pointer;">
+				<input type="hidden" name="productId" th:value="${prodVO.productId}" />
+
+				<button type="submit"
+					style="background: none; border: none; padding: 0; margin: 0; width: 100%; text-align: left; cursor: pointer;">
+
 					<img th:src="@{/upload/{imgName}(imgName=${prodVO.productImg})}" class="prod-img" alt="商品圖片">
-					
+
 					<h3 th:text="${prodVO.productName}" style="margin: 10px 0 5px 0;">商品名稱 placeholder</h3>
-					
+
 				</button>
 			</form>
-			
+
 			<div class="price-box" style="justify-content: flex-end; margin-top: 15px;">
-				<span class="prict-text" th:text="'NT$' + ${prodVO.productPrice}" style="font-size: 18px; color: coral; font-weight: bold;">$999999999</span>
+				<span class="prict-text" th:text="'NT$' + ${prodVO.productPrice}"
+					style="font-size: 18px; color: coral; font-weight: bold;">$999999999</span>
 			</div>
 
 		</div>
 	</div>
-	
+
 
 	<div class="pagination-container" th:if="${prodData != null and totalPages > 1}">
-		    
-		<span class="page-info" th:text="'頁面 ' + ${currentPage} + ' / ' + ${totalPages}" style="font-size: 14px; color: #666; margin-right: 15px;">頁面 1 / 1</span>
-		
+
+		<span class="page-info" th:text="'頁面 ' + ${currentPage} + ' / ' + ${totalPages}"
+			style="font-size: 14px; color: #666; margin-right: 15px;">頁面 1 / 1</span>
+
 		<div class="page-buttons" style="display: flex;">
-			
-			<a th:href="@{/frontend/product/listAll(page=1, keyword=${keyword})}" 
-			   th:classappend="${currentPage == 1} ? 'disabled' : ''" 
-			   class="page-item">« 首頁</a>
-			
-			<a th:href="@{/frontend/product/listAll(page=${currentPage - 1}, keyword=${keyword})}" 
-			   th:classappend="${currentPage == 1} ? 'disabled' : ''" 
-			   class="page-item">‹ 上一頁</a>
-			
-			<a th:each="i : ${#numbers.sequence(1, totalPages == 0 ? 1 : totalPages)}" 
-			   th:href="@{/frontend/product/listAll(page=${i}, keyword=${keyword})}"
-			   th:text="${i}"
-			   th:classappend="${i == currentPage} ? 'active' : ''"
-			   class="page-item"></a>
-			
-			<a th:href="@{/frontend/product/listAll(page=${currentPage + 1}, keyword=${keyword})}" 
-			   th:classappend="${currentPage == totalPages} ? 'disabled' : ''" 
-			   class="page-item">下一頁 ›</a>
-			
-			<a th:href="@{/frontend/product/listAll(page=${totalPages}, keyword=${keyword})}" 
-			   th:classappend="${currentPage == totalPages} ? 'disabled' : ''"
-			   class="page-item">末頁 »</a>
+
+			<a th:href="@{/frontend/product/listAll(page=1, keyword=${keyword})}"
+				th:classappend="${currentPage == 1} ? 'disabled' : ''" class="page-item">« 首頁</a>
+
+			<a th:href="@{/frontend/product/listAll(page=${currentPage - 1}, keyword=${keyword})}"
+				th:classappend="${currentPage == 1} ? 'disabled' : ''" class="page-item">‹ 上一頁</a>
+
+			<a th:each="i : ${#numbers.sequence(1, totalPages == 0 ? 1 : totalPages)}"
+				th:href="@{/frontend/product/listAll(page=${i}, keyword=${keyword})}" th:text="${i}"
+				th:classappend="${i == currentPage} ? 'active' : ''" class="page-item"></a>
+
+			<a th:href="@{/frontend/product/listAll(page=${currentPage + 1}, keyword=${keyword})}"
+				th:classappend="${currentPage == totalPages} ? 'disabled' : ''" class="page-item">下一頁 ›</a>
+
+			<a th:href="@{/frontend/product/listAll(page=${totalPages}, keyword=${keyword})}"
+				th:classappend="${currentPage == totalPages} ? 'disabled' : ''" class="page-item">末頁 »</a>
 		</div>
 	</div>
-	
-	
-	
+
+
+
 	<script>
 		// 1抓出網頁上所有帶有 class="prod-desc-text" 的欄位（因為有很多張商品卡片）
 		const descElements = document.querySelectorAll('.prod-desc-text');
 		const formattedElements = document.querySelectorAll('.prod-desc-formatted');
-		
+
 		// 用迴圈一筆一筆處理
 		descElements.forEach((el, index) => {
 			const rawText = el.innerText.trim(); // 拿到原始文字
 			const targetDiv = formattedElements[index]; // 找到對應的容器
-			
+
 			// 隱藏原本大括號的文字
 			el.style.display = 'none';
-			
+
 			// 判斷:如果是大括號開頭，表示是JSON格式
 			if (rawText.startsWith('{')) {
 				try {
 					// JS的JSON拆解工具，網頁瀏覽器現場把文字變成變數 data，將字串變物件
 					const data = JSON.parse(rawText);
-					
+
 					// 把裡面的中文拆出來，用 HTML 標籤排好
 					targetDiv.innerHTML = `
 						<div style="font-size: 13px; color: #555; text-align: left; margin-bottom: 10px; line-height: 1.5;">
@@ -614,6 +437,8 @@
 		});
 
 	</script>
-	
+
+	<th:block th:replace="~{layouts/frontend :: scripts}"></th:block>
 </body>
+
 </html>
