@@ -30,7 +30,10 @@
                         <!-- 1. 會員中心：已登入才顯示，並點擊展開選單 -->
                         <li class="nav-item dropdown" th:if="${userName != null or session.loginCust != null}">
                             <a class="nav-link text-secondary px-3 dropdown-toggle" href="#" id="memberDropdown" role="button">
-                                <i class="bi bi-person-circle"></i> <span th:text="${userName != null ? userName : (session.loginCust != null ? session.loginCust.custName : '')} + ' 你好'">會員中心</span>
+                                <i class="bi bi-person-circle"></i> <span class="position-relative">
+                                    <span th:text="${userName != null ? userName : (session.loginCust != null ? session.loginCust.custName : '')} + ' 你好'">會員中心</span>
+                                    <span id="navRedDot" class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle" style="display:none; width: 10px; height: 10px;"></span>
+                                </span>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2" aria-labelledby="memberDropdown" style="border-radius: 10px;">
                                 <li>
@@ -50,7 +53,7 @@
                                 </li>
                                 <li>
                                     <a class="dropdown-item py-2" th:href="@{/customer/message}">
-                                        <i class="bi bi-bell me-2 text-secondary"></i>我的通知
+                                        <i class="bi bi-bell me-2 text-secondary"></i>我的通知 <span id="dropdownRedDot" class="badge bg-danger rounded-circle p-1 ms-1" style="display:none; width: 10px; height: 10px;"></span>
                                     </a>
                                 </li>
                             </ul>
@@ -169,6 +172,19 @@
 
     <!-- JS Dropdown 控制 -->
     <th:block th:fragment="scripts">
+        <!-- 通知 Toast 彈窗 -->
+        <div class="toast-container position-fixed bottom-0 end-0 p-4" style="z-index: 1055; pointer-events: none;">
+            <div id="notificationToast" class="toast shadow-lg" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000" style="border-radius: 12px; border: 1px solid rgba(255,135,36,0.3); cursor: pointer; pointer-events: auto;" onclick="window.location.href='/customer/message'">
+                <div class="toast-header text-white" style="background-color: var(--primary-color, #ff7f50); border-top-left-radius: 12px; border-top-right-radius: 12px;">
+                    <i class="bi bi-bell-fill me-2"></i>
+                    <strong class="me-auto" style="letter-spacing: 1px;">新通知提醒</strong>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close" onclick="event.stopPropagation();"></button>
+                </div>
+                <div class="toast-body text-dark fw-bold py-3" style="background-color: #fffdfc; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; font-size: 1.05rem;">
+                    <span style="color: var(--primary-color, #ff7f50);">●</span> 您有新的未讀通知，請點擊查看！
+                </div>
+            </div>
+        </div>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
         <script>
             document.addEventListener("DOMContentLoaded", function() {
@@ -187,6 +203,44 @@
                             }
                         }
                     });
+                }
+                
+                // 3. 檢查未讀通知 (紅點與 Toast 邏輯)
+                // 只有在已經登入的情況下，我們才去問後端
+                const isMemberLoggedIn = document.getElementById('memberDropdown') !== null;
+                if (isMemberLoggedIn) {
+                    fetch('/customer/message/api/unreadStatus')
+                        .then(res => res.json())
+                        .then(currentCount => {
+                            // 轉成數字確保安全
+                            currentCount = parseInt(currentCount);
+                            
+                            if (currentCount > 0) {
+                                // (A) 只要數量 > 0，一律顯示紅點
+                                if(document.getElementById('navRedDot')) document.getElementById('navRedDot').style.display = 'inline-block';
+                                if(document.getElementById('dropdownRedDot')) document.getElementById('dropdownRedDot').style.display = 'inline-block';
+
+                                // (B) 判斷是否需要彈出 Toast (用 sessionStorage 防擾)
+                                // 拿出session裡的上次數量，如果沒有就當作 0
+                                let savedCount = sessionStorage.getItem('lastUnreadCount');
+                                savedCount = savedCount ? parseInt(savedCount) : 0;
+                                
+                                // 只有當「現在的未讀數量」大於「上次提醒的數量」時，才彈出！
+                                if (currentCount > savedCount) {
+                                    const toastEl = document.getElementById('notificationToast');
+                                    if (toastEl) {
+                                        const toast = new bootstrap.Toast(toastEl);
+                                        toast.show();
+                                    }
+                                    // 提醒完了，把最新的數量寫進session
+                                    sessionStorage.setItem('lastUnreadCount', currentCount);
+                                }
+                            } else {
+                                // 如果現在是 0 則未讀，那就把session清空歸零，準備下次有新通知時再彈出
+                                sessionStorage.setItem('lastUnreadCount', 0);
+                            }
+                        })
+                        .catch(err => console.log('Check notification failed', err));
                 }
 
                 // 2. 自動設定導覽列作用中項目的橘色底線

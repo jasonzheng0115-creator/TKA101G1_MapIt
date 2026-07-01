@@ -140,5 +140,40 @@
 
     <!-- Bootstrap core JS-->
     <th:block th:replace="~{layouts/frontend :: scripts}"></th:block>
+    
+    <!-- 通知互動邏輯 -->
+    <script>
+        function markAsRead(element, msgId) {
+            // 1. 防呆：如果已經讀過了 (沒有 unread 樣式)，就不用再發 API 浪費資源
+            if (!element.classList.contains('unread')) {
+                return; 
+            }
+
+            // 2. 在背景偷偷向後端發送「已讀」請求
+            fetch('/customer/message/read/' + msgId, {
+                method: 'POST'
+            })
+            .then(response => response.text())
+            .then(result => {
+                if (result === 'success') {
+                    // 3. 【外觀變化】拔掉 unread 類別，讓左邊的亮橘色粗線與微橘背景消失
+                    element.classList.remove('unread');
+                    
+                    // 4. 【外觀變化】找出卡片裡面的 "New!" 徽章，並把它隱藏起來
+                    const badge = element.querySelector('.msg-badge');
+                    if (badge) {
+                        badge.style.transition = "opacity 0.3s ease";
+                        badge.style.opacity = "0"; // 漸隱動畫
+                        setTimeout(() => badge.style.display = 'none', 300); // 動畫結束後移除空間
+                    }
+
+                    // 5. （選擇性）為了讓視覺更明顯，我們把已讀的文字稍微調暗一點
+                    element.querySelector('.msg-headline').style.color = '#6c757d';
+                    element.querySelector('.msg-text').style.color = '#adb5bd';
+                }
+            })
+            .catch(error => console.log('標記已讀失敗:', error));
+        }
+    </script>
 </body>
 </html>

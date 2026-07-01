@@ -103,5 +103,19 @@ public class MessageController {
             return org.springframework.http.ResponseEntity.internalServerError().build();
         }
     }
-}
 
+    /**
+     * 提供給全站導覽列檢查是否有未讀通知的API
+     */
+    @GetMapping("/api/unreadStatus")
+    @ResponseBody
+    public long checkUnreadStatus(HttpSession session) {
+        CustVO loginCust = (CustVO) session.getAttribute("loginCust");
+        if (loginCust == null) {
+            return 0; // 沒登入就當作 0 則未讀
+        }
+        
+        // 回傳真實的未讀數量
+        return messageService.getUnreadCount(loginCust.getCustId());
+    }
+}
