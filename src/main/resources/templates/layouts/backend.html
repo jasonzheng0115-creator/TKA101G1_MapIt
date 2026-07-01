@@ -16,6 +16,8 @@
             }
 
             body {
+                background-color: #f8fafc;
+                color: #334155;
                 padding-top: 120px;
                 /* 預留上方固定導覽列的高度，避免內容被遮擋 */
             }
@@ -114,7 +116,8 @@
                 <ul class="nav justify-content-center fw-bold">
                     <!-- 1. 景點管理 (含景點與評論下拉) -->
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle px-4" href="#" id="attr-parent" role="button" data-bs-toggle="dropdown">景點管理</a>
+                        <a class="nav-link dropdown-toggle px-4" href="#" id="attr-parent" role="button"
+                            data-bs-toggle="dropdown">景點管理</a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" th:href="@{/attr/listAll}">景點管理</a></li>
                             <li><a class="dropdown-item" th:href="@{/comment/listAll}">評論管理</a></li>
@@ -133,7 +136,8 @@
 
                     <!-- 4. 會員管理 (含會員與檢舉下拉) -->
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle px-4" href="#" id="customer-parent" role="button" data-bs-toggle="dropdown">會員管理</a>
+                        <a class="nav-link dropdown-toggle px-4" href="#" id="customer-parent" role="button"
+                            data-bs-toggle="dropdown">會員管理</a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" th:href="@{/customer/empCustomerList}">會員管理</a></li>
                             <li><a class="dropdown-item" th:href="@{/report/listAll}">檢舉管理</a></li>
@@ -142,7 +146,8 @@
 
                     <!-- 5. 廠商管理 (含廠商與應付帳款下拉) -->
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle px-4" href="#" id="supplier-parent" role="button" data-bs-toggle="dropdown">廠商管理</a>
+                        <a class="nav-link dropdown-toggle px-4" href="#" id="supplier-parent" role="button"
+                            data-bs-toggle="dropdown">廠商管理</a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" th:href="@{/supplier/select_page}">廠商管理</a></li>
                             <li><a class="dropdown-item" th:href="@{/ap/select_page}">應付帳款</a></li>
@@ -151,7 +156,8 @@
 
                     <!-- 6. 人資中心 (含員工與部門下拉) -->
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle px-4" href="#" id="hr-parent" role="button" data-bs-toggle="dropdown">人資中心</a>
+                        <a class="nav-link dropdown-toggle px-4" href="#" id="hr-parent" role="button"
+                            data-bs-toggle="dropdown">人資中心</a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" th:href="@{/emp/select_page}">員工管理</a></li>
                             <li><a class="dropdown-item" th:href="@{/dept/listAllDept}">部門管理</a></li>
