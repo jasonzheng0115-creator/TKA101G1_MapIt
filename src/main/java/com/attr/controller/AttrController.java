@@ -324,7 +324,7 @@ public class AttrController {
         commentService.addComment(commentVO);
         
         // 重新導向回詳情頁
-        return "redirect:/attr/detail/" + attrId;
+        return "redirect:/front/attr/detail/" + attrId;
     }
     
     // ========== Open Data 匯入 ==========
