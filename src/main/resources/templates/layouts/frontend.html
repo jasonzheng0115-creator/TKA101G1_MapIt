@@ -28,9 +28,9 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center" style="font-size: 0.9rem;">
                         <!-- 1. 會員中心：已登入才顯示，並點擊展開選單 -->
-                        <li class="nav-item dropdown" th:if="${userName}">
+                        <li class="nav-item dropdown" th:if="${userName != null or session.loginCust != null}">
                             <a class="nav-link text-secondary px-3 dropdown-toggle" href="#" id="memberDropdown" role="button">
-                                <i class="bi bi-person-circle"></i> <span th:text="${userName} + ' 你好'">會員中心</span>
+                                <i class="bi bi-person-circle"></i> <span th:text="${userName != null ? userName : (session.loginCust != null ? session.loginCust.custName : '')} + ' 你好'">會員中心</span>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2" aria-labelledby="memberDropdown" style="border-radius: 10px;">
                                 <li>
@@ -61,12 +61,12 @@
                             </a>
                         </li>
                         <!-- 3. 登出按鈕：已登入時顯示 -->
-                        <li class="nav-item ms-lg-2" th:if="${userName}">
+                        <li class="nav-item ms-lg-2" th:if="${userName != null or session.loginCust != null}">
                             <a class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-bold shadow-sm"
                                 th:href="@{/customer/logout}">登出</a>
                         </li>
                         <!-- 4. 註冊 / 登入按鈕：未登入時才顯示 -->
-                        <li class="nav-item ms-lg-2" th:unless="${userName}">
+                        <li class="nav-item ms-lg-2" th:unless="${userName != null or session.loginCust != null}">
                             <a class="btn btn-warning btn-sm rounded-pill px-3 fw-bold shadow-sm"
                                 th:href="@{/customer/login}">註冊 / 登入</a>
                         </li>
