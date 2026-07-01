@@ -10,4 +10,8 @@ public interface TicketItemRepository extends JpaRepository<TicketItemVO, Ticket
 	@Query("SELECT ticket FROM TicketItemVO ticket WHERE ticket.custId.custId = ?1")
 	List<TicketItemVO> findTicketsByCustId(Integer custId);
 
+	// 根據tktId找出明細
+	@Query("SELECT ticket FROM TicketItemVO ticket WHERE ticket.ticketId.tktId = ?1")
+	TicketItemVO findByTktId(Integer tktId);
+
 }

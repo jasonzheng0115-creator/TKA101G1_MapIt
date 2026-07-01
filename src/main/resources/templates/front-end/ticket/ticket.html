@@ -113,12 +113,20 @@
                         <h3 th:text="${ticketItem.ticketId.productVO.productName}">商品名稱</h3>
                         <p><i class="bi bi-upc-scan me-1"></i><strong>票券代碼：</strong> <span th:text="${ticketItem.ticketId.tktId}" class="text-secondary">TK-000</span></p>
                         <p><i class="bi bi-calendar-event me-1"></i><strong>有效期限：</strong> <span th:text="${#temporals.format(ticketItem.endDate, 'yyyy-MM-dd')}">2026-12-31</span> 前有效</p>
-                        <p><i class="bi bi-check-circle me-1"></i><strong>狀態：</strong> <span style="color: #ff5722; font-weight: bold;">可使用</span></p>
+                        <p><i class="bi bi-check-circle me-1"></i><strong>狀態：</strong> 
+                            <span th:if="${ticketItem.ticketStatus == '未使用'}" style="color: #ff5722; font-weight: bold;">可使用</span>
+                            <span th:if="${ticketItem.ticketStatus == '已使用'}" style="color: #6c757d; font-weight: bold;">已使用</span>
+                        </p>
                     </div>
                     
-                    <div class="ms-3 text-center">
-                        <img th:src="@{/ticket/qrcode/{tktId}(tktId=${ticketItem.ticketId.tktId})}" alt="QR Code" class="img-fluid rounded border p-1 qr-thumbnail" style="width: 100px; height: 100px;" onclick="openQrModal(this.src)" title="點擊放大顯示">
-                        <div class="mt-1 small text-muted" style="cursor: pointer;" onclick="openQrModal(this.previousElementSibling.src)">點擊放大</div>
+                    <div class="ms-3 text-center" th:if="${ticketItem.ticketStatus == '未使用'}">
+                        <img th:src="@{/ticket/qrcode/{tktId}(tktId=${ticketItem.ticketId.tktId})}" alt="QR Code" class="img-fluid rounded border p-1 qr-thumbnail" style="width: 100px; height: 100px;" th:onclick="'openQrModal(this.src, ' + ${ticketItem.ticketId.tktId} + ')'" title="點擊放大顯示">
+                        <div class="mt-1 small text-muted" style="cursor: pointer;" th:onclick="'openQrModal(this.previousElementSibling.src, ' + ${ticketItem.ticketId.tktId} + ')'">點擊放大</div>
+                    </div>
+                    <div class="ms-3 text-center" th:if="${ticketItem.ticketStatus == '已使用'}">
+                        <div style="width: 100px; height: 100px; display: flex; align-items: center; justify-content: center; background-color: #f8f9fa; border: 1px dashed #ced4da; color: #adb5bd; border-radius: 8px;">
+                            <i class="bi bi-slash-circle me-1"></i>已失效
+                        </div>
                     </div>
                 </div>
             </div>
@@ -128,13 +136,52 @@
     <!-- JS for dropdown -->
 
     <script>
+        let currentTktId = null; // 用來記住現在點開的是哪一張票
+
         // QR Code Modal 控制
-        function openQrModal(src) {
+        function openQrModal(src, tktId) {
+            currentTktId = tktId; // 把票券 ID 存起來
             document.getElementById('qrModalImg').src = src;
             document.getElementById('qrModal').style.display = 'flex';
         }
+
         function closeQrModal() {
             document.getElementById('qrModal').style.display = 'none';
+        }
+
+        // 點擊「店家專用核銷」按鈕時觸發的邏輯
+        function promptRedeemPIN() {
+            // 1. 跳出最簡單的內建輸入框，讓新手一眼看懂
+            let pinCode = prompt("⚠️ 這是店家專用的功能！\n請輸入 4 位數店家驗證碼來核銷這張票券：");
+            
+            // 2. 如果使用者按了取消，或是什麼都沒輸入，就直接結束
+            if (pinCode === null || pinCode.trim() === "") {
+                return;
+            }
+
+            // 3. 準備送去後端的資料 (使用 FormData 就像傳統表單送出一樣簡單)
+            let formData = new FormData();
+            formData.append("tktId", currentTktId);
+            formData.append("pinCode", pinCode);
+
+            // 4. 用 fetch 把資料 POST 到我們剛剛寫好的 /ticket/api/redeem
+            fetch('/ticket/api/redeem', {
+                method: 'POST',
+                body: formData
+            })
+            .then(function(response) {
+                if (response.ok) {
+                    // 如果後端回傳 HTTP 200 OK (代表密碼正確)
+                    alert("✅ 核銷成功！票券已作廢。");
+                    location.reload(); // 自動重新整理頁面，讓票券變成已使用狀態
+                } else {
+                    // 如果後端回傳 HTTP 400 (代表密碼錯誤或找不到)
+                    alert("❌ 驗證碼錯誤，核銷失敗！");
+                }
+            })
+            .catch(function(error) {
+                alert("發生未知的網路錯誤，請稍後再試！");
+            });
         }
     </script>
     
@@ -142,6 +189,12 @@
     <div id="qrModal" class="qr-modal-overlay" onclick="closeQrModal()">
         <div class="qr-modal-content" onclick="event.stopPropagation()">
             <img id="qrModalImg" src="" alt="Full Screen QR Code">
+            <!-- 新增店家專用核銷按鈕 -->
+            <div class="mt-4">
+                <button id="redeemBtn" class="btn btn-danger fw-bold rounded-pill px-4 py-2 shadow-sm" onclick="promptRedeemPIN()">
+                    <i class="bi bi-shop me-2"></i>店家專用：點擊核銷
+                </button>
+            </div>
         </div>
         <div class="mt-3 text-white fw-bold fs-5">點擊空白處即可關閉</div>
     </div>

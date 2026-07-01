@@ -118,4 +118,21 @@ public class TicketController {
 			return ResponseEntity.status(500).build();
 		}
 	}
+	
+	// 店家核銷 API 接收端
+	@RequestMapping(value = "/api/redeem", method = org.springframework.web.bind.annotation.RequestMethod.POST)
+	@ResponseBody
+	public ResponseEntity<String> redeemTicket(@RequestParam("tktId") Integer tktId, 
+	                                           @RequestParam("pinCode") String pinCode) {
+		// 呼叫我們剛剛在 TicketService 寫好的核銷方法
+		boolean isSuccess = ticketservice.exchangeTicket(tktId, pinCode);
+		
+		if (isSuccess) {
+			// 核銷成功，回傳 HTTP 200 OK
+			return ResponseEntity.ok("核銷成功");
+		} else {
+			// 密碼錯誤或找不到票，回傳 HTTP 400 Bad Request
+			return ResponseEntity.badRequest().body("驗證碼錯誤或找不到此票券！");
+		}
+	}
 }
