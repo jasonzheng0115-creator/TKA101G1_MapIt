@@ -1,22 +1,14 @@
 <!DOCTYPE html>
 <html lang="zh-TW" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <th:block th:replace="~{layouts/frontend :: head}"></th:block>
     <title>關於我們 - 旅圖 MapIt</title>
-    <!-- Google Fonts Outfit & Noto Sans TC -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Noto+Sans+TC:wght@300;400;700;900&display=swap" rel="stylesheet">
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
     <style>
         body {
             background: linear-gradient(135deg, #fff5f2 0%, #eefbf1 100%);
             color: #333;
             font-family: 'Outfit', 'Noto Sans TC', sans-serif;
             min-height: 100vh;
-            display: flex;
-            align-items: center;
             position: relative;
             overflow-x: hidden;
         }
@@ -193,12 +185,14 @@
     </style>
 </head>
 <body>
+    <!-- 引用共用的前台導覽列 -->
+    <header th:replace="~{layouts/frontend :: navbar}"></header>
 
     <!-- 裝飾性背景 -->
     <div class="bg-shape-1"></div>
     <div class="bg-shape-2"></div>
 
-    <div class="container py-5" style="max-width: 1000px;">
+    <div class="container py-5" style="max-width: 1000px; margin-top: 140px;">
         
         <!-- 毛玻璃主容器 -->
         <div class="about-card">
@@ -244,10 +238,11 @@
                     </div>
                 </div>
             </div> <!-- End Row -->
-            
         </div> <!-- End About Card -->
-
     </div>
+
+    <!-- 引用共用的前台 scripts -->
+    <th:block th:replace="~{layouts/frontend :: scripts}"></th:block>
 
 </body>
 </html>
