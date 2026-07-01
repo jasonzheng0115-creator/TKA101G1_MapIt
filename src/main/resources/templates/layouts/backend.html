@@ -48,6 +48,41 @@
                 margin-bottom: -1px;
                 /* 讓橘色底線貼齊次導覽列的灰底線，視覺效果更精緻 */
             }
+
+            /* 滑鼠移入下拉選單項目時展開 */
+            .sub-navbar-backend .dropdown:hover .dropdown-menu {
+                display: block;
+                margin-top: 0;
+            }
+
+            /* 下拉選單外觀樣式 */
+            .sub-navbar-backend .dropdown-menu {
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+                border: 1px solid #e2e8f0;
+                padding: 0.5rem 0;
+            }
+
+            .sub-navbar-backend .dropdown-item {
+                color: #475569;
+                font-size: 0.9rem;
+                padding: 0.5rem 1.25rem;
+                transition: all 0.2s;
+            }
+
+            .sub-navbar-backend .dropdown-item:hover {
+                background-color: #fff5f2 !important;
+                color: var(--primary-orange) !important;
+            }
+
+            /* 下拉選單中選中項目的橘色文字與底線 */
+            .sub-navbar-backend .dropdown-item.active {
+                background-color: transparent !important;
+                color: var(--primary-orange) !important;
+                text-decoration: underline !important;
+                text-underline-offset: 4px;
+                text-decoration-thickness: 2px;
+            }
         </style>
 
         <!-- 主選單 (Top Bar) -->
@@ -77,38 +112,53 @@
         <nav class="sub-navbar-backend py-1">
             <div class="container-fluid px-4 px-lg-5">
                 <ul class="nav justify-content-center fw-bold">
-                    <li class="nav-item">
-                        <a class="nav-link px-4" th:href="@{/attr/listAll}">景點管理</a>
+                    <!-- 1. 景點管理 (含景點與評論下拉) -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle px-4" href="#" id="attr-parent" role="button" data-bs-toggle="dropdown">景點管理</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" th:href="@{/attr/listAll}">景點管理</a></li>
+                            <li><a class="dropdown-item" th:href="@{/comment/listAll}">評論管理</a></li>
+                        </ul>
                     </li>
 
+                    <!-- 2. 商品管理 -->
                     <li class="nav-item">
                         <a class="nav-link px-4" th:href="@{/product/select_page}">商品管理</a>
                     </li>
 
+                    <!-- 3. 訂單管理 -->
                     <li class="nav-item">
                         <a class="nav-link px-4" th:href="@{/orders/backend-list}">訂單管理</a>
                     </li>
 
-                    <li class="nav-item">
-                        <a class="nav-link px-4" th:href="@{/customer/empCustomerList}">會員管理</a>
+                    <!-- 4. 會員管理 (含會員與檢舉下拉) -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle px-4" href="#" id="customer-parent" role="button" data-bs-toggle="dropdown">會員管理</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" th:href="@{/customer/empCustomerList}">會員管理</a></li>
+                            <li><a class="dropdown-item" th:href="@{/report/listAll}">檢舉管理</a></li>
+                        </ul>
                     </li>
 
-                    <li class="nav-item">
-                        <a class="nav-link px-4" th:href="@{/supplier/select_page}">廠商管理</a>
+                    <!-- 5. 廠商管理 (含廠商與應付帳款下拉) -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle px-4" href="#" id="supplier-parent" role="button" data-bs-toggle="dropdown">廠商管理</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" th:href="@{/supplier/select_page}">廠商管理</a></li>
+                            <li><a class="dropdown-item" th:href="@{/ap/select_page}">應付帳款</a></li>
+                        </ul>
                     </li>
 
-                    <li class="nav-item">
-                        <a class="nav-link px-4" th:href="@{/ap/select_page}">應付帳款</a>
+                    <!-- 6. 人資中心 (含員工與部門下拉) -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle px-4" href="#" id="hr-parent" role="button" data-bs-toggle="dropdown">人資中心</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" th:href="@{/emp/select_page}">員工管理</a></li>
+                            <li><a class="dropdown-item" th:href="@{/dept/listAllDept}">部門管理</a></li>
+                        </ul>
                     </li>
 
-                    <li class="nav-item">
-                        <a class="nav-link px-4" th:href="@{/emp/select_page}">員工管理</a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link px-4" th:href="@{/dept/listAllDept}">部門管理</a>
-                    </li>
-
+                    <!-- 7. 通知發送 -->
                     <li class="nav-item">
                         <a class="nav-link px-4" th:href="@{/emp/message/send}">通知發送</a>
                     </li>
@@ -121,43 +171,59 @@
             document.addEventListener("DOMContentLoaded", function () {
                 const path = window.location.pathname; // 取得當前網址路徑 (例如: /emp/select_page)
                 const navLinks = document.querySelectorAll(".sub-navbar-backend .nav-link");
+                const dropdownItems = document.querySelectorAll(".sub-navbar-backend .dropdown-item");
 
-                let activeKey = "";
+                let parentKey = "";
+                let childKeyword = "";
 
-                // 優先判定長路徑前綴，防呆區分 /emp/message 與 /emp
-                if (path.includes("/emp/message")) {
-                    activeKey = "message";
-                } else if (path.includes("/emp")) {
-                    activeKey = "emp";
-                } else if (path.includes("/dept")) {
-                    activeKey = "dept";
-                } else if (path.includes("/attr")) {
-                    activeKey = "attr";
-                } else if (path.includes("/product")) {
-                    activeKey = "product";
+                // 1. 判定當前 URL 屬於哪一個父項目與子功能關鍵字
+                if (path.includes("/attr") || path.includes("/comment")) {
+                    parentKey = "attr-parent";
+                    childKeyword = path.includes("/attr") ? "/attr/" : "/comment/";
+                } else if (path.includes("/product") || path.includes("/ticket")) {
+                    parentKey = "product";
                 } else if (path.includes("/orders")) {
-                    activeKey = "orders";
-                } else if (path.includes("/customer")) {
-                    activeKey = "customer";
-                } else if (path.includes("/supplier")) {
-                    activeKey = "supplier";
-                } else if (path.includes("/ap")) {
-                    activeKey = "ap";
+                    parentKey = "orders";
+                } else if (path.includes("/customer") || path.includes("/report")) {
+                    parentKey = "customer-parent";
+                    childKeyword = path.includes("/customer") ? "/customer/" : "/report/";
+                } else if (path.includes("/supplier") || path.includes("/ap")) {
+                    parentKey = "supplier-parent";
+                    childKeyword = path.includes("/supplier") ? "/supplier/" : "/ap/";
+                } else if (path.includes("/emp") || path.includes("/dept")) {
+                    // 防呆：如果是通知發送 (/emp/message/send)，屬於獨立功能而非人資中心
+                    if (path.includes("/emp/message")) {
+                        parentKey = "message";
+                    } else {
+                        parentKey = "hr-parent";
+                        childKeyword = path.includes("/emp") ? "/emp/" : "/dept/";
+                    }
                 }
 
-                // 遍歷所有選單按鈕，將匹配的按鈕加上 active 樣式
-                navLinks.forEach(link => {
-                    const href = link.getAttribute("href");
-                    if (!href) return;
-
-                    // 防呆：如果是員工管理，但該連結本身是通知發送，則不給予高亮
-                    if (activeKey === "emp" && href.includes("/message")) {
-                        return;
+                // 2. 匹配下拉選單子選項 (dropdown-item)，加上 active 樣式
+                dropdownItems.forEach(item => {
+                    const href = item.getAttribute("href");
+                    if (href && childKeyword && href.includes(childKeyword)) {
+                        item.classList.add("active");
                     }
+                });
 
-                    // 比對 href 中是否包含該關鍵字
-                    if (activeKey && href.includes("/" + activeKey)) {
+                // 3. 匹配主次選單導覽項目 (nav-link)
+                navLinks.forEach(link => {
+                    const id = link.getAttribute("id");
+                    const href = link.getAttribute("href");
+
+                    if (id && id === parentKey) {
+                        // 如果有設 ID，且 ID 符合當前的 parentKey，則亮起
                         link.classList.add("active");
+                    } else if (!id && href && parentKey) {
+                        // 如果沒有設 ID (非下拉項目，如商品、訂單、通知)，比對 href 是否包含 parentKey
+                        // 排除通知發送 href 比對到員工管理的情況
+                        if (parentKey === "emp" && href.includes("/message")) return;
+
+                        if (href.includes("/" + parentKey)) {
+                            link.classList.add("active");
+                        }
                     }
                 });
             });
