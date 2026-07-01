@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.dept.model.DeptService;
 import com.dept.model.DeptVO;
 
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import jakarta.validation.Valid;
 
 @Controller
@@ -41,13 +42,19 @@ public class DeptController {
 
     // 新增部門
     @PostMapping("/insert")
-    public String insert(@Valid DeptVO deptVO, BindingResult result, ModelMap model) {
+    public String insert(@Valid DeptVO deptVO, BindingResult result, RedirectAttributes redirectAttributes, ModelMap model) {
         if (result.hasErrors() || deptVO.getDeptName() == null || deptVO.getDeptName().trim().isEmpty()) {
-            model.addAttribute("errorMsg", "部門名稱請勿空白");
-            List<DeptVO> list = deptService.getAll();
-            model.addAttribute("deptList", list);
-            return "back-end/dept/listAllDept";
+            redirectAttributes.addFlashAttribute("errorMsg", "部門名稱請勿空白");
+            return "redirect:/dept/listAllDept";
         }
+
+        // 防呆：檢查部門名稱是否重複
+        if (deptService.isDeptNameDuplicate(deptVO.getDeptName().trim())) {
+            redirectAttributes.addFlashAttribute("errorMsg", "部門名稱「" + deptVO.getDeptName().trim() + "」已存在，請勿重複新增！");
+            redirectAttributes.addFlashAttribute("deptVO", deptVO); // 快閃保存輸入的值，使其保持展開狀態且不遺失
+            return "redirect:/dept/listAllDept";
+        }
+
         deptService.save(deptVO);
         return "redirect:/dept/listAllDept";
     }
@@ -65,13 +72,20 @@ public class DeptController {
 
     // 修改部門資料
     @PostMapping("/update")
-    public String update(@Valid DeptVO deptVO, BindingResult result, ModelMap model) {
+    public String update(@Valid DeptVO deptVO, BindingResult result, RedirectAttributes redirectAttributes, ModelMap model) {
         if (result.hasErrors() || deptVO.getDeptName() == null || deptVO.getDeptName().trim().isEmpty()) {
-            model.addAttribute("errorMsg", "部門名稱請勿空白");
-            List<DeptVO> list = deptService.getAll();
-            model.addAttribute("deptList", list);
-            return "back-end/dept/listAllDept";
+            redirectAttributes.addFlashAttribute("errorMsg", "部門名稱請勿空白");
+            return "redirect:/dept/listAllDept";
         }
+
+        // 防呆：檢查修改後的部門名稱是否與其他部門重複
+        DeptVO existingDept = deptService.findByDeptName(deptVO.getDeptName().trim());
+        if (existingDept != null && !existingDept.getDeptId().equals(deptVO.getDeptId())) {
+            redirectAttributes.addFlashAttribute("errorMsg", "部門名稱「" + deptVO.getDeptName().trim() + "」已存在，修改失敗！");
+            redirectAttributes.addFlashAttribute("deptVO", deptVO); // 快閃保存修改中的資料，保持編輯狀態
+            return "redirect:/dept/listAllDept";
+        }
+
         deptService.save(deptVO);
         return "redirect:/dept/listAllDept";
     }

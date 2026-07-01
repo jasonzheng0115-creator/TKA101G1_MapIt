@@ -95,7 +95,7 @@
         </div>
 
         <!-- 錯誤訊息提示區 -->
-        <div class="alert alert-danger shadow-sm mb-4" role="alert" th:if="${errorMsg}" th:text="${errorMsg}"></div>
+        <div id="errorAlert" class="alert alert-danger shadow-sm mb-4" role="alert" th:if="${errorMsg}" th:text="${errorMsg}"></div>
 
         <div class="row g-4">
             <!-- 👉 部門列表 (寬度 12/12 滿版) -->
@@ -132,7 +132,7 @@
                                 <div class="col-md-6 col-lg-4">
                                     <label for="deptName" class="form-label fw-bold small">部門名稱 :</label>
                                     <input type="text" class="form-control py-2" id="deptName" th:field="*{deptName}"
-                                        placeholder="請輸入部門名稱 (如: 財務部)" required maxlength="20">
+                                        placeholder="請輸入部門名稱 (如: 財務部)" required maxlength="20" autocomplete="off">
                                     <span class="text-danger small fw-bold mt-1 d-block"
                                         th:if="${#fields.hasErrors('deptName')}" th:errors="*{deptName}"></span>
                                 </div>
@@ -210,6 +210,18 @@
             if (btnCancelAdd && deptFormContainer) {
                 btnCancelAdd.addEventListener("click", function () {
                     deptFormContainer.classList.add("d-none");
+                    
+                    // 點擊取消時，自動移除錯誤訊息提示區
+                    const errorAlert = document.getElementById("errorAlert");
+                    if (errorAlert) {
+                        errorAlert.remove();
+                    }
+
+                    // 點擊取消時，清空輸入框的文字
+                    const deptNameInput = document.getElementById("deptName");
+                    if (deptNameInput) {
+                        deptNameInput.value = "";
+                    }
                 });
             }
         });

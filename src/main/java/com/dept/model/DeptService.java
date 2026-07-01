@@ -28,4 +28,14 @@ public class DeptService {
         Optional<DeptVO> optional = deptRepository.findById(deptId);
         return optional.orElse(null); // 如果有部門就拿出來，沒有就回傳 null
     }
+
+    // 檢查部門名稱是否重複
+    public boolean isDeptNameDuplicate(String deptName) {
+        return deptRepository.existsByDeptName(deptName);
+    }
+
+    // 依部門名稱查詢
+    public DeptVO findByDeptName(String deptName) {
+        return deptRepository.findByDeptName(deptName);
+    }
 }
