@@ -273,6 +273,7 @@ public class CustController {
 		// 取得先前會員的就個人資料
 		CustVO oldData = (CustVO) session.getAttribute("loginCust");
 		model.addAttribute("loginCust", oldData);
+		model.addAttribute("userName", oldData.getCustName());
 		return "front-end/customer/updateProfile";
 	}
 
@@ -334,6 +335,7 @@ public class CustController {
 		custService.updateProfile(custVO);
 		// 更新新的資料給
 		session.setAttribute("loginCust", custVO);
+		model.addAttribute("userName", custVO.getCustName());
 		return "redirect:/";
 	}
 
