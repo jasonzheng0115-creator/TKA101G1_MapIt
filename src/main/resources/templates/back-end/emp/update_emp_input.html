@@ -9,45 +9,10 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
     <link href="/css/styles.css" rel="stylesheet" />
     <style>
-        :root {
-            --primary-orange: #ff5722;
-            --primary-orange-hover: #e64a19;
-            --dark-blue: #0f172a;
-        }
-
         body {
             background-color: #f8fafc;
             color: #334155;
-            padding-top: 120px;
-            /* 預留給固定頂部雙導覽列的空間 */
-        }
-
-        /* 後台專用 Top Bar */
-        .navbar-backend {
-            background-color: white;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        /* 後台功能次選單 */
-        .sub-navbar-backend {
-            background-color: white;
-            border-bottom: 2px solid #e2e8f0;
-        }
-
-        .sub-navbar-backend .nav-link {
-            color: #475569;
-            transition: color 0.2s;
-            font-size: 0.95rem;
-        }
-
-        .sub-navbar-backend .nav-link:hover {
-            color: var(--primary-orange);
-        }
-
-        .sub-navbar-backend .nav-link.active {
-            color: var(--primary-orange);
-            border-bottom: 3px solid var(--primary-orange);
-            margin-bottom: -2px;
+            /* padding-top: 120px 已經包在 backend-header.html 中，這裡就不需要重複設定了 */
         }
 
         /* 卡片樣式 */
@@ -119,70 +84,8 @@
 
 <body>
 
-    <!-- 組合式固定導覽列 (與前台首頁結構一致) -->
-    <header class="fixed-top shadow-sm" style="z-index: 1030;">
-        <!-- 主選單 (Top Bar) -->
-        <nav class="navbar navbar-expand-lg navbar-light navbar-backend py-2">
-            <div class="container-fluid px-4 px-lg-5">
-                <a class="navbar-brand fw-bold fs-3" th:href="@{/manage}" style="color: var(--primary-orange);">MapIt
-                    <span class="fs-5 text-secondary">後台管理系統</span></a>
-
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center" style="font-size: 0.9rem;">
-                        <li class="nav-item" th:if="${session.loginEmp}">
-                            <span class="nav-link text-secondary px-3">
-                                <i class="bi bi-person-badge-fill text-dark"></i>
-                                <span th:text="${session.loginEmp.empName} + ' 您好'">管理員 您好</span>
-                            </span>
-                        </li>
-                        <li class="nav-item ms-lg-2">
-                            <a class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-bold shadow-sm"
-                                th:href="@{/emp/logout}">登出</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-
-        <!-- 次選單 (後台各模組功能選單) -->
-        <nav class="sub-navbar-backend py-1">
-            <div class="container-fluid px-4 px-lg-5">
-                <ul class="nav justify-content-center fw-bold">
-                    <li class="nav-item">
-                        <a class="nav-link px-4" th:href="@{/product/select_page}">商品管理</a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link px-4" th:href="@{/orders/backend-list}">訂單管理</a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link px-4" th:href="@{/customer/empCustomerList}">會員管理</a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link px-4" th:href="@{/supplier/select_page}">廠商管理</a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link px-4" th:href="@{/ap/select_page}">應付帳款</a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link active px-4" th:href="@{/emp/select_page}">員工管理</a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link px-4" th:href="@{/dept/listAllDept}">部門管理</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link px-4" th:href="@{/emp/message/send}">通知發送</a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
-        </nav>
-    </header>
+    <!-- 引入共用後台導覽列片段 -->
+    <header th:replace="~{layouts/backend :: backendHeader}"></header>
 
     <!-- 主要內容區 -->
     <div class="container px-4 px-lg-5 mt-5">
