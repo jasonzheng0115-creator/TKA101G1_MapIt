@@ -24,4 +24,12 @@ public interface MessageRepository extends JpaRepository<MessageVO, Integer> {
      */
     @Query("SELECT COUNT(messageVO) FROM MessageVO messageVO WHERE messageVO.custVO.custId = ?1 AND messageVO.msgStatus = 0")
     long countUnreadMessagesByCustId(Integer custId);
+    
+    /**
+     * 查詢某位會員並發送訊息數量(給eclipse的註解)
+     * @param custId 會員編號
+     * @return 
+     */
+    @Query("SELECT messageVO FROM MessageVO messageVO WHERE messageVO.custVO.custId = ?1 AND messageVO.msgStatus = 0")
+    long messagesByCustId(Integer custId);
 }

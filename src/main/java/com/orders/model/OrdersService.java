@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.message.model.MessageService;
 import com.prod.model.ProdRepository;
 import com.prod.model.ProdVO;
 import com.ticket.model.TicketService;
@@ -20,9 +21,11 @@ public class OrdersService {
 	@Autowired
 	private ProdRepository prodRepository;
 	
-	// ========= 導入票券ticketService =========
+	// ========= 導入票券、通知Service =========
 	@Autowired
 	private TicketService ticketService;
+	@Autowired
+	private MessageService messageService;
 	// ========================================
 	
 	// 結帳是一個「一連串」的動作：存訂單 ➔ 存明細 ➔ 扣商品 A 庫存 ➔ 扣商品 B 庫存。
@@ -100,8 +103,19 @@ public class OrdersService {
 		// ===== 先存進存檔ordersRepository，再把訂單的資料傳給ticketService =====
 		OrdersVO finalOrder = ordersRepository.save(savedOrder);
 		ticketService.ticketForOrder(finalOrder);
+		// ======通知訂單完成跟票券發送通知給會員==================================		
+		//抓出訂單是哪格會員買的
+		Integer custId = finalOrder.getCustVO().getCustId();
+		messageService.sendNotificationToUser(
+		custId,"🛒 結帳成功通知", "您的訂單 (編號: " + finalOrder.getOrderId() + ") 已成功結帳！感謝您的購買。", 
+	    null // 如果沒有圖片就傳 null
+		);
+		messageService.sendNotificationToUser(
+		custId,"🎟️ 票券發放通知", "您購買的票券已經全數發放至「我的票券匣」，趕快去看看吧！", 
+		null // 如果沒有圖片就傳 null
+		);
+		//===================================================================
 		return finalOrder;
-		// ==================================================================
 	}
 	
 	// 取消訂單 逆向邏輯（更新狀態 ＋ 退還庫存 ＋ 扣減銷量）
