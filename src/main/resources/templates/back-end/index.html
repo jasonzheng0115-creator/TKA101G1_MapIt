@@ -48,7 +48,16 @@
         </div>
 
         <div class="row g-4 justify-content-center">
-            <!-- 1. 商品管理 -->
+            <!-- 1. 景點管理 -->
+            <div class="col-md-4">
+                <a th:href="@{/attr/listAll}" class="portal-card p-4 text-center">
+                    <div class="portal-icon"><i class="bi bi-compass"></i></div>
+                    <h4 class="fw-bold">景點管理</h4>
+                    <p class="text-muted fs-7">管理旅遊景點資訊、照片與評論狀態</p>
+                </a>
+            </div>
+
+            <!-- 2. 商品管理 -->
             <div class="col-md-4">
                 <a th:href="@{/product/select_page}" class="portal-card p-4 text-center">
                     <div class="portal-icon"><i class="bi bi-box-seam"></i></div>
@@ -57,7 +66,7 @@
                 </a>
             </div>
 
-            <!-- 2. 訂單管理 -->
+            <!-- 3. 訂單管理 -->
             <div class="col-md-4">
                 <a th:href="@{/orders/backend-list}" class="portal-card p-4 text-center">
                     <div class="portal-icon"><i class="bi bi-receipt"></i></div>
@@ -66,7 +75,7 @@
                 </a>
             </div>
 
-            <!-- 3. 會員管理 -->
+            <!-- 4. 會員管理 -->
             <div class="col-md-4">
                 <a th:href="@{/customer/empCustomerList}" class="portal-card p-4 text-center">
                     <div class="portal-icon"><i class="bi bi-people"></i></div>
@@ -75,7 +84,7 @@
                 </a>
             </div>
 
-            <!-- 4. 員工管理 -->
+            <!-- 5. 員工管理 -->
             <div class="col-md-4">
                 <a th:href="@{/emp/select_page}" class="portal-card p-4 text-center">
                     <div class="portal-icon"><i class="bi bi-person-workspace"></i></div>
@@ -84,7 +93,7 @@
                 </a>
             </div>
 
-            <!-- 5. 廠商管理 -->
+            <!-- 6. 廠商管理 -->
             <div class="col-md-4">
                 <a th:href="@{/supplier/select_page}" class="portal-card p-4 text-center">
                     <div class="portal-icon"><i class="bi bi-building"></i></div>
@@ -93,7 +102,7 @@
                 </a>
             </div>
 
-            <!-- 6. 部門管理 -->
+            <!-- 7. 部門管理 -->
             <div class="col-md-4">
                 <a th:href="@{/dept/listAllDept}" class="portal-card p-4 text-center">
                     <div class="portal-icon"><i class="bi bi-diagram-3"></i></div>
@@ -102,7 +111,7 @@
                 </a>
             </div>
 
-            <!-- 7. 通知發送 -->
+            <!-- 8. 通知發送 -->
             <div class="col-md-4">
                 <a th:href="@{/emp/message/send}" class="portal-card p-4 text-center">
                     <div class="portal-icon"><i class="bi bi-megaphone"></i></div>
