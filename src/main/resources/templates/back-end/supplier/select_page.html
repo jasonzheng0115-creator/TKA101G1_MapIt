@@ -23,29 +23,7 @@
 		font-family: "Segoe UI", Arial, sans-serif;
 		background-color: whitesmoke;
 		color: dimgray;
-		padding-top: 140px;
 	}
-	
-	/* 導覽列 */
-    .navbar-backend {
-        background-color: white;
-        border-bottom: 1px solid lightgray;
-    }
-
-    .sub-navbar-backend {
-        background-color: white;
-        border-bottom: 2px solid lightgray;
-    }
-
-    .sub-navbar-backend .nav-link {
-        color: slategray;
-        transition: color 0.2s;
-        font-size: 0.95rem;
-    }
-
-    .sub-navbar-backend .nav-link:hover {
-        color: var(--primary-orange);
-    }
     
 	/* 常用功能 */
 	.main-card ul {
@@ -118,59 +96,8 @@
 </head>
 <body>
 	
-	<!-- 組合式固定導覽列 -->
-    <header class="fixed-top shadow-sm" style="z-index: 1030;">
-        <!-- 主選單 (Top Bar) -->
-        <nav class="navbar navbar-expand-lg navbar-light navbar-backend py-2">
-            <div class="container-fluid px-4 px-lg-5">
-                <a class="navbar-brand fw-bold fs-3" href="/manage" style="color: var(--primary-orange);">MapIt <span
-                        class="fs-5 text-secondary">後台管理系統</span></a>
-
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center" style="font-size: 0.9rem;">
-                        <li class="nav-item" th:if="${session.loginEmp}">
-                            <span class="nav-link text-secondary px-3">
-                                <i class="bi bi-person-badge-fill text-dark"></i>
-                                <span th:text="${session.loginEmp.empName} + ' 您好'">管理員 您好</span>
-                            </span>
-                        </li>
-                        <li class="nav-item ms-lg-2">
-                            <a class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-bold shadow-sm"
-                                th:href="@{/emp/logout}">登出</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-
-        <!-- 次選單 (功能導覽) -->
-        <nav class="sub-navbar-backend py-1">
-            <div class="container-fluid px-4 px-lg-5">
-                <ul class="nav justify-content-center fw-bold">
-                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/product/select_page}">商品管理</a></li>
-                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/orders/backend-list}">訂單管理</a></li>
-                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/customer/empCustomerList}">會員管理</a></li>
-                    
-                    <li class="nav-item">
-	                	<a class="nav-link active px-4" 
-	                		style="color: #ff5722 !important; 
-	                				font-weight: bold;
-	                				border-bottom: 3px solid #ff5722;
-	                				padding-bottom: 8px;
-	                				margin-bottom: -1px;"
-	                		th:href="@{/supplier/select_page}">
-	                		廠商管理
-	                	</a>
-	                </li>   
-                    
-                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/ap/select_page}">應付帳款</a></li>
-                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/emp/select_page}">員工管理</a></li>
-                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/dept/listAllDept}">部門管理</a></li>
-                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/emp/message/send}">通知發送</a></li>
-                </ul>
-            </div>
-        </nav>
-    </header>
+		<!-- 引入共用後台導覽列片段 -->
+	<header th:replace="~{layouts/backend :: backendHeader}"></header>
 
 	
 	<div class="container">
