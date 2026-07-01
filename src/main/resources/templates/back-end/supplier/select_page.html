@@ -5,24 +5,21 @@
 <title>廠商管理中心</title>
 <style>
 
-	:root {
-		--primary-orange: #ff5722;
-		--dark-blue: #0f172a;
+	.form-card-wrapper {
+		max-width: 600px;
+		margin: 35px auto;
 	}
-	
+
 	* {
 		box-sizing: border-box;
 		margin: 0;
 		padding: 0;
 	}
-	
-	body {
-		font-family: "Segoe UI", Arial, sans-serif;
-		background-color: whitesmoke;
-		color: dimgray;
-	}
     
-	/* 常用功能 */
+	.main-card {
+		margin-bottom: 25px;
+	}
+
 	.main-card ul {
 		list-style: none; /* 移除原點 */
 	}
@@ -71,14 +68,14 @@
 	
 	/* 送出查詢按鈕 */
 	.main-card button[type="submit"] {
-		width: 100%;
-	    padding: 10px;
-	    background-color: #ff5722;
-	    border: 1px solid #ff5722;
-	    color: white;
-	    border-radius: 4px;
-	    cursor: pointer;    /* 滑鼠移過去變成手指 */
-	    font-size: 15px;
+	    padding: 8px 22px;
+		background-color: #ff5722;
+		border: 1px solid #ff5722;
+		color: white;
+		border-radius: 4px;
+		cursor: pointer; /* 滑鼠移過去變成手指 */
+		font-size: 14px;
+		float: right; /* 置右對齊 */
 	}
 	
 	/* hover 滑鼠懸停狀態 */
@@ -88,6 +85,35 @@
 	}
 
 	.error-msg { color: red; font-size: 14px; }
+
+	/* 限制寬度並與上方導覽列保持舒適間距 */
+	.form-card-wrapper {
+		max-width: 600px;
+		margin: 35px auto; /* 往下推 35px 避開導覽列，並水平置中 */
+	}
+	
+	/* 讓兩個卡片之間有適當的呼吸間距 */
+	.main-card {
+		margin-bottom: 25px;
+	}
+	
+	.search-input-group {
+		display: flex;
+		gap: 10px; 
+		align-items: center;
+	}
+	
+	.search-input-group input[type="text"] {
+		margin-bottom: 0; 
+		flex: 1;   
+	}
+	
+	.search-input-group button[type="submit"] {
+		width: auto;          /* 覆蓋原本的 100% 寬度，改為內容自適應 */
+		white-space: nowrap;  /* 防止按鈕文字折行 */
+		padding: 10px 24px;
+	}
+	
 
 </style>
 </head>
@@ -99,25 +125,41 @@
 	
 	<div class="container">
 	
-		<div class="main-card">
-			<h3>🏭 廠商管理中心</h3>
-			<ul>
-				<li><a th:href="@{/supplier/addSupplier}">➕ 新增廠商資料</a></li>
-				<br>
-				<li><a th:href="@{/supplier/listAllSupplier}">📋 列出所有廠商</a></li>
-			</ul>
-		</div>
+		<div class="form-card-wrapper">
+	
+			<div class="main-card">
+				<h3>🏭 廠商管理中心</h3>
+				<ul>
+					<li><a th:href="@{/supplier/addSupplier}">➕ 新增廠商資料</a></li>
+					<br>
+					<li><a th:href="@{/supplier/listAllSupplier}">📋 列出所有廠商</a></li>
+				</ul>
+			</div>
 		
 		<div class="main-card">
 			<h3>🔍 依廠商編號查詢</h3>
 			<form th:action="@{/supplier/getOne_For_Display}" method="post">
 				<label>請輸入廠商編號</label>
-				<input type="text" name="supplierId" placeholder="請輸入編號..." th:value="${param.supplierId}" />
-				<button type="submit">送出查詢</button>
+				<div class="search-input-group">
+					<input type="text" name="supplierId" placeholder="請輸入編號..." th:value="${param.supplierId}" />
+					<button type="submit">送出查詢</button>
+				</div>
 				<div class="error-msg" th:if="${errorMsg}" th:text="${errorMsg}"></div>
 			</form>
 		</div>
 		
+			<div class="main-card">
+				<h3>🔍 依廠商名稱查詢</h3>
+				<form th:action="@{/supplier/getByName_For_Display}" method="post">
+					<label>請輸入廠商名稱關鍵字</label>
+					<div class="search-input-group">
+						<input type="text" name="supplierName" placeholder="例如：星辰..." />
+						<button type="submit">送出查詢</button>
+					</div>
+					<div class="error-msg" th:if="${errorMsgName}" th:text="${errorMsgName}"></div>
+				</form>
+			</div>
+		</div>
 	</div>
 	
 </body>

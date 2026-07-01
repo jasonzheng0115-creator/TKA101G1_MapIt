@@ -40,8 +40,8 @@ public class CartController {
 	        // 有登入，動態返回該會員專屬的 Key
 	        return "cart:member:" + loginCust.getCustId();
 	    } else {
-	        // 沒登入，返回旅客專屬的 Key
-	        return "cart:guest";
+	        // 沒登入，session.getId()讓每個瀏覽器(不同遊客)都會拿到不同key，才不會把A遊客的資料帶去B遊客的畫面
+	        return "cart:guest:" + session.getId();
 	    }
 	}
 	
@@ -52,14 +52,7 @@ public class CartController {
 			@RequestParam("quantity") Integer quantity,
 			HttpSession session) {
 		
-		String key;  // 指定一個會員的購物車
-		CustVO loginCust = (CustVO) session.getAttribute("loginCust");
-	    if (loginCust != null) {
-	        key = "cart:member:" + loginCust.getCustId();
-	    } else {
-	        key = "cart:guest";
-	    }
-		
+		String key = getCartKey(session);  // 取得key,判斷是否登入交給getCartKey
 		
 		String field = String.valueOf(productId); // 此會員購物車裡的某一個商品
 		
@@ -76,16 +69,8 @@ public class CartController {
 	// 顯示購物車 ( Redis + Function 資料轉換 Stream)
 	@GetMapping("/show")
 	public String showCart(ModelMap model, HttpSession session) {
-		String key;
-		CustVO loginCust = (CustVO) session.getAttribute("loginCust");
 		
-		if (loginCust != null) {
-	        // 如果有登入，用該會員專屬的號碼箱
-	        key = "cart:member:" + loginCust.getCustId();
-	    } else {
-	        // 如果是沒登入的旅客，用遊客專用的號碼箱
-	        key = "cart:guest";
-	    }
+		String key = getCartKey(session);  // 取得key,判斷是否登入交給getCartKey()
 		
 		// 官方標準寫法：直接把這個 key 的所有 {商品ID: 數量} 倒出來
 		Map<Object, Object> redisCart = redisTemplate.opsForHash().entries(key);
@@ -110,6 +95,8 @@ public class CartController {
 		int totalAmount = cartList.stream()
 				.mapToInt(CartVO::getSubtotal)
 				.sum();
+		
+		CustVO loginCust = (CustVO) session.getAttribute("loginCust");
 		
 		if (loginCust != null) {
 			// 有登入，傳入會員名字
@@ -137,13 +124,7 @@ public class CartController {
 			@RequestParam("quantity") Integer quantity,
 			HttpSession session) {
 		
-		String key;
-		CustVO loginCust = (CustVO) session.getAttribute("loginCust");
-	    if (loginCust != null) {
-	        key = "cart:member:" + loginCust.getCustId();
-	    } else {
-	        key = "cart:guest";
-	    }
+		String key = getCartKey(session);  // 取得key,判斷是否登入交給getCartKey()
 		
 		String field = String.valueOf(productId);
 		
@@ -163,13 +144,8 @@ public class CartController {
 	public String deleteFormCart(
 			@RequestParam("productId") Integer productId,
 			HttpSession session) {
-		String key;
-		CustVO loginCust = (CustVO) session.getAttribute("loginCust");
-	    if (loginCust != null) {
-	        key = "cart:member:" + loginCust.getCustId();
-	    } else {
-	        key = "cart:guest";
-	    }
+		
+		String key = getCartKey(session);  // 取得key,判斷是否登入交給getCartKey()
 	    
 		redisTemplate.opsForHash().delete(key, String.valueOf(productId));
 		return "redirect:/cart/show";

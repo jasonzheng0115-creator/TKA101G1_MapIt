@@ -93,7 +93,7 @@ public class CustController {
 		
 		// ========== 購物車 ========== // 
 		// 未登入的狀態下加入購物車,登入後清單會帶入會員購物車
-		String guestKey = "cart:guest";
+		String guestKey = "cart:guest:" + session.getId();
 		String memberKey = "cart:member:" + custVO.getCustId();
 		
 		// 取出遊客購物車內的所有欄位與數量
