@@ -1,273 +1,187 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
-<meta charset="UTF-8">
-<title>商品管理中心</title>
-<!-- <link th:href="@{/css/backend-common.css}" rel="stylesheet"> -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
-<link href="/css/styles.css" rel="stylesheet" />
-<style>
-	
-	:root {
-		--primary-orange: #ff5722;
-		--dark-blue: #0f172a;
-	}
-	
-	* {
-		box-sizing: border-box;
-		margin: 0;
-		padding: 0;
-	}
-	
-	body {
-		font-family: "Segoe UI", Arial, sans-serif;
-		background-color: whitesmoke;
-		color: dimgray;
-		padding-top: 140px;
-	}
-	
-	/* 導覽列 */
-    .navbar-backend {
-        background-color: white;
-        border-bottom: 1px solid lightgray;
-    }
+	<meta charset="UTF-8">
+	<title>商品管理中心</title>
+	<!-- <link th:href="@{/css/backend-common.css}" rel="stylesheet"> -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+	<link href="/css/styles.css" rel="stylesheet" />
+	<style>
+		body {
+			background-color: #f8fafc;
+			color: #334155;
+			/* padding-top: 120px 已經包在 backend-header.html 中，這裡就不需要重複設定了 */
+		}
 
-    .sub-navbar-backend {
-        background-color: white;
-        border-bottom: 2px solid lightgray;
-    }
 
-    .sub-navbar-backend .nav-link {
-        color: slategray;
-        transition: color 0.2s;
-        font-size: 0.95rem;
-    }
+		.error {
+			color: crimson;
+			font-weight: bold;
+			margin: 15px 0;
+			font-size: 14px;
+		}
 
-    .sub-navbar-backend .nav-link:hover {
-        color: var(--primary-orange);
-    }
-    
-    
-	.error { 
-		color: crimson;
-		font-weight: bold; 
-		margin: 15px 0; 
-		font-size: 14px;
-	}
-	
-	/* 首頁大卡片限制寬度並在網頁正中央 */
-	.form-card {
-		max-width: 650px;
-		margin: 10px auto; 
-	}
-	
-	/* 搜尋區塊卡片：在主卡片裡再隔出獨立小區塊 */
-	.search-box { 
-		background: whitesmoke;
-		padding: 25px; 
-		border-radius: 6px; 
-		border: 1px solid lightgray;
-		margin-bottom: 25px; 
-	}
-	
-	/* 搜尋區塊的小標題（如：萬用複合搜尋） */
-	.search-box h3 { 
-		margin-top: 0; 
-		margin-bottom: 20px;
-		color: black; 
-		font-size: 16px;
-		border-left: 4px solid #ff5722; /* 標題左邊邊條 */
-		padding-left: 10px;
-	}
-	
-	/* 欄位群組排版：垂直排隊設計 */
-	.form-group { 
-		display: flex;
-		flex-direction: column;
-		gap: 6px;
-		margin-bottom: 18px; 
-	}
-	
-	/* 欄位小標題 */
-	.form-label {
-		font-size: 14px;
-		font-weight: 600;
-		color: black;
-	}
-	
-	/* 輸入框與下拉選單（Input / Select） */
-	.form-control { 
-		width: 100%;
-		padding: 10px 12px; 
-		border: 1px solid lightgray; 
-		border-radius: 4px; 
-		font-size: 14px;
-		color: dimgray;
-		box-sizing: border-box;
-		background-color: white;
-		transition: border-color 0.2s;
-	}
-	
-	.form-control:focus {
-		border-color: #ff5722;
-		outline: none;
-	}
-	
-	/* 按鈕通用樣式 */
-	.btn-submit { 
-		background-color: var(--primary-orange); 
-		color: white; 
-		padding: 9px 18px; 
-		border: 1px solid var(--primary-orange); 
-		border-radius: 4px; 
-		cursor: pointer; 
-		font-size: 13px; 
-		font-weight: bold;
-		transition: all 0.2s;
-	}
-	
-	.btn-submit:hover { 
-		background-color: chocolate; 
-		border-color: chocolate;
-	}
-	
-	/* 頂部功能快捷按鈕（新增商品、商品總覽） */
-	.action-header .page-item {
-		display: inline-block;
-		text-decoration: none;
-		color: dimgray;
-		padding: 8px 16px;
-		border: 1px solid lightgray;
-		border-radius: 4px;
-		font-size: 13px;
-		background-color: white;
-		transition: all 0.2s;
-	}
-	
-	.action-header .page-item:hover {
-		border-color: #ff5722;
-		color: #ff5722;
-		background-color: whitesmoke;
-	}
-	
-</style>
+		/* 首頁大卡片限制寬度並在網頁正中央 */
+		.form-card {
+			max-width: 650px;
+			margin: 10px auto;
+		}
+
+		/* 搜尋區塊卡片：在主卡片裡再隔出獨立小區塊 */
+		.search-box {
+			background: whitesmoke;
+			padding: 25px;
+			border-radius: 6px;
+			border: 1px solid lightgray;
+			margin-bottom: 25px;
+		}
+
+		/* 搜尋區塊的小標題（如：萬用複合搜尋） */
+		.search-box h3 {
+			margin-top: 0;
+			margin-bottom: 20px;
+			color: black;
+			font-size: 16px;
+			border-left: 4px solid #ff5722;
+			/* 標題左邊邊條 */
+			padding-left: 10px;
+		}
+
+		/* 欄位群組排版：垂直排隊設計 */
+		.form-group {
+			display: flex;
+			flex-direction: column;
+			gap: 6px;
+			margin-bottom: 18px;
+		}
+
+		/* 欄位小標題 */
+		.form-label {
+			font-size: 14px;
+			font-weight: 600;
+			color: black;
+		}
+
+		/* 輸入框與下拉選單（Input / Select） */
+		.form-control {
+			width: 100%;
+			padding: 10px 12px;
+			border: 1px solid lightgray;
+			border-radius: 4px;
+			font-size: 14px;
+			color: dimgray;
+			box-sizing: border-box;
+			background-color: white;
+			transition: border-color 0.2s;
+		}
+
+		.form-control:focus {
+			border-color: #ff5722;
+			outline: none;
+		}
+
+		/* 按鈕通用樣式 */
+		.btn-submit {
+			background-color: var(--primary-orange);
+			color: white;
+			padding: 9px 18px;
+			border: 1px solid var(--primary-orange);
+			border-radius: 4px;
+			cursor: pointer;
+			font-size: 13px;
+			font-weight: bold;
+			transition: all 0.2s;
+		}
+
+		.btn-submit:hover {
+			background-color: chocolate;
+			border-color: chocolate;
+		}
+
+		/* 頂部功能快捷按鈕（新增商品、商品總覽） */
+		.action-header .page-item {
+			display: inline-block;
+			text-decoration: none;
+			color: dimgray;
+			padding: 8px 16px;
+			border: 1px solid lightgray;
+			border-radius: 4px;
+			font-size: 13px;
+			background-color: white;
+			transition: all 0.2s;
+		}
+
+		.action-header .page-item:hover {
+			border-color: #ff5722;
+			color: #ff5722;
+			background-color: whitesmoke;
+		}
+	</style>
 </head>
+
 <body>
-	
-	<!-- 組合式固定導覽列 -->
-    <header class="fixed-top shadow-sm" style="z-index: 1030;">
-        <!-- 主選單 (Top Bar) -->
-        <nav class="navbar navbar-expand-lg navbar-light navbar-backend py-2">
-            <div class="container-fluid px-4 px-lg-5">
-                <a class="navbar-brand fw-bold fs-3" href="/manage" style="color: var(--primary-orange);">MapIt <span
-                        class="fs-5 text-secondary">後台管理系統</span></a>
 
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center" style="font-size: 0.9rem;">
-                        <li class="nav-item" th:if="${session.loginEmp}">
-                            <span class="nav-link text-secondary px-3">
-                                <i class="bi bi-person-badge-fill text-dark"></i>
-                                <span th:text="${session.loginEmp.empName} + ' 您好'">管理員 您好</span>
-                            </span>
-                        </li>
-                        <li class="nav-item ms-lg-2">
-                            <a class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-bold shadow-sm"
-                                th:href="@{/emp/logout}">登出</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-
-        <!-- 次選單 (功能導覽) -->
-        <nav class="sub-navbar-backend py-1">
-            <div class="container-fluid px-4 px-lg-5">
-                <ul class="nav justify-content-center fw-bold">
-                    
-                    <li class="nav-item">
-	                	<a class="nav-link active px-4" 
-	                		style="color: #ff5722 !important; 
-	                				font-weight: bold;
-	                				border-bottom: 3px solid #ff5722;
-	                				padding-bottom: 8px;
-	                				margin-bottom: -1px;"
-	                		th:href="@{/product/select_page}">
-	                		商品管理
-	                	</a>
-	                </li>   
-                    
-                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/orders/backend-list}">訂單管理</a></li>
-                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/customer/empCustomerList}">會員管理</a></li>
-                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/supplier/select_page}">廠商管理</a></li>
-                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/ap/select_page}">應付帳款</a></li>
-                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/emp/select_page}">員工管理</a></li>
-                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/dept/listAllDept}">部門管理</a></li>
-                    <li class="nav-item"><a class="nav-link px-4" th:href="@{/emp/message/send}">通知發送</a></li>
-                </ul>
-            </div>
-        </nav>
-    </header>
+	<!-- 引入共用後台導覽列片段 -->
+	<header th:replace="~{layouts/backend :: backendHeader}"></header>
 
 
 	<div class="container-fluid">
 		<div class="main-card form-card">
-			
+
 			<h3>📦 商品管理中心</h3>
-			
+
 			<div class="error" th:if="${errorMsg}" th:text="${errorMsg}"></div>
-			
+
 			<div class="action-header" style="margin-bottom: 25px;">
-				<a th:href="@{/product/addProduct}" 
-					class="page-item active" 
-					style="text-decoration: none;">
+				<a th:href="@{/product/addProduct}" class="page-item active" style="text-decoration: none;">
 					➕ 新增商品
 				</a>
-				<a th:href="@{/product/listAllProduct}" 
-					class="page-item"
+				<a th:href="@{/product/listAllProduct}" class="page-item"
 					style="text-decoration: none; margin-left: 10px;">
 					📋 商品總覽
 				</a>
 				<!-- ===Sasha新增=== -->
-				<a th:href="@{/ticket/ticketList}" 
-					class="page-item"
-					style="text-decoration: none; margin-left: 10px;">
+				<a th:href="@{/ticket/ticketList}" class="page-item" style="text-decoration: none; margin-left: 10px;">
 					🎟️ 票券總覽
 				</a>
 				<!-- ===Sasha新增=== -->
 			</div>
-			
+
 			<div class="search-box">
 				<h3>🔍 單筆商品查詢</h3>
 				<form th:action="@{/product/getOne_For_Display}" method="post">
 					<div class="form-group">
 						<label class="form-label" for="pruductId">輸入商品編號:</label>
-						<div style="display: flex; gap: 10px;">	
-							<input type="number" class="form-control" id="productId" name="productId" placeholder="例如: 1" required style="max-width: 300px;">
-							<button type="submit" class="btn-submit">送出查詢</button> 
+						<div style="display: flex; gap: 10px;">
+							<input type="number" class="form-control" id="productId" name="productId"
+								placeholder="例如: 1" required style="max-width: 300px;">
+							<button type="submit" class="btn-submit">送出查詢</button>
 						</div>
 					</div>
 				</form>
 			</div>
-			
+
 			<div class="search-box">
 				<h3>🎯 萬用複合搜尋</h3>
 				<form th:action="@{/product/listProductByCompositeQuery}" method="post">
 					<div class="form-group">
 						<label class="form-label" for="productName">商品名稱關鍵字:</label>
-						<input type="text" class="form-control" id="productName" name="productName" placeholder="請輸入商品名稱關鍵字..." style="max-width: 400px;">
+						<input type="text" class="form-control" id="productName" name="productName"
+							placeholder="請輸入商品名稱關鍵字..." style="max-width: 400px;">
 					</div>
-					
+
 					<div class="form-group">
 						<label class="form-label" for="supplierId">合作廠商名稱:</label>
-						<select class="form-control" id="supplierId" name="supplierId" style="max-width: 400px; height: auto;">
+						<select class="form-control" id="supplierId" name="supplierId"
+							style="max-width: 400px; height: auto;">
 							<option value="">-- 請選擇合作廠商 (選填) --</option>
-							<option th:each="splr : ${supplierList}"
-									th:value="${splr.supplierId}"
-									th:text="${splr.supplierId} + ' - ' + ${splr.supplierName}">
+							<option th:each="splr : ${supplierList}" th:value="${splr.supplierId}"
+								th:text="${splr.supplierId} + ' - ' + ${splr.supplierName}">
 							</option>
 						</select>
 					</div>
-					
+
 					<div style="margin-top: 20px;">
 						<button type="submit" class="btn-submit" style="padding: 10px 24px;">🚀 開始萬用複合搜尋</button>
 					</div>
@@ -277,4 +191,5 @@
 	</div>
 
 </body>
+
 </html>
