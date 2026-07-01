@@ -3,6 +3,7 @@ package com.ticket.model;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -129,7 +130,7 @@ public class TicketService {
 		return unsoldTickets;
 	}
 	
-	//結帳成功後，系統自動配發實體票券明細給會員
+	// 結帳成功後，系統自動配發實體票券明細給會員
 	public void ticketForOrder(OrdersVO order) {
 		//從訂單中拿到買家
 		CustVO cust = order.getCustVO(); 
@@ -154,6 +155,42 @@ public class TicketService {
 			}
 			
 		}
+	}
+	
+	// 店家透過輸入 PIN 碼來核銷票券
+	public boolean exchangeTicket(Integer tktId, String pinCode) {
+		//寫死的店家密碼
+		String correctPin = "8888";
+		//檢查密碼對不對
+		if (!correctPin.equals(pinCode)) {
+			return false; // 密碼錯誤，回傳失敗
+		}
+		//從資料庫拿到可能裝有票，也可能為空的盒子 (Optional)
+		Optional<TicketVO> ticketBox = repository.findById(tktId);
+		//準備一個變數來裝票
+		TicketVO ticket;
+		//用 if-else 來檢查盒子裡面有沒有東西
+		if (ticketBox.isPresent()) {
+		    // 如果有找到(isPresent = 存在)，就把票從盒子裡拿出來(get)
+		    ticket = ticketBox.get(); 
+		} else {
+		    // 如果沒找到，就給null
+		    ticket = null; 
+		}
+		//再找這張票對應的使用者明細TicketItemVO
+		TicketItemVO ticketItem = ticketItemRepository.findByTktId(tktId);
+		
+		if (ticket != null && ticketItem != null) {
+			// 將票券狀態改為2(已作廢/已使用)
+			ticket.setTktSale(2);
+			// 將使用者的票券明細狀態改為 "已使用"
+			ticketItem.setTicketStatus("已使用");
+			// 存回資料庫
+			repository.save(ticket);
+			ticketItemRepository.save(ticketItem);
+			return true; // 成功核銷
+		}
+		return false; // 找不到票券
 	}
 	
 }
