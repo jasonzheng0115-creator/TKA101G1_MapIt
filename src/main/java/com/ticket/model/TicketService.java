@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cust.model.CustVO;
 import com.orders.model.OrderItemVO;
@@ -192,5 +193,39 @@ public class TicketService {
 		}
 		return false; // 找不到票券
 	}
+	
+	
+	// === 取消訂單時回收、作廢票券並產生新票券 ===
+	@Transactional
+	public void cancelTicketsForOrder(OrdersVO order) {
+		// 撈出這筆訂單產生的所有票券明細
+		List<TicketItemVO> items = ticketItemRepository.findByCustId_CustIdAndStartDate(
+			order.getCustVO().getCustId(), 
+			order.getOrderTimestamp()
+		);
+		
+		// 檢查票券是否都是「未使用」狀態
+		for (TicketItemVO item : items) {
+			if (!"未使用".equals(item.getTicketStatus())) {
+				throw new IllegalStateException("取消失敗：訂單內已有票券被使用或已失效，無法退單！");
+			}
+		}
+		
+		// 執行作廢與再生
+		for (TicketItemVO item : items) {
+			// 會員票券明細狀態設為「已失效」
+			item.setTicketStatus("已失效");
+			ticketItemRepository.save(item);
+			
+			// 票券狀態設為 2 (已作廢)
+			TicketVO ticket = item.getTicketId();
+			ticket.setTktSale(2);
+			repository.save(ticket);
+			
+			// 自動生成一張全新的未售出票券 (狀態為 0)
+			addTickets(ticket.getProductVO(), 1);
+		}
+	}
+
 	
 }

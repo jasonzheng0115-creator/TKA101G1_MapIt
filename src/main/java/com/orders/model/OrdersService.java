@@ -131,6 +131,9 @@ public class OrdersService {
 			throw new IllegalStateException("取消失敗：該訂單先前已執行過取消，請勿重複操作！");
 		}
 		
+		// 呼叫票券回收與作廢邏輯（如果內部拋出異常，整筆訂單取消就會取消並回滾）
+		ticketService.cancelTicketsForOrder(order);
+		
 		// 走訪這張訂單底下的所有明細，把庫存與銷量放回去
 		for (OrderItemVO item : order.getOrderItems()) {
 			
