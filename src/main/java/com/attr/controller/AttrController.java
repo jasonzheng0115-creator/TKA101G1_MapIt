@@ -251,8 +251,21 @@ public class AttrController {
         attrVO.setRegionVO(region);
         attrVO.setCategoryVO(category);
         
-        // 更新景點資料
-        attrService.update(attrVO);
+        // 修正：先取出資料庫原本完整的資料，只更新修改的欄位，保留照片與評分數據
+        AttrVO existing = attrService.findById(attrVO.getAttrId());
+        if (existing != null) {
+            existing.setAttrName(attrVO.getAttrName());
+            existing.setRegionVO(region);
+            existing.setCategoryVO(category);
+            existing.setAttrAddress(attrVO.getAttrAddress());
+            existing.setLat(attrVO.getLat());
+            existing.setLng(attrVO.getLng());
+            existing.setAttrTel(attrVO.getAttrTel());
+            existing.setOpenTime(attrVO.getOpenTime());
+            existing.setIsOpen(attrVO.getIsOpen());
+            
+            attrService.update(existing);
+        }
         
         // 重導向到列表頁
         return "redirect:/attr/listAll";

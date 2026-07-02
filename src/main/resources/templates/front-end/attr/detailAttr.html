@@ -11,11 +11,14 @@
         
         /* 頁面標題區 */
         .page-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: linear-gradient(135deg, #ffc107 0%, #ffb300 100%);
+            color: #212529;
             padding: 2rem 0;
             margin-bottom: 2rem;
             margin-top: 130px; /* 避免固定雙導覽列遮擋內容 */
+        }
+        .page-header h1 {
+            color: #004085 !important;
         }
         
         /* 手動控制會員下拉選單 */
@@ -158,7 +161,7 @@
         
         .info-label {
             font-weight: bold;
-            color: #667eea;
+            color: #d39e00;
             margin-right: 1rem;
             min-width: 100px;
             display: inline-block;
@@ -169,20 +172,54 @@
             padding: 0.5rem 1rem;
         }
         
+        /* 將地區與類別的藍色、青色標籤改成與 .btn-back 相同的黃橘色系 */
+        .badge.bg-primary.badge-custom, .badge.bg-info.badge-custom {
+            background: linear-gradient(135deg, #ffc107 0%, #ffb300 100%) !important;
+            color: #212529 !important;
+            font-weight: bold;
+        }
+        
         /* 返回按鈕 */
         .btn-back {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: linear-gradient(135deg, #ffc107 0%, #ffb300 100%);
+            color: #212529;
             border: none;
             padding: 0.75rem 2rem;
             border-radius: 8px;
             transition: transform 0.2s;
+            font-weight: bold;
         }
         
         .btn-back:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            color: white;
+            color: #212529;
+        }
+
+        /* 覆蓋 Bootstrap btn-primary 為景點搜尋黃橘色 */
+        .btn-primary {
+            background-color: #ffc107 !important;
+            border-color: #ffc107 !important;
+            color: #212529 !important;
+            font-weight: bold;
+        }
+        .btn-primary:hover, .btn-primary:focus, .btn-primary:active {
+            background-color: #e0a800 !important;
+            border-color: #e0a800 !important;
+            color: #212529 !important;
+        }
+        
+        /* 覆蓋 Bootstrap btn-outline-primary 為景點搜尋黃橘色 */
+        .btn-outline-primary {
+            color: #d39e00 !important;
+            border-color: #ffc107 !important;
+            background-color: transparent !important;
+            font-weight: bold;
+        }
+        .btn-outline-primary:hover, .btn-outline-primary:focus, .btn-outline-primary:active {
+            background-color: #ffc107 !important;
+            border-color: #ffc107 !important;
+            color: #212529 !important;
         }
     </style>
 </head>

@@ -18,6 +18,35 @@
     
     <!-- DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+    
+    <style>
+        /* 覆蓋標題圖示顏色為景點管理同款的橘色 */
+        .text-primary {
+            color: #ff5722 !important;
+        }
+        
+        /* 覆蓋 DataTables 分頁按鈕為景點管理同款橘色系 */
+        .page-link {
+            color: #ff5722 !important;
+            border-color: #dee2e6 !important;
+        }
+        .page-link:hover {
+            color: #e64a19 !important;
+            background-color: #fff5f2 !important;
+            border-color: #dee2e6 !important;
+        }
+        .page-item.active .page-link {
+            background-color: #ff5722 !important;
+            border-color: #ff5722 !important;
+            color: white !important;
+            font-weight: bold;
+        }
+        .page-item.disabled .page-link {
+            color: #6c757d !important;
+            background-color: #fff !important;
+            border-color: #dee2e6 !important;
+        }
+    </style>
 </head>
 <body>
     <!-- 引用共用的導航列 -->
