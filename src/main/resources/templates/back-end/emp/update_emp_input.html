@@ -102,7 +102,9 @@
                         th:text="${errorMsg}"></div>
 
                     <!-- 修改表單 -->
-                    <form method="post" th:action="@{/emp/update}" th:object="${empVO}">
+                    <form method="post" th:action="@{/emp/update}" th:object="${empVO}" id="empUpdateForm"
+                        th:data-original-dept="*{deptVO.deptId}" th:data-original-status="*{empStatus}">
+                        <input type="hidden" name="authPwd" id="authPwd">
 
                         <!-- 帶入員工 ID 主鍵 (隱藏欄位，以利更新定位) -->
                         <input type="hidden" th:field="*{empId}">
@@ -112,7 +114,7 @@
                             <div class="col-md-6">
                                 <label for="empName" class="form-label fw-bold">員工姓名 :</label>
                                 <input type="text" class="form-control py-2" id="empName" th:field="*{empName}"
-                                    placeholder="請輸入 2-10 字姓名" required>
+                                    placeholder="請輸入 2-20 字姓名" required th:readonly="${!isSelf}">
                                 <span class="error-text" th:if="${#fields.hasErrors('empName')}"
                                     th:errors="*{empName}"></span>
                             </div>
@@ -123,14 +125,16 @@
                                 <div class="pt-2">
                                     <div class="form-check form-check-inline me-4">
                                         <input class="form-check-input" type="radio" id="sexM" th:field="*{empSex}"
-                                            value="M" required>
+                                            value="M" required th:disabled="${!isSelf}">
                                         <label class="form-check-label fw-bold" for="sexM">男</label>
                                     </div>
                                     <div class="form-check form-check-inline">
                                         <input class="form-check-input" type="radio" id="sexF" th:field="*{empSex}"
-                                            value="F" required>
+                                            value="F" required th:disabled="${!isSelf}">
                                         <label class="form-check-label fw-bold" for="sexF">女</label>
                                     </div>
+                                    <!-- 當唯讀狀態禁用 radio 時，利用隱藏欄位送出原值防止綁定遺失 -->
+                                    <input type="hidden" th:if="${!isSelf}" name="empSex" th:value="*{empSex}">
                                 </div>
                                 <span class="error-text" th:if="${#fields.hasErrors('empSex')}"
                                     th:errors="*{empSex}"></span>
@@ -140,7 +144,7 @@
                             <div class="col-md-6">
                                 <label for="empTel" class="form-label fw-bold">聯絡電話 :</label>
                                 <input type="text" class="form-control py-2" id="empTel" th:field="*{empTel}"
-                                    placeholder="請輸入聯絡電話" required>
+                                    placeholder="請輸入聯絡電話" required th:readonly="${!isSelf}">
                                 <span class="error-text" th:if="${#fields.hasErrors('empTel')}"
                                     th:errors="*{empTel}"></span>
                             </div>
@@ -149,7 +153,7 @@
                             <div class="col-md-6">
                                 <label for="empEmail" class="form-label fw-bold">電子信箱 :</label>
                                 <input type="email" class="form-control py-2" id="empEmail" th:field="*{empEmail}"
-                                    placeholder="請輸入 Email 信箱" required>
+                                    placeholder="請輸入 Email 信箱" required th:readonly="${!isSelf}">
                                 <span class="error-text" th:if="${#fields.hasErrors('empEmail')}"
                                     th:errors="*{empEmail}"></span>
                             </div>
@@ -191,19 +195,30 @@
                             <div class="col-md-6">
                                 <label for="empAcc" class="form-label fw-bold">登入帳號 :</label>
                                 <input type="text" class="form-control py-2" id="empAcc" th:field="*{empAcc}"
-                                    placeholder="請輸入 6-12 碼英數帳號" required>
+                                    placeholder="請輸入 6-12 碼英數帳號" required readonly="readonly">
                                 <span class="error-text" th:if="${#fields.hasErrors('empAcc')}"
                                     th:errors="*{empAcc}"></span>
                             </div>
 
                             <!-- 8. 密碼 -->
-                            <div class="col-md-6">
-                                <label for="empPwd" class="form-label fw-bold">登入密碼 :</label>
-                                <input type="password" class="form-control py-2" id="empPwd" th:field="*{empPwd}"
-                                    placeholder="請輸入 8-20 碼英數密碼" required autocomplete="new-password">
-                                <span class="error-text" th:if="${#fields.hasErrors('empPwd')}"
-                                    th:errors="*{empPwd}"></span>
-                            </div>
+                            <!-- 密碼隱藏欄位，用於傳遞/綁定原始密碼或不修改時的原值 -->
+                            <input type="hidden" th:field="*{empPwd}">
+
+                            <!-- 修改密碼與重複驗證欄位，僅限修改自己時顯示 -->
+                            <th:block th:if="${isSelf}">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="newPwd" class="form-label fw-bold">變更密碼 (若不修改請留空) :</label>
+                                        <input type="password" class="form-control py-2" id="newPwd" name="newPwd"
+                                            placeholder="請輸入 8-20 碼新密碼" autocomplete="new-password">
+                                    </div>
+                                    <div>
+                                        <label for="confirmPwd" class="form-label fw-bold">確認新密碼 :</label>
+                                        <input type="password" class="form-control py-2" id="confirmPwd"
+                                            name="confirmPwd" placeholder="請再次輸入新密碼" autocomplete="new-password">
+                                    </div>
+                                </div>
+                            </th:block>
 
                             <!-- 按鈕操作區區塊 -->
                             <div class="col-md-12 mt-5 d-flex justify-content-end gap-3 border-top pt-4">
@@ -218,6 +233,85 @@
         </div>
     </div>
 
+    <!-- 前端防護與授權對話框 JS 邏輯 -->
+    <script>
+        document.getElementById('empUpdateForm').addEventListener('submit', function (event) {
+            const form = this;
+            const originalDept = form.getAttribute('data-original-dept');
+            const originalStatus = form.getAttribute('data-original-status');
+
+            // 1. 取得目前選取的部門與啟用狀態
+            const currentDept = document.getElementById('deptId').value;
+            const currentStatusInput = document.querySelector('input[name="empStatus"]:checked');
+            const currentStatus = currentStatusInput ? currentStatusInput.value : '';
+
+            // 2. 比對是否有所變更
+            const deptChanged = String(originalDept) !== String(currentDept);
+            const statusChanged = String(originalStatus) !== String(currentStatus);
+
+            if (deptChanged || statusChanged) {
+                const password = prompt("偵測到您變更了「所屬部門」或「啟用狀態」，請輸入安全授權密碼以儲存：");
+
+                if (password === null) {
+                    // 使用者點選取消
+                    event.preventDefault();
+                    return;
+                }
+
+                if (password.trim() === "") {
+                    alert("安全授權密碼不能為空，儲存失敗！");
+                    event.preventDefault();
+                    return;
+                }
+
+                if (password !== "root888") {
+                    alert("安全授權密碼錯誤，儲存失敗！");
+                    event.preventDefault();
+                    return;
+                }
+
+                // 將正確的密碼寫入隱藏欄位隨表單送出
+                document.getElementById('authPwd').value = password;
+            }
+
+            // 3. 自我密碼修改驗證
+            const newPwdInput = document.getElementById('newPwd');
+            const confirmPwdInput = document.getElementById('confirmPwd');
+            if (newPwdInput && confirmPwdInput) {
+                const newPwd = newPwdInput.value;
+                const confirmPwd = confirmPwdInput.value;
+
+                if (newPwd.trim() !== "") {
+                    if (newPwd !== confirmPwd) {
+                        alert("兩次輸入的新密碼不一致！");
+                        event.preventDefault();
+                        return;
+                    }
+                    if (newPwd.length < 8 || newPwd.length > 20) {
+                        alert("新密碼長度需在 8-20 碼之間！");
+                        event.preventDefault();
+                        return;
+                    }
+                }
+            }
+        });
+
+        // 點擊或修改欄位時自動清除該欄位的錯誤提示
+        document.querySelectorAll('form input, form select').forEach(element => {
+            const clearError = () => {
+                const container = element.closest('div[class^="col-md-"]');
+                if (container) {
+                    const errorSpan = container.querySelector('.error-text');
+                    if (errorSpan) {
+                        errorSpan.textContent = '';
+                    }
+                }
+            };
+            element.addEventListener('focus', clearError);
+            element.addEventListener('change', clearError);
+            element.addEventListener('input', clearError);
+        });
+    </script>
 </body>
 
 </html>

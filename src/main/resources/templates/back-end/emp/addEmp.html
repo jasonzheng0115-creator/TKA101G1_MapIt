@@ -101,7 +101,7 @@
                         th:text="${errorMsg}"></div>
 
                     <!-- 新增表單 -->
-                    <form method="post" th:action="@{/emp/insert}" th:object="${empVO}">
+                    <form method="post" th:action="@{/emp/addEmp}" th:object="${empVO}">
 
                         <!-- 預設啟用狀態為 true (隱藏欄位) -->
                         <input type="hidden" th:field="*{empStatus}">
@@ -111,7 +111,7 @@
                             <div class="col-md-6">
                                 <label for="empName" class="form-label fw-bold">員工姓名 :</label>
                                 <input type="text" class="form-control py-2" id="empName" th:field="*{empName}"
-                                    placeholder="請輸入 2-10 字姓名" required>
+                                    placeholder="請輸入 2-20 字中英文姓名" required>
                                 <span class="error-text" th:if="${#fields.hasErrors('empName')}"
                                     th:errors="*{empName}"></span>
                             </div>
@@ -162,8 +162,8 @@
                                         th:text="${dept.deptId} + ' - ' + ${dept.deptName}">
                                     </option>
                                 </select>
-                                <span class="error-text" th:if="${#fields.hasErrors('deptVO.deptId')}"
-                                    th:errors="*{deptVO.deptId}"></span>
+                                <span class="error-text" th:if="${#fields.hasErrors('deptVO')}"
+                                    th:errors="*{deptVO}"></span>
                             </div>
 
                             <!-- 6. 帳號 -->
@@ -186,7 +186,7 @@
 
                             <!-- 按鈕操作區 -->
                             <div class="col-md-12 mt-5 d-flex justify-content-end gap-3 border-top pt-4">
-                                <button type="reset"
+                                <button type="button" onclick="clearForm()"
                                     class="btn btn-light px-4 py-2 fw-bold text-secondary border">重設欄位</button>
                                 <a th:href="@{/emp/listAllEmp}" class="btn btn-outline-orange px-4 py-2">取消返回</a>
                                 <button type="submit" class="btn btn-orange px-5 py-2">確認新增 🚀</button>
@@ -199,6 +199,51 @@
         </div>
     </div>
 
+    <!-- JavaScript 自訂清空與錯誤訊息動態清除邏輯 -->
+    <script>
+        function clearForm() {
+            const form = document.querySelector('form');
+            if (form) {
+                // 1. 清空所有文字、信箱、密碼、電話輸入框
+                form.querySelectorAll('input[type="text"], input[type="email"], input[type="password"]').forEach(input => {
+                    input.value = '';
+                });
+                // 2. 取消選取性別 Radio 按鈕
+                form.querySelectorAll('input[type="radio"]').forEach(radio => {
+                    radio.checked = false;
+                });
+                // 3. 重置部門下拉選單至第一個選項 ("-- 請選擇所屬部門 --")
+                form.querySelectorAll('select').forEach(select => {
+                    select.selectedIndex = 0;
+                });
+                // 4. 清除頁面上顯示的所有後端驗證紅色錯誤訊息
+                form.querySelectorAll('.error-text').forEach(span => {
+                    span.textContent = '';
+                });
+                // 5. 清除全域系統錯誤提示 (例如帳號已存在錯誤)
+                const globalAlert = document.querySelector('.alert.alert-danger');
+                if (globalAlert) {
+                    globalAlert.style.display = 'none';
+                }
+            }
+        }
+
+        // 點擊或修改欄位時自動清除該欄位的錯誤提示
+        document.querySelectorAll('form input, form select').forEach(element => {
+            const clearError = () => {
+                const container = element.closest('div[class^="col-md-"]');
+                if (container) {
+                    const errorSpan = container.querySelector('.error-text');
+                    if (errorSpan) {
+                        errorSpan.textContent = '';
+                    }
+                }
+            };
+            element.addEventListener('focus', clearError);
+            element.addEventListener('change', clearError);
+            element.addEventListener('input', clearError);
+        });
+    </script>
 </body>
 
 </html>
