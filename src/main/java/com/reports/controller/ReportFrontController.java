@@ -67,6 +67,12 @@ public class ReportFrontController {
                         .body(Map.of("success", false, "message", "被檢舉的評論不存在"));
             }
 
+            // 限制不能檢舉自己的評論
+            if (comment.getCustId().equals(custId)) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("success", false, "message", "您不能檢舉自己發布的評論"));
+            }
+
             // 4. 建立檢舉案件
             ReportVO report = new ReportVO();
             report.setCommentVO(comment);

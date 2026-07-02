@@ -258,18 +258,19 @@ public class AttrController {
         return "redirect:/attr/listAll";
     }
     
-    // ========== 景點刪除 ==========
+    // ========== 景點刪除 (已停用) ==========
     
     /**
-     * 刪除景點
+     * 刪除景點 (已停用)
      * 路由：GET /attr/delete/{id}
      * 刪除後重導向到列表頁
-     */
+     *
     @GetMapping("/delete/{id}")
     public String delete(@PathVariable("id") Integer attrId) {
         attrService.deleteById(attrId);
         return "redirect:/attr/listAll";
     }
+    */
     
     // ========== 景點詳情頁 ==========
     

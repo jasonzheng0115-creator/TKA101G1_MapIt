@@ -15,6 +15,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.attr.model.AttrImageService;
 import com.attr.model.AttrImageVO;
+import com.attr.model.AttrService;
+import com.attr.model.AttrVO;
 
 /**
  * AttrImageController - 景點圖片控制器
@@ -32,6 +34,9 @@ public class AttrImageController {
     @Autowired
     private AttrImageService attrImageService;
     
+    @Autowired
+    private AttrService attrService;
+    
     /**
      * 查詢指定景點的圖片清單
      * @param attrId 景點 ID
@@ -44,9 +49,14 @@ public class AttrImageController {
             // 查詢該景點的所有圖片 (主圖優先，再依上傳時間排序)
             List<AttrImageVO> images = attrImageService.getImagesByAttrId(attrId);
             
+            // 查詢該景點資訊以獲取景點名稱
+            AttrVO attrVO = attrService.findById(attrId);
+            String attrName = (attrVO != null) ? attrVO.getAttrName() : "";
+            
             // 傳遞資料到前端
             model.addAttribute("images", images);
             model.addAttribute("attrId", attrId);
+            model.addAttribute("attrName", attrName); // 塞入景點名稱
             
             return "image/list"; // 對應 templates/image/list.html
         } catch (Exception e) {

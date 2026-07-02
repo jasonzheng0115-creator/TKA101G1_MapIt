@@ -54,11 +54,6 @@
                                    class="btn btn-sm btn-warning">
                                     <i class="bi bi-pencil-square"></i> 編輯
                                 </a>
-                                <a th:href="@{/category/delete(categoryId=${category.categoryId})}" 
-                                   class="btn btn-sm btn-danger"
-                                   onclick="return confirm('確定要刪除此類別嗎？');">
-                                    <i class="bi bi-trash"></i> 刪除
-                                </a>
                             </td>
                         </tr>
                     </tbody>
@@ -97,7 +92,7 @@
                     "url": "//cdn.datatables.net/plug-ins/1.13.4/i18n/zh-HANT.json"
                 },
                 "pageLength": 10,
-                "order": [[0, "asc"]]
+                "order": new Array(new Array(0, 'asc'))
             });
         });
     </script>
