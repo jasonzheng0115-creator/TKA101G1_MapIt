@@ -35,7 +35,7 @@ public class LoginFilter extends OncePerRequestFilter {
 		if (uri.startsWith("/customer") ||
 				uri.startsWith("/order") ||
 				uri.startsWith("/trip") ||
-				uri.startsWith("/front/favorite/list"))
+				uri.startsWith("/front/favorite"))
 		{
 			return false;
 		}
