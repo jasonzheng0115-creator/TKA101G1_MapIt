@@ -95,6 +95,11 @@ public class IndexController {
                 .collect(Collectors.toList());
 
         model.addAttribute("attrWithImages", attrWithImages);
+        
+        // 額外複製一份並隨機洗牌，供首頁大輪播使用（不限數量，傳送全部以供無限輪播）
+        List<Map<String, Object>> randomAttrs = new java.util.ArrayList<>(attrWithImages);
+        java.util.Collections.shuffle(randomAttrs);
+        model.addAttribute("randomAttrs", randomAttrs);
         // 將分頁資訊傳遞給前端以產生分頁按鈕
         model.addAttribute("attrPage", attrPage);
 

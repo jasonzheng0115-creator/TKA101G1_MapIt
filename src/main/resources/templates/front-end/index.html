@@ -4,74 +4,200 @@
 <head>
     <th:block th:replace="~{layouts/frontend :: head}"></th:block>
     <title>MapIt - 旅遊景點平台</title>
+    <style>
+        /* 專屬置中 Banner 輪播樣式 */
+        .hero-banner-carousel {
+            width: 100%;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .banner-track {
+            display: flex;
+            transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+            will-change: transform;
+        }
+
+        .banner-slide {
+            flex: 0 0 65%; /* 輪播寬度，兩側各保留約 17.5% 作為相鄰卡片露出空間 */
+            height: 400px;
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+            transform: scale(0.9);
+            opacity: 0.5;
+            transition: transform 0.5s ease, opacity 0.5s ease;
+            margin: 0 10px;
+        }
+
+        @media (max-width: 768px) {
+            .banner-slide {
+                flex: 0 0 85%; /* 手機版寬度佔滿 85% */
+                height: 250px;
+            }
+        }
+
+        .banner-slide.active {
+            transform: scale(1);
+            opacity: 1;
+            z-index: 2;
+        }
+
+        .banner-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .banner-overlay {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.7));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .banner-title {
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
+            font-size: 2.5rem;
+            font-weight: 800;
+        }
+
+        @media (max-width: 768px) {
+            .banner-title {
+                font-size: 1.8rem;
+            }
+        }
+
+        /* 指示點 */
+        .banner-dots {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 20px;
+        }
+
+        .banner-dot {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            background-color: #ccc;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .banner-dot.active {
+            background-color: #ff5722;
+            width: 25px; /* 主動點變為長橢圓 */
+            border-radius: 5px;
+        }
+
+        /* 搜尋框本體樣式優化 */
+        .hero-search-bar {
+            background: #ffffff;
+            border-radius: 50px;
+            padding: 8px 8px 8px 24px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15) !important;
+            border: 1px solid rgba(0,0,0,0.05);
+            width: 100%;
+        }
+
+        .hero-search-bar input {
+            border: none;
+            background: transparent;
+            font-size: 1.1rem;
+            flex-grow: 1;
+            color: #333;
+        }
+
+        .hero-search-bar input:focus {
+            outline: none;
+        }
+
+        .hero-search-bar .btn {
+            border-radius: 50px;
+            padding: 12px 35px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            background-color: #ff5722 !important; /* 與主視覺一致的亮橘色 */
+            border: none;
+            transition: background-color 0.2s;
+        }
+
+        .hero-search-bar .btn:hover {
+            background-color: #e04818 !important;
+        }
+    </style>
 </head>
 
 <body>
     <!-- 引用共用的前台導覽列 -->
     <header th:replace="~{layouts/frontend :: navbar}"></header>
-   <!-- 首頁大圖與搜尋區塊 -->
-   <section class="hero-section" style="padding-top: 120px; margin-top: 0;">
-       <div class="hero-overlay"></div>
-       <div class="hero-content">
-           <div class="container px-4 px-lg-5 text-center">
-               <h1 class="display-4 fw-bolder text-white mb-4">探索台灣美景</h1>
-               <form class="hero-search-bar" action="/front/attr/search" method="get">
-                   <input type="search" name="keyword" placeholder="搜尋景點或地區" aria-label="Search" required>
-                   <button class="btn btn-primary" type="submit" style="background-color: #ffb300; color: #212529;">
-                       <i class="bi bi-search"></i> 搜尋
-                   </button>
-               </form>
-           </div>
-       </div>
-   </section>
-   <!-- 城市探索 (照片輪播) -->
-   <section class="py-5">
-       <div class="container-fluid px-4 px-lg-5 mt-4">
-           <h3 class="fw-bold mb-4">熱門縣市探索</h3>
-           <div class="position-relative">
-               <div class="city-swimlane-container" id="citySwimlane">
-                   <!-- 臺北市 -->
-                   <a href="/front/attr/search?keyword=臺北市" class="city-card">
-                       <img src="/images/taipei.jpg" alt="臺北市">
-                       <div class="city-name">臺北市</div>
-                   </a>
-                   <!-- 新北市 -->
-                   <a href="/front/attr/search?keyword=新北市" class="city-card">
-                       <img src="/images/newtaipei.jpg" alt="新北市">
-                       <div class="city-name">新北市</div>
-                   </a>
-                   <!-- 基隆市 -->
-                   <a href="/front/attr/search?keyword=基隆市" class="city-card">
-                       <img src="/images/keelung.jpg" alt="基隆市">
-                       <div class="city-name">基隆市</div>
-                   </a>
-                   <!-- 宜蘭縣 -->
-                   <a href="/front/attr/search?keyword=宜蘭縣" class="city-card">
-                       <img src="/images/yilan.jpg" alt="宜蘭縣">
-                       <div class="city-name">宜蘭縣</div>
-                   </a>
-                   <!-- 桃園市 -->
-                   <a href="/front/attr/search?keyword=桃園市" class="city-card">
-                       <img src="/images/taoyuan.jpg" alt="桃園市">
-                       <div class="city-name">桃園市</div>
-                   </a>
-                   <!-- 新竹縣 -->
-                   <a href="/front/attr/search?keyword=新竹縣" class="city-card">
-                       <img src="/images/hsinchu.jpg" alt="新竹縣">
-                       <div class="city-name">新竹縣</div>
-                   </a>
-               </div>
-               <!-- 輪播右滑箭頭 -->
-               <button class="scroll-arrow right-arrow shadow-sm" onclick="scrollSwimlane('citySwimlane', 1)">
-                   <i class="bi bi-chevron-right"></i>
-               </button>
-               <!-- 輪播左滑箭頭 -->
-               <button class="scroll-arrow left-arrow shadow-sm" onclick="scrollSwimlane('citySwimlane', -1)">
-                   <i class="bi bi-chevron-left"></i>
-               </button>
-           </div>
-       </div>
-   </section>
+
+    <!-- 置頂景點照片輪播 (置於導覽列正下方，調整 padding-top) -->
+    <section class="position-relative bg-light overflow-hidden" style="padding-top: 160px; padding-bottom: 50px;">
+        <div class="container-fluid px-0">
+            
+            <!-- 搜尋列 (置於照片輪播上方) -->
+            <div class="d-flex justify-content-center mb-5 px-4">
+                <div style="width: 100%; max-width: 800px;">
+                    <form class="hero-search-bar shadow" action="/front/attr/search" method="get">
+                        <input type="search" name="keyword" placeholder="輸入目的地、景點名稱或關鍵字..." aria-label="Search" required>
+                        <button class="btn btn-primary" type="submit" style="background-color: #ff5722; color: #fff;">
+                            <i class="bi bi-search"></i> 搜尋
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="position-relative hero-banner-carousel">
+                <!-- 輪播軌道 -->
+                <div class="banner-track" id="bannerTrack">
+                    <!-- 動態渲染隨機景點 Banner -->
+                    <div th:each="item, iterStat : ${randomAttrs}" 
+                         class="banner-slide"
+                         th:classappend="${iterStat.index == 0} ? 'active' : ''"
+                         th:attr="data-index=${iterStat.index}">
+                         
+                        <a th:href="${item['attr']?.attrId != null} ? '/front/attr/detail/' + ${item['attr']?.attrId} : '#'" 
+                           class="banner-link d-block position-relative h-100 w-100">
+                            
+                            <!-- 景點大圖 -->
+                            <img th:src="${item['imageUrl'] != null && !#strings.isEmpty(item['imageUrl'])} 
+                                         ? ${item['imageUrl']} 
+                                         : (${item['imagePath'] != null && !#strings.isEmpty(item['imagePath'])} 
+                                            ? '/attraction_images/' + ${item['imagePath']} 
+                                            : 'https://dummyimage.com/1200x500/dee2e6/6c757d.jpg')" 
+                                 th:alt="${item['attr']?.attrName}"
+                                 class="banner-img"
+                                 loading="lazy"
+                                 onerror="this.onerror=null; this.src='https://dummyimage.com/1200x500/dee2e6/6c757d.jpg';">
+                            
+                            <!-- 漸層黑色遮罩與文字內容 -->
+                            <div class="banner-overlay">
+                                <div class="banner-content text-white text-center">
+                                    <h2 class="display-5 fw-bold mb-2 banner-title" th:text="${item['attr']?.attrName}">景點名稱</h2>
+                                    <div class="banner-tags d-flex justify-content-center gap-2">
+                                        <span class="badge bg-primary px-3 py-2 rounded-pill" th:text="${item['attr']?.regionVO != null ? item['attr']?.regionVO?.regionName : '未分類'}">地區</span>
+                                        <span class="badge bg-warning text-dark px-3 py-2 rounded-pill" th:text="${item['attr']?.categoryVO != null ? item['attr']?.categoryVO?.categoryName : '未分類'}">類別</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 指示點 -->
+            <div class="banner-dots mb-4" id="bannerDots">
+                <!-- 由 JavaScript 在頁面載入時動態產生 -->
+            </div>
+        </div>
+    </section>
     <!-- 遊程快搜 (照片輪播) -->
     <section class="py-5 pb-0">
         <div class="container-fluid px-4 px-lg-5">
@@ -121,11 +247,6 @@
                 <!--                         <img src="https://picsum.photos/seed/food/400/400" alt="美食之旅"> -->
                 <!--                         <div class="city-name">美食之旅</div> -->
                 <!--                     </a> -->
-                <!--                     <a href="#" class="city-card"> -->
-                <!--                         <img src="https://picsum.photos/seed/bike/400/400" alt="單車漫遊"> -->
-                <!--                         <div class="city-name">單車漫遊</div> -->
-                <!--                     </a> -->
-                <!--                 </div> -->
                 <!-- 輪播右滑箭頭 -->
                 <button class="scroll-arrow right-arrow shadow-sm" onclick="scrollSwimlane('itinerarySwimlane', 1)">
                     <i class="bi bi-chevron-right"></i>
@@ -137,7 +258,7 @@
             </div>
         </div>
     </section>
-    <section class="py-5 bg-light">
+    <section class="py-5 bg-light" id="attrSection">
         <div class="container px-4 px-lg-5">
             <h3 class="fw-bold mb-4">熱門景點推薦</h3>
             <!-- 區域分類標籤 -->
@@ -170,20 +291,6 @@
                                style="height: 220px;"
                                onerror="this.onerror=null; this.src='https://dummyimage.com/450x300/dee2e6/6c757d.jpg';" />
                            
-                           <!--/*
-                           <div class="view-count position-absolute top-0 end-0 m-2 px-2 py-1 bg-dark bg-opacity-75 text-white rounded-2 small d-flex align-items-center">
-                               <span class="me-1">534955</span>
-                               <i class="bi bi-eye-fill"></i>
-                           </div>
-                           <button
-                               class="favorite-btn position-absolute top-0 start-0 m-2 btn btn-light rounded-circle p-0 d-flex align-items-center justify-content-center shadow-sm"
-                               th:attr="data-attr-id=${item['attr']?.attrId}"
-                               onclick="event.preventDefault(); addToFavorite(this.getAttribute('data-attr-id'))"
-                               title="加入收藏"
-                               style="width: 32px; height: 32px; border: none; background: rgba(255, 255, 255, 0.9);">
-                               <i class="bi bi-heart" style="color: #dc3545; font-size: 1rem;"></i>
-                           </button>
-                           */-->
                        </div>
                        <!-- 資訊區塊 -->
                        <div class="info-wrapper pt-3">
@@ -201,8 +308,19 @@
                        </div>
                    </a>
                </div>
-           </div>
-       </div>
+            </div>
+
+            <!-- 前端分頁控制列 -->
+            <div class="pagination-container justify-content-center mt-5" id="gridPagination" style="display: none;">
+                <!-- 左側的頁面資訊 -->
+                <span class="page-info" id="gridPageInfo">頁面 1 / 1</span>
+                
+                <!-- 右側的分頁按鈕 -->
+                <div class="page-buttons" id="gridPageButtons" style="display: flex;">
+                    <!-- 按鈕將由 JS 動態生成 -->
+                </div>
+            </div>
+        </div>
    </section>
    <footer class="py-5 bg-dark">
        <div class="container">
@@ -211,7 +329,118 @@
    </footer>
     <!-- 引用共用的前台 scripts -->
     <th:block th:replace="~{layouts/frontend :: scripts}"></th:block>
-   <script>
+    <script>
+        let activeBannerIndex = 0;
+        let autoplayTimer = null;
+        const MAX_DOTS = 8; // 限制指示點最大數量為 8 個
+
+        function setupBannerCarousel() {
+            const track = document.getElementById('bannerTrack');
+            const slides = document.querySelectorAll('.banner-slide');
+            const dotsContainer = document.getElementById('bannerDots');
+            
+            if (!track || slides.length === 0) return;
+            
+            // 1. 動態產生 Dots (最多 MAX_DOTS 個)
+            dotsContainer.innerHTML = '';
+            const totalDots = Math.min(slides.length, MAX_DOTS);
+            for (let idx = 0; idx < totalDots; idx++) {
+                const dot = document.createElement('div');
+                dot.className = `banner-dot ${idx === 0 ? 'active' : ''}`;
+                dot.addEventListener('click', () => {
+                    // 點擊第 idx 個 dot 時，跳轉到最接近當前循環的目標投影片
+                    const currentCycle = Math.floor(activeBannerIndex / totalDots);
+                    const targetIndex = currentCycle * totalDots + idx;
+                    if (targetIndex < slides.length) {
+                        jumpToBanner(targetIndex);
+                    } else {
+                        jumpToBanner(idx); // 超出總數則回到首輪
+                    }
+                    resetAutoplay();
+                });
+                dotsContainer.appendChild(dot);
+            }
+            
+            // 2. 初始定位
+            updateBannerPosition();
+            
+            // 3. 啟動自動輪播 (每 4 秒切換一次)
+            startAutoplay();
+            
+            // 4. 監聽視窗重置大小 (確保 RWD 置中無誤)
+            window.addEventListener('resize', updateBannerPosition);
+        }
+
+        function startAutoplay() {
+            autoplayTimer = setInterval(() => {
+                moveBanner(1);
+            }, 4000);
+        }
+
+        function resetAutoplay() {
+            if (autoplayTimer) {
+                clearInterval(autoplayTimer);
+            }
+            startAutoplay();
+        }
+
+        function updateBannerPosition() {
+            const track = document.getElementById('bannerTrack');
+            const slides = document.querySelectorAll('.banner-slide');
+            const dots = document.querySelectorAll('.banner-dot');
+            
+            if (!track || slides.length === 0) return;
+            
+            const trackWidth = track.parentElement.offsetWidth;
+            const slideEl = slides[activeBannerIndex];
+            const slideWidth = slideEl.offsetWidth;
+            
+            // 取得軌道 gap / margin 設定
+            const slideStyle = window.getComputedStyle(slideEl);
+            const marginLeft = parseFloat(slideStyle.marginLeft) || 0;
+            const marginRight = parseFloat(slideStyle.marginRight) || 0;
+            const slideFullWidth = slideWidth + marginLeft + marginRight;
+            
+            // 計算置中偏移量公式
+            const centerOffset = (trackWidth - slideWidth) / 2 - (activeBannerIndex * slideFullWidth) - marginLeft;
+            
+            track.style.transform = `translateX(${centerOffset}px)`;
+            
+            // 更新 Active Class
+            slides.forEach((slide, idx) => {
+                if (idx === activeBannerIndex) {
+                    slide.classList.add('active');
+                } else {
+                    slide.classList.remove('active');
+                }
+            });
+            
+            // 更新 Dots Active Class (採用取餘數循環機制)
+            if (dots.length > 0) {
+                const activeDotIndex = activeBannerIndex % dots.length;
+                dots.forEach((dot, idx) => {
+                    if (idx === activeDotIndex) {
+                        dot.classList.add('active');
+                    } else {
+                        dot.classList.remove('active');
+                    }
+                });
+            }
+        }
+
+        function moveBanner(direction) {
+            const slides = document.querySelectorAll('.banner-slide');
+            if (slides.length === 0) return;
+            
+            activeBannerIndex = (activeBannerIndex + direction + slides.length) % slides.length;
+            updateBannerPosition();
+        }
+
+        function jumpToBanner(index) {
+            activeBannerIndex = index;
+            updateBannerPosition();
+        }
+
        function scrollSwimlane(containerId, direction) {
            const container = document.getElementById(containerId);
            if (container) {
@@ -243,11 +472,17 @@
                     console.error('Error:', error);
                 });
         }
-        // 縣市篩選與顯示邏輯
+        // 縣市篩選、顯示與前端分頁邏輯
         document.addEventListener('DOMContentLoaded', function () {
+            setupBannerCarousel();
             const regionLinks = document.querySelectorAll('.region-pills .nav-link');
-            const attractionItems = document.querySelectorAll('.attraction-item');
+            const attractionItems = Array.from(document.querySelectorAll('.attraction-item'));
             const countyContainer = document.getElementById('countyPillsContainer');
+            const paginationContainer = document.getElementById('gridPagination');
+            const pageInfo = document.getElementById('gridPageInfo');
+            const pageButtons = document.getElementById('gridPageButtons');
+            const attrSection = document.getElementById('attrSection'); // 用於滾動定位
+            
             const regionCountyMap = {
                 '北部地區': ['基隆市', '台北市', '新北市', '桃園市', '新竹市', '新竹縣', '宜蘭縣'],
                 '中部地區': ['苗栗縣', '台中市', '彰化縣', '南投縣', '雲林縣'],
@@ -255,41 +490,63 @@
                 '東部地區': ['花蓮縣', '台東縣'],
                 '離島地區': ['澎湖縣', '金門縣', '連江縣']
             };
+
+            const PAGE_SIZE = 12;      // 每頁顯示 12 筆
+            let currentPage = 1;       // 當前頁碼
+            let currentRegion = '全部'; // 當前選中地區
+            let currentCounty = null;   // 當前選中縣市
+
+            // 1. 初始化分頁與顯示
+            filterAndPaginate();
+
+            // 2. 一級地區 Pill 點擊事件
             regionLinks.forEach(link => {
                 link.addEventListener('click', function (e) {
                     e.preventDefault();
                     regionLinks.forEach(l => l.classList.remove('active'));
                     this.classList.add('active');
-                    const selectedRegion = this.getAttribute('data-region');
+                    
+                    currentRegion = this.getAttribute('data-region');
+                    currentCounty = null; // 重設二級篩選
+                    currentPage = 1;      // 切換地區時回第一頁
+                    
                     countyContainer.innerHTML = '';
-                    if (selectedRegion === '全部') {
+                    if (currentRegion === '全部') {
                         countyContainer.classList.add('d-none');
-                        attractionItems.forEach(item => item.style.display = 'block');
                     } else {
                         countyContainer.classList.remove('d-none');
+                        
+                        // 生成「全部縣市」按鈕
                         const allCountyBtn = document.createElement('button');
                         allCountyBtn.className = 'btn btn-sm btn-dark px-3 rounded-pill me-2 mb-2';
                         allCountyBtn.innerText = '全部縣市';
                         allCountyBtn.addEventListener('click', function () {
                             setActiveCountyBtn(this);
-                            filterAttractions(selectedRegion, null);
+                            currentCounty = null;
+                            currentPage = 1;
+                            filterAndPaginate();
                         });
                         countyContainer.appendChild(allCountyBtn);
-                        const counties = regionCountyMap[selectedRegion] || [];
+                        
+                        // 生成各縣市按鈕
+                        const counties = regionCountyMap[currentRegion] || [];
                         counties.forEach(county => {
                             const btn = document.createElement('button');
                             btn.className = 'btn btn-sm btn-outline-secondary px-3 rounded-pill me-2 mb-2';
                             btn.innerText = county;
                             btn.addEventListener('click', function () {
                                 setActiveCountyBtn(this);
-                                filterAttractions(selectedRegion, county);
+                                currentCounty = county;
+                                currentPage = 1;
+                                filterAndPaginate();
                             });
                             countyContainer.appendChild(btn);
                         });
-                        filterAttractions(selectedRegion, null);
                     }
+                    filterAndPaginate();
                 });
             });
+
             function setActiveCountyBtn(activeBtn) {
                 const buttons = countyContainer.querySelectorAll('button');
                 buttons.forEach(btn => {
@@ -299,39 +556,123 @@
                 activeBtn.classList.remove('btn-outline-secondary');
                 activeBtn.classList.add('btn-dark');
             }
-            function filterAttractions(region, county) {
-                attractionItems.forEach(item => {
+
+            // 3. 核心過濾與分頁渲染函數
+            function filterAndPaginate() {
+                // A. 依據條件過濾景點
+                const filteredItems = attractionItems.filter(item => {
                     const itemRegion = item.getAttribute('data-region') || '';
                     const itemAddress = item.getAttribute('data-address') || '';
-                    // 標準化「台/臺」
                     const normalizedItemRegion = itemRegion.replace(/臺/g, '台');
-                    // 1. 檢查一級地區是否匹配
+                    
+                    // 檢查一級地區
                     let matchesRegion = false;
-                    if (region === '全部') {
+                    if (currentRegion === '全部') {
                         matchesRegion = true;
                     } else {
-                        // 取得目前選取地區對應的縣市清單，並統一轉成「台」
-                        const countiesInRegion = (regionCountyMap[region] || []).map(c => c.replace(/臺/g, '台'));
-                        // 檢查該景點的縣市（例如新北市）是否在該地區（例如北部地區）的縣市清單中
+                        const countiesInRegion = (regionCountyMap[currentRegion] || []).map(c => c.replace(/臺/g, '台'));
                         matchesRegion = countiesInRegion.includes(normalizedItemRegion);
                     }
-                    // 2. 檢查二級縣市是否匹配
+                    
+                    // 檢查二級縣市
                     let matchesCounty = false;
-                    if (!county) {
-                        matchesCounty = true; // 未選取縣市按鈕，預設通過
+                    if (!currentCounty) {
+                        matchesCounty = true;
                     } else {
-                        const normalizedCounty = county.replace(/臺/g, '台');
-                        // 景點地區等於選中縣市，或地址中包含該縣市
+                        const normalizedCounty = currentCounty.replace(/臺/g, '台');
                         matchesCounty = (normalizedItemRegion === normalizedCounty) ||
-                            itemAddress.replace(/臺/g, '台').includes(normalizedCounty);
+                                        itemAddress.replace(/臺/g, '台').includes(normalizedCounty);
                     }
-                    // 3. 兩者皆符合時顯示，否則隱藏
-                    if (matchesRegion && matchesCounty) {
-                        item.style.display = 'block';
+                    
+                    return matchesRegion && matchesCounty;
+                });
+
+                // B. 計算分頁
+                const totalItems = filteredItems.length;
+                const totalPages = Math.ceil(totalItems / PAGE_SIZE);
+                
+                // 防呆處理：若目前頁數超出總頁數，退回第一頁
+                if (currentPage > totalPages && totalPages > 0) {
+                    currentPage = 1;
+                }
+
+                // C. 隱藏所有景點，僅顯示當前頁面範圍 (12筆)
+                attractionItems.forEach(item => item.style.display = 'none');
+                
+                const startIdx = (currentPage - 1) * PAGE_SIZE;
+                const endIdx = Math.min(startIdx + PAGE_SIZE, totalItems);
+                
+                for (let i = startIdx; i < endIdx; i++) {
+                    filteredItems[i].style.display = 'block';
+                }
+
+                // D. 渲染分頁按鈕
+                renderPaginationButtons(totalPages);
+            }
+
+            // 4. 動態繪製分頁按鈕
+            function renderPaginationButtons(totalPages) {
+                if (totalPages <= 1) {
+                    paginationContainer.style.setProperty('display', 'none', 'important');
+                    return;
+                }
+                
+                paginationContainer.style.setProperty('display', 'flex', 'important');
+                pageInfo.innerText = `頁面 ${currentPage} / ${totalPages}`;
+                pageButtons.innerHTML = '';
+
+                // (A) 上一頁按鈕
+                const prevBtn = document.createElement('a');
+                prevBtn.href = '#attrSection';
+                prevBtn.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+                prevBtn.innerText = '‹ 上一頁';
+                prevBtn.addEventListener('click', (e) => {
+                    if (currentPage > 1) {
+                        currentPage--;
+                        filterAndPaginate();
+                        scrollToSection();
                     } else {
-                        item.style.display = 'none';
+                        e.preventDefault();
                     }
                 });
+                pageButtons.appendChild(prevBtn);
+
+                // (B) 頁碼按鈕
+                for (let i = 1; i <= totalPages; i++) {
+                    const pageBtn = document.createElement('a');
+                    pageBtn.href = '#attrSection';
+                    pageBtn.className = `page-item ${i === currentPage ? 'active' : ''}`;
+                    pageBtn.innerText = i;
+                    pageBtn.addEventListener('click', () => {
+                        currentPage = i;
+                        filterAndPaginate();
+                        scrollToSection();
+                    });
+                    pageButtons.appendChild(pageBtn);
+                }
+
+                // (C) 下一頁按鈕
+                const nextBtn = document.createElement('a');
+                nextBtn.href = '#attrSection';
+                nextBtn.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+                nextBtn.innerText = '下一頁 ›';
+                nextBtn.addEventListener('click', (e) => {
+                    if (currentPage < totalPages) {
+                        currentPage++;
+                        filterAndPaginate();
+                        scrollToSection();
+                    } else {
+                        e.preventDefault();
+                    }
+                });
+                pageButtons.appendChild(nextBtn);
+            }
+
+            // 5. 點擊分頁時平滑滾動至推薦區段頂部
+            function scrollToSection() {
+                if (attrSection) {
+                    attrSection.scrollIntoView({ behavior: 'smooth' });
+                }
             }
         });
 
