@@ -113,7 +113,7 @@ public class EmpController {
     }
 
     // 執行新增員工
-    @PostMapping("/insert")
+    @PostMapping("/addEmp")
     public String insert(
             @Valid @ModelAttribute("empVO") EmpVO empVO,
             BindingResult result,
@@ -129,7 +129,7 @@ public class EmpController {
         // 2. 呼叫服務層進行新增 (內含帳號唯一性防呆)
         try {
             empService.addEmp(empVO);
-            return "redirect:/back-end/emp/listAllEmp"; // 新增成功重導向至列表
+            return "redirect:/emp/listAllEmp"; // 新增成功重導向至列表
         } catch (RuntimeException e) {
             model.addAttribute("errorMsg", e.getMessage());
             List<DeptVO> deptList = deptService.getAll();
@@ -142,7 +142,16 @@ public class EmpController {
     @PostMapping("/getOne_For_Update")
     public String getOneForUpdate(
             @RequestParam("empId") Integer empId,
-            ModelMap model) {
+            ModelMap model,
+            HttpSession session) {
+
+        // 取得登入者資訊以判斷是否修改自己
+        EmpVO loginEmp = (EmpVO) session.getAttribute("loginEmp");
+        if (loginEmp == null) {
+            return "redirect:/emp/login";
+        }
+        boolean isSelf = loginEmp.getEmpId().equals(empId);
+        model.addAttribute("isSelf", isSelf);
 
         EmpVO empVO = empService.getOneEmp(empId);
         model.addAttribute("empVO", empVO);
@@ -159,16 +168,83 @@ public class EmpController {
     public String update(
             @Valid @ModelAttribute("empVO") EmpVO empVO,
             BindingResult result,
+            @RequestParam(value = "newPwd", required = false) String newPwd,
+            @RequestParam(value = "confirmPwd", required = false) String confirmPwd,
+            @RequestParam(value = "authPwd", required = false) String authPwd,
+            HttpSession session,
             ModelMap model) {
 
-        // 1. 資料驗證有錯誤
+        // 取得登入者資訊
+        EmpVO loginEmp = (EmpVO) session.getAttribute("loginEmp");
+        if (loginEmp == null) {
+            return "redirect:/emp/login";
+        }
+
+        // 取得資料庫中原本的資料
+        EmpVO originalEmp = empService.getOneEmp(empVO.getEmpId());
+        if (originalEmp == null) {
+            return "redirect:/emp/listAllEmp";
+        }
+
+        boolean isSelf = loginEmp.getEmpId().equals(empVO.getEmpId());
+
+        // 1. 他人資料覆寫防護
+        if (!isSelf) {
+            empVO.setEmpName(originalEmp.getEmpName());
+            empVO.setEmpSex(originalEmp.getEmpSex());
+            empVO.setEmpTel(originalEmp.getEmpTel());
+            empVO.setEmpEmail(originalEmp.getEmpEmail());
+            empVO.setEmpAcc(originalEmp.getEmpAcc());
+            empVO.setEmpPwd(originalEmp.getEmpPwd());
+        } else {
+            // 2. 自己資料：不可更改帳號
+            empVO.setEmpAcc(originalEmp.getEmpAcc());
+            
+            // 3. 處理自己密碼變更邏輯
+            if (newPwd != null && !newPwd.trim().isEmpty()) {
+                if (confirmPwd == null || !newPwd.equals(confirmPwd)) {
+                    model.addAttribute("errorMsg", "兩次輸入的新密碼不一致！");
+                    List<DeptVO> deptList = deptService.getAll();
+                    model.addAttribute("deptList", deptList);
+                    model.addAttribute("isSelf", isSelf);
+                    return "back-end/emp/update_emp_input";
+                }
+                if (newPwd.length() < 8 || newPwd.length() > 20) {
+                    model.addAttribute("errorMsg", "密碼長度需在 8-20 碼之間！");
+                    List<DeptVO> deptList = deptService.getAll();
+                    model.addAttribute("deptList", deptList);
+                    model.addAttribute("isSelf", isSelf);
+                    return "back-end/emp/update_emp_input";
+                }
+                empVO.setEmpPwd(newPwd);
+            } else {
+                // 若新密碼為空，保留原密碼
+                empVO.setEmpPwd(originalEmp.getEmpPwd());
+            }
+        }
+
+        // 4. 修改部門或啟用狀態時，驗證安全密碼
+        boolean deptChanged = !originalEmp.getDeptVO().getDeptId().equals(empVO.getDeptVO().getDeptId());
+        boolean statusChanged = !originalEmp.getEmpStatus().equals(empVO.getEmpStatus());
+        if (deptChanged || statusChanged) {
+            if (authPwd == null || !authPwd.equals("root888")) {
+                model.addAttribute("errorMsg", "安全授權驗證失敗，無法修改部門或狀態！");
+                List<DeptVO> deptList = deptService.getAll();
+                model.addAttribute("deptList", deptList);
+                model.addAttribute("isSelf", isSelf);
+                return "back-end/emp/update_emp_input";
+            }
+        }
+
+        // 5. 其他資料驗證有錯誤
         if (result.hasErrors()) {
             List<DeptVO> deptList = deptService.getAll();
             model.addAttribute("deptList", deptList);
+            model.addAttribute("isSelf", isSelf);
             return "back-end/emp/update_emp_input";
         }
 
-        // 2. 執行更新
+        // 6. 執行更新
         empService.updateEmp(empVO);
         return "redirect:/emp/listAllEmp";
     }
