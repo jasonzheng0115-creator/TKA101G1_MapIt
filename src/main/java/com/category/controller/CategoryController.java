@@ -136,16 +136,17 @@ public class CategoryController {
         return "redirect:/category/listAll";
     }
     
-    // ========== 類別刪除 ==========
+    // ========== 類別刪除 (已停用) ==========
     
     /**
-     * 刪除類別
+     * 刪除類別 (已停用)
      * 路由：GET /category/delete?categoryId=1
      * 刪除後重導向到列表頁
-     */
+     *
     @GetMapping("/delete")
     public String delete(@RequestParam("categoryId") Integer categoryId) {
         categoryService.deleteCategory(categoryId);
         return "redirect:/category/listAll";
     }
+    */
 }

@@ -428,8 +428,9 @@
                                         <i class="bi bi-star-fill" th:each="i : ${#numbers.sequence(1, comment.commentScore)}"></i>
                                         <span th:text="${comment.commentScore} + ' 分'">5 分</span>
                                     </span>
-                                    <!-- 檢舉按鈕 -->
-                                    <button class="btn btn-link btn-sm text-danger p-0 ms-3 btn-report-comment" 
+                                    <!-- 檢舉按鈕（若為自己發布的評論則不顯示） -->
+                                    <button th:if="${session.loginCust == null or session.loginCust.custId != comment.custId}"
+                                            class="btn btn-link btn-sm text-danger p-0 ms-3 btn-report-comment" 
                                             th:data-comment-id="${comment.commentId}" 
                                             title="檢舉此評論"
                                             style="font-size: 0.85rem; text-decoration: none;">

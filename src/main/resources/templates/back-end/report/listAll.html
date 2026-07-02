@@ -37,21 +37,28 @@
                 <table id="reportTable" class="table table-striped table-hover">
                     <thead class="table-dark">
                         <tr>
-                            <th class="text-center" style="width: 6%;">編號</th>
+                            <th class="text-center" style="width: 5%;">編號</th>
                             <th class="text-center" style="width: 8%;">評論編號</th>
+                            <th style="width: 12%;">被檢舉景點</th>
                             <th style="width: 15%;">被檢舉評論內容</th>
-                            <th class="text-center" style="width: 8%;">檢舉人</th>
-                            <th style="width: 20%;">檢舉內容</th>
+                            <th class="text-center" style="width: 7%;">檢舉人</th>
+                            <th style="width: 15%;">檢舉內容</th>
                             <th class="text-center" style="width: 8%;">處理員工</th>
-                            <th class="text-center" style="width: 12%;">檢舉時間</th>
-                            <th class="text-center" style="width: 10%;">狀態</th>
-                            <th class="text-center" style="width: 13%;">操作</th>
+                            <th class="text-center" style="width: 10%;">檢舉時間</th>
+                            <th class="text-center" style="width: 8%;">狀態</th>
+                            <th class="text-center" style="width: 12%;">操作</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr th:each="report : ${reportList}">
                             <td class="text-center" th:text="${report.reportId}">1</td>
                             <td class="text-center" th:text="${report.commentVO != null ? report.commentVO.commentId : '未指定'}">1</td>
+                            <td>
+                                <span th:if="${report.commentVO != null && report.commentVO.attrVO != null}"
+                                      th:text="${report.commentVO.attrVO.attrName}">景點名稱</span>
+                                <span th:if="${report.commentVO == null || report.commentVO.attrVO == null}" 
+                                      class="text-muted">未知景點</span>
+                            </td>
                             <td>
                                 <span th:if="${report.commentVO != null && report.commentVO.commentContent != null}"
                                       th:text="${#strings.length(report.commentVO.commentContent) > 30 ? 
