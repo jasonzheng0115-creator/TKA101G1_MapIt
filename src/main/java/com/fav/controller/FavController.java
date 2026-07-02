@@ -48,6 +48,13 @@ public class FavController {
             }
             Integer memberId = loginCust.getCustId();
             
+            // 檢查是否已收藏過該景點
+            if (favService.isFavorite(memberId, attrId)) {
+                response.put("success", false);
+                response.put("message", "已收藏過該景點");
+                return response;
+            }
+            
             // 呼叫 Service 新增收藏
             FavoriteVO favorite = favService.addFavorite(memberId, attrId);
             

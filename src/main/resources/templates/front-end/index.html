@@ -461,13 +461,18 @@
                 },
                 body: 'attrId=' + attrId
             })
-                .then(response => {
-                    if (response.ok) {
-                        alert('成功加入收藏！');
-                    } else {
-                        alert('加入收藏失敗，請稍後再試。');
-                    }
-                })
+                 .then(response => response.json())
+                 .then(data => {
+                     if (data.success) {
+                         alert('成功加入收藏！');
+                     } else {
+                         alert(data.message || '加入收藏失敗，請稍後再試。');
+                         if (data.message === '請先登入會員') {
+                             const currentUrl = window.location.pathname + window.location.search;
+                             window.location.href = '/customer/login?redirect=' + encodeURIComponent(currentUrl);
+                         }
+                     }
+                 })
                 .catch(error => {
                     console.error('Error:', error);
                 });
