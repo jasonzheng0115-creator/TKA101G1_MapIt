@@ -49,10 +49,15 @@ public class CustController {
 	
 	@Autowired //會員驗證信
 	private MailService mailService;
-
+	
 	@GetMapping("/login") // 登入功能，指向前端的登入html
-	public String loginPage() {
-		return "front-end/customer/login";
+	public String loginPage(HttpServletRequest request, HttpSession session) {
+	    // 取得來源網頁的網址
+	    String referer = request.getHeader("Referer");
+	    if (referer != null && !referer.contains("/customer/login") && !referer.contains("/customer/register")) {
+	        session.setAttribute("location", referer);
+	    }
+	    return "front-end/customer/login";
 	}
 
 	@PostMapping("/loginCheck") // 拿前端給的資料
