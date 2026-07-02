@@ -172,7 +172,7 @@
 
     <!-- JS Dropdown 控制 -->
     <th:block th:fragment="scripts">
-        <!-- 通知 Toast 彈窗 -->
+        <!-- 通知彈窗 -->
         <div class="toast-container position-fixed bottom-0 end-0 p-4" style="z-index: 1055; pointer-events: none;">
             <div id="notificationToast" class="toast shadow-lg" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000" style="border-radius: 12px; border: 1px solid rgba(255,135,36,0.3); cursor: pointer; pointer-events: auto;" onclick="window.location.href='/customer/message'">
                 <div class="toast-header text-white" style="background-color: var(--primary-color, #ff7f50); border-top-left-radius: 12px; border-top-right-radius: 12px;">
@@ -205,28 +205,33 @@
                     });
                 }
                 
-                // 3. 檢查未讀通知 (紅點與 Toast 邏輯)
-                // 只有在已經登入的情況下，我們才去問後端
+                // 3. 通知檢查未讀通知 (紅點與 Toast 邏輯)
                 const isMemberLoggedIn = document.getElementById('memberDropdown') !== null;
                 if (isMemberLoggedIn) {
                     fetch('/customer/message/api/unreadStatus')
                         .then(res => res.json())
                         .then(currentCount => {
-                            // 轉成數字確保安全
+                            // 轉成數字確保安全，防呆處理 NaN
                             currentCount = parseInt(currentCount);
+                            if (isNaN(currentCount)) currentCount = 0;
                             
+                            //console.log("【通知系統 Debug】從資料庫抓到的真實未讀數量:", currentCount);
+
                             if (currentCount > 0) {
                                 // (A) 只要數量 > 0，一律顯示紅點
                                 if(document.getElementById('navRedDot')) document.getElementById('navRedDot').style.display = 'inline-block';
                                 if(document.getElementById('dropdownRedDot')) document.getElementById('dropdownRedDot').style.display = 'inline-block';
 
                                 // (B) 判斷是否需要彈出 Toast (用 sessionStorage 防擾)
-                                // 拿出session裡的上次數量，如果沒有就當作 0
-                                let savedCount = sessionStorage.getItem('lastUnreadCount');
-                                savedCount = savedCount ? parseInt(savedCount) : 0;
+                                let savedCountStr = sessionStorage.getItem('lastUnreadCount');
+                                let savedCount = savedCountStr ? parseInt(savedCountStr) : 0;
+                                if (isNaN(savedCount)) savedCount = 0;
+                                
+                                //console.log("【通知系統 Debug】小本本紀錄的上次數量:", savedCount);
                                 
                                 // 只有當「現在的未讀數量」大於「上次提醒的數量」時，才彈出！
                                 if (currentCount > savedCount) {
+                                    //console.log("【通知系統 Debug】觸發彈窗！因為", currentCount, ">", savedCount);
                                     const toastEl = document.getElementById('notificationToast');
                                     if (toastEl) {
                                         const toast = new bootstrap.Toast(toastEl);
