@@ -181,6 +181,15 @@
 
     <!-- 票券統計總表區塊 -->
     <div class="glass-card">
+        <!-- 排序按鈕區塊 -->
+        <div class="mb-3 d-flex align-items-center gap-2 flex-wrap">
+            <span class="fw-semibold text-secondary" style="font-size: 14px;"><i class="bi bi-sort-numeric-down"></i> 排序庫存量：</span>
+            <button class="btn btn-sm btn-outline-success" onclick="sortTickets('unsold')">🟢 未售出 (多 ➔ 少)</button>
+            <button class="btn btn-sm btn-outline-danger" onclick="sortTickets('sold')">🔴 已售出 (多 ➔ 少)</button>
+            <button class="btn btn-sm btn-outline-secondary" onclick="sortTickets('cancel')">⚪ 已作廢 (多 ➔ 少)</button>
+            <button class="btn btn-sm btn-light" onclick="sortTickets('id')">🔢 依商品編號排序</button>
+        </div>
+
         <div class="table-container">
             <table>
                 <thead>
@@ -217,6 +226,7 @@
                 <tr>
                     <th>票券編號</th>
                     <th>銷售狀態</th>
+                    <th>會員使用狀態</th>
                 </tr>
             </thead>
             <tbody id="modalTableBody">
@@ -235,45 +245,87 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
+	// 暫存加載後的票券統計資料
+	window.loadedTicketsData = [];
+
 	// 網頁載入完成時，去抓取票券查詢功能的資料
 	window.onload = function() {searchTickets();};
 
-	
-	//票券查詢功能
+	// 渲染表格資料
+	function renderTable(data) {
+		var tbody = document.getElementById("ticketTableBody");
+		tbody.innerHTML = "";
+
+		for(var i=0; i<data.length; i++){
+			var prodListOne = data[i]; //拿出一份單獨的商品報表
+			
+			var trHTML = "<tr>";
+			trHTML = trHTML + "<td>" + prodListOne.productId + "</td>";
+			trHTML = trHTML + "<td>" + prodListOne.productName + "</td>";
+			trHTML = trHTML + "<td class='status-col'><span class='status-badge status-unsold'>" + prodListOne.unsoldCount + "</span></td>";
+			trHTML = trHTML + "<td class='status-col'><span class='status-badge status-sold'>" + prodListOne.soldCount + "</span></td>";
+			trHTML = trHTML + "<td class='status-col'><span class='status-badge status-void'>" + prodListOne.cancelCount + "</span></td>";
+			trHTML = trHTML + "<td><button class='btn btn-sm btn-outline-info' onclick='openDetailModal(" 
+				+ prodListOne.productId
+				+ ",\"" + prodListOne.productName.replace(/"/g, '&quot;') + "\")'>查看明細</button></td>";
+			trHTML = trHTML + "</tr>";
+			tbody.innerHTML = tbody.innerHTML + trHTML;
+		}
+	}
+
+	// 票券查詢功能
 	function searchTickets(){
 		var inputId = document.getElementById("searchProdId").value;
 		var inputName = document.getElementById("searchProdName").value;
 		var url = "/ticket/api/ticketAll?prodId="+inputId+"&prodName="+inputName;
-	fetch(url) //接到api網址
-		.then(function(response){
-			return response.json(); //把uri拆成json格式
-		})
-		.then(function(data){ //拿到json格式的報表
+		fetch(url) //接到api網址
+			.then(function(response){
+				return response.json(); //把uri拆成json格式
+			})
+			.then(function(data){ //拿到json格式的報表
+				window.loadedTicketsData = data; // 存入全域變數
+				renderTable(data); // 渲染畫面
+			});
+	}
 
-			//每次查詢時都先清空網頁的資料，避免疊加上一次的搜尋結果資料
-			var tbody = document.getElementById("ticketTableBody");
-			tbody.innerHTML="";
-	
-			//寫上搜尋的所有結果
-			for(var i=0;i<data.length;i++){
-				var prodListOne = data[i]; //拿出一份單獨的商品報表
-				
-				var trHTML = "<tr>";
-				trHTML = trHTML+"<td>"+prodListOne.productId +"</td>";
-				trHTML = trHTML+"<td>"+prodListOne.productName +"</td>";
-				trHTML = trHTML+"<td class='status-col'><span class='status-badge status-unsold'>"
-					+prodListOne.unsoldCount +"</span></td>";
-				trHTML = trHTML+"<td class='status-col'><span class='status-badge status-sold'>"
-					+prodListOne.soldCount +"</span></td>";
-				trHTML = trHTML+"<td class='status-col'><span class='status-badge status-void'>"
-					+prodListOne.cancelCount +"</span></td>";
-				trHTML = trHTML + "<td><button class='btn btn-sm btn-outline-info' onclick='openDetailModal(" 
-					+ prodListOne.productId
-					+ ",\" "+ prodListOne.productName +"\")'>查看明細</button></td>";
-				trHTML = trHTML+"</tr>";
-				tbody.innerHTML=tbody.innerHTML+trHTML;
-			}
-		});
+	// 排序功能 (由多到少)
+	function sortTickets(type) {
+		// 1. 安全防護：如果目前沒有任何票券資料，直接結束，不做任何動作
+		if (window.loadedTicketsData == null || window.loadedTicketsData.length == 0) {
+			return;
+		}
+		
+		// 2. 複製一份陣列資料：用最簡單的 for 迴圈，把原資料一筆筆塞入新陣列，避免修改到原資料順序
+		var sortedData = [];
+		for (var i = 0; i < window.loadedTicketsData.length; i++) {
+			sortedData.push(window.loadedTicketsData[i]);
+		}
+		
+		// 3. 根據傳入的排序類型 (type) 進行排序
+		if (type == 'unsold') {
+			// 依「未售出數量」由大到小排序
+			sortedData.sort(function(a, b) {
+				return b.unsoldCount - a.unsoldCount;
+			});
+		} else if (type == 'sold') {
+			// 依「已售出數量」由大到小排序
+			sortedData.sort(function(a, b) {
+				return b.soldCount - a.soldCount;
+			});
+		} else if (type == 'cancel') {
+			// 依「已作廢數量」由大到小排序
+			sortedData.sort(function(a, b) {
+				return b.cancelCount - a.cancelCount;
+			});
+		} else if (type == 'id') {
+			// 依「商品編號」由小到大排序 (用來恢復預設值)
+			sortedData.sort(function(a, b) {
+				return a.productId - b.productId;
+			});
+		}
+		
+		// 4. 將排序好後的陣列，重新呼叫渲染函式畫在網頁表格上
+		renderTable(sortedData);
 	}
 	
 	//票券詳細視窗
@@ -314,9 +366,22 @@
 				statusBadge = "<span class='status-badge status-void'>已作廢</span>";
 			}
 			
+			// 準備會員狀態名牌
+			var memberBadge = "";
+			if(ticket.memberStatus === "無") {
+				memberBadge = "<span style='color: #adb5bd;'>無</span>";
+			} else if (ticket.memberStatus === "未使用") {
+				memberBadge = "<span class='badge bg-warning text-dark'>未使用</span>";
+			} else if (ticket.memberStatus === "已使用") {
+				memberBadge = "<span class='badge bg-secondary'>已使用</span>";
+			} else if (ticket.memberStatus === "已逾期") {
+				memberBadge = "<span class='badge bg-danger'>已逾期</span>";
+			}
+			
 			var trHTML = "<tr>"
 			trHTML = trHTML + "<td>" +ticket.tktId + "</td>";
 			trHTML = trHTML + "<td>" +statusBadge + "</td>";
+			trHTML = trHTML + "<td>" +memberBadge + "</td>";
 			trHTML = trHTML + "</tr>"
 			modalTbody.innerHTML = modalTbody.innerHTML +trHTML;
 		}

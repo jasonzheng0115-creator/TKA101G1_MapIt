@@ -182,6 +182,13 @@ public class TicketService {
 		TicketItemVO ticketItem = ticketItemRepository.findByTktId(tktId);
 		
 		if (ticket != null && ticketItem != null) {
+			// 檢查現在的時間是否已經超過了票券的截止日期 (endDate)
+			// 如果 endDate 在現在的時間之前 (isBefore)，就代表過期了，直接拒絕核銷
+			if (ticketItem.getEndDate().isBefore(LocalDateTime.now())) {
+				System.out.println("核銷失敗：該票券已逾期");
+				return false;
+			}
+			
 			// 將票券狀態改為2(已作廢/已使用)
 			ticket.setTktSale(2);
 			// 將使用者的票券明細狀態改為 "已使用"

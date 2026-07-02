@@ -34,6 +34,9 @@ public class TicketController {
 	@Autowired //自動注入，用來拿商品清單
 	com.prod.model.ProdService prodSvc;
 	
+	@Autowired
+	com.ticket.model.TicketItemRepository ticketItemRepository;
+	
 	//票券詳細功能
     @GetMapping("/ticketList")
     public String ticketList(ModelMap model) {
@@ -76,6 +79,24 @@ public class TicketController {
 			}else {
 				dto.setSaleStatus("已作廢");
 			}
+			
+			// 判斷會員使用狀態
+			com.ticket.model.TicketItemVO itemVO = ticketItemRepository.findByTktId(vo.getTktId());
+			if (itemVO == null) {
+				dto.setMemberStatus("無");
+			} else {
+				if ("已使用".equals(itemVO.getTicketStatus())) {
+					dto.setMemberStatus("已使用");
+				} else {
+					// 狀態為未使用時，檢查是否逾期
+					if (itemVO.getEndDate() != null && itemVO.getEndDate().isBefore(java.time.LocalDateTime.now())) {
+						dto.setMemberStatus("已逾期");
+					} else {
+						dto.setMemberStatus("未使用");
+					}
+				}
+			}
+			
 			//跑迴圈後乾淨的參數，一個個加進dto變數
 			resultList.add(dto);
 		}

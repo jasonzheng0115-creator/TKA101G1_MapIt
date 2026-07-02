@@ -108,21 +108,34 @@
 
             <!-- 票券列表 (當有票券時顯示) -->
             <div th:unless="${#lists.isEmpty(ticketList)}">
-                <div class="ticket-card" th:each="ticketItem : ${ticketList}">
+                <!-- 使用 th:with 計算 isExpired 變數，判斷 endDate 是否早於現在時間 -->
+                <div class="ticket-card" th:each="ticketItem : ${ticketList}" th:with="isExpired=${ticketItem.endDate.isBefore(#temporals.createNow())}">
                     <div class="ticket-info">
                         <h3 th:text="${ticketItem.ticketId.productVO.productName}">商品名稱</h3>
                         <p><i class="bi bi-upc-scan me-1"></i><strong>票券代碼：</strong> <span th:text="${ticketItem.ticketId.tktId}" class="text-secondary">TK-000</span></p>
                         <p><i class="bi bi-calendar-event me-1"></i><strong>有效期限：</strong> <span th:text="${#temporals.format(ticketItem.endDate, 'yyyy-MM-dd')}">2026-12-31</span> 前有效</p>
                         <p><i class="bi bi-check-circle me-1"></i><strong>狀態：</strong> 
-                            <span th:if="${ticketItem.ticketStatus == '未使用'}" style="color: #ff5722; font-weight: bold;">可使用</span>
+                            <!-- 判斷狀態與是否逾期 -->
+                            <span th:if="${ticketItem.ticketStatus == '未使用' and !isExpired}" style="color: #ff5722; font-weight: bold;">可使用</span>
+                            <span th:if="${ticketItem.ticketStatus == '未使用' and isExpired}" style="color: #dc3545; font-weight: bold;">已逾期</span>
                             <span th:if="${ticketItem.ticketStatus == '已使用'}" style="color: #6c757d; font-weight: bold;">已使用</span>
                         </p>
                     </div>
                     
-                    <div class="ms-3 text-center" th:if="${ticketItem.ticketStatus == '未使用'}">
+                    <!-- 只有在「未使用」且「未過期」時，才顯示 QR Code -->
+                    <div class="ms-3 text-center" th:if="${ticketItem.ticketStatus == '未使用' and !isExpired}">
                         <img th:src="@{/ticket/qrcode/{tktId}(tktId=${ticketItem.ticketId.tktId})}" alt="QR Code" class="img-fluid rounded border p-1 qr-thumbnail" style="width: 100px; height: 100px;" th:onclick="'openQrModal(this.src, ' + ${ticketItem.ticketId.tktId} + ')'" title="點擊放大顯示">
                         <div class="mt-1 small text-muted" style="cursor: pointer;" th:onclick="'openQrModal(this.previousElementSibling.src, ' + ${ticketItem.ticketId.tktId} + ')'">點擊放大</div>
                     </div>
+                    
+                    <!-- 「未使用」但「已過期」，隱藏 QR Code，顯示紅色逾期框 -->
+                    <div class="ms-3 text-center" th:if="${ticketItem.ticketStatus == '未使用' and isExpired}">
+                        <div style="width: 100px; height: 100px; display: flex; align-items: center; justify-content: center; background-color: #fff5f5; border: 1px dashed #dc3545; color: #dc3545; border-radius: 8px;">
+                            <i class="bi bi-clock-history me-1"></i>已逾期
+                        </div>
+                    </div>
+                    
+                    <!-- 「已使用」，顯示原本的灰色失效框 -->
                     <div class="ms-3 text-center" th:if="${ticketItem.ticketStatus == '已使用'}">
                         <div style="width: 100px; height: 100px; display: flex; align-items: center; justify-content: center; background-color: #f8f9fa; border: 1px dashed #ced4da; color: #adb5bd; border-radius: 8px;">
                             <i class="bi bi-slash-circle me-1"></i>已失效
