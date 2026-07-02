@@ -3,6 +3,7 @@ package com.message.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -74,16 +75,28 @@ public class MessageController {
      * 讀取本地端推播圖片
      */
     @GetMapping("/image/{msgId}")
-    public org.springframework.http.ResponseEntity<byte[]> getMessageImage(@PathVariable("msgId") Integer msgId) {
+    public ResponseEntity<byte[]> getMessageImage(@PathVariable("msgId") Integer msgId) {
         String msgPicPath = messageService.getMessagePicPath(msgId);
         if (msgPicPath == null || msgPicPath.trim().isEmpty()) {
-            return org.springframework.http.ResponseEntity.notFound().build();
+            return ResponseEntity.notFound().build();
         }
 
         try {
-            java.io.File imgFile = new java.io.File(msgPicPath);
+            String filename = msgPicPath;
+            // 相容舊資料庫的絕對路徑：如果字串包含斜線，只取出最後的檔名
+            int lastSlash = filename.lastIndexOf('/');
+            int lastBackslash = filename.lastIndexOf('\\');
+            int maxIdx = Math.max(lastSlash, lastBackslash);
+            if (maxIdx >= 0) {
+                filename = filename.substring(maxIdx + 1);
+            }
+
+            String userHome = System.getProperty("user.home");
+            String uploadDirectory = userHome + java.io.File.separator + "upload" + java.io.File.separator + "messagePic";
+            java.io.File imgFile = new java.io.File(uploadDirectory, filename);
+
             if (!imgFile.exists()) {
-                return org.springframework.http.ResponseEntity.notFound().build();
+                return ResponseEntity.notFound().build();
             }
 
             byte[] imageBytes = java.nio.file.Files.readAllBytes(imgFile.toPath());
@@ -95,12 +108,12 @@ public class MessageController {
                 mediaType = org.springframework.http.MediaType.IMAGE_GIF;
             }
 
-            return org.springframework.http.ResponseEntity.ok()
+            return ResponseEntity.ok()
                     .contentType(mediaType)
                     .body(imageBytes);
         } catch (Exception e) {
             e.printStackTrace();
-            return org.springframework.http.ResponseEntity.internalServerError().build();
+            return ResponseEntity.internalServerError().build();
         }
     }
 

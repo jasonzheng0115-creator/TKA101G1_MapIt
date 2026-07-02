@@ -323,8 +323,8 @@ public class CustController {
 				File saveFile = new File(uploadDirectory, newFileName);
 				// 複製檔案存入硬碟
 				file.transferTo(saveFile);
-				// 將電腦本地端的絕對路徑存入資料庫
-				custVO.setCustImg(saveFile.getAbsolutePath());
+				// 將電腦本地端的檔名存入資料庫，避免跨系統絕對路徑不相容的問題
+				custVO.setCustImg(newFileName);
 			} catch (Exception e) {
 				e.printStackTrace();
 				model.addAttribute("errorMsg", "照片上傳失敗:" + e.getMessage());
@@ -428,7 +428,19 @@ public class CustController {
 		}
 
 		try {
-			File imgFile = new File(loginCust.getCustImg());
+			String filename = loginCust.getCustImg();
+			// 相容舊資料庫的絕對路徑：如果字串包含斜線，只取出最後的檔名
+			int lastSlash = filename.lastIndexOf('/');
+			int lastBackslash = filename.lastIndexOf('\\');
+			int maxIdx = Math.max(lastSlash, lastBackslash);
+			if (maxIdx >= 0) {
+				filename = filename.substring(maxIdx + 1);
+			}
+
+			String userHome = System.getProperty("user.home");
+			String uploadDirectory = userHome + java.io.File.separator + "upload" + java.io.File.separator + "custAvatar";
+			File imgFile = new File(uploadDirectory, filename);
+
 			if (!imgFile.exists()) {
 				return ResponseEntity.notFound().build();
 			}
@@ -461,7 +473,19 @@ public class CustController {
 		}
 
 		try {
-			File imgFile = new File(custVO.getCustImg());
+			String filename = custVO.getCustImg();
+			// 相容舊資料庫的絕對路徑：如果字串包含斜線，只取出最後的檔名
+			int lastSlash = filename.lastIndexOf('/');
+			int lastBackslash = filename.lastIndexOf('\\');
+			int maxIdx = Math.max(lastSlash, lastBackslash);
+			if (maxIdx >= 0) {
+				filename = filename.substring(maxIdx + 1);
+			}
+
+			String userHome = System.getProperty("user.home");
+			String uploadDirectory = userHome + java.io.File.separator + "upload" + java.io.File.separator + "custAvatar";
+			File imgFile = new File(uploadDirectory, filename);
+
 			if (!imgFile.exists()) {
 				return ResponseEntity.notFound().build();
 			}
