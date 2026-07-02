@@ -6,6 +6,7 @@ public class TicketDTO {
 	private Integer productId;
 	private String productName;
 	private String saleStatus;
+	private String memberStatus;
 	
 	//getter setter方法
 	public Integer getTktId() {
@@ -31,6 +32,12 @@ public class TicketDTO {
 	}
 	public void setSaleStatus(String saleStatus) {
 		this.saleStatus = saleStatus;
+	}
+	public String getMemberStatus() {
+		return memberStatus;
+	}
+	public void setMemberStatus(String memberStatus) {
+		this.memberStatus = memberStatus;
 	}
 	
 	
