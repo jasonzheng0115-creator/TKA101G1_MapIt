@@ -156,6 +156,9 @@ public class AttrFrontController {
         if (loginCust != null) {
             model.addAttribute("userName", loginCust.getCustName());
         }
+        // 自動重新計算評分，以防資料同步落差 (自動修復機制)
+        commentService.recalculateStats(attrId);
+        
         // 1. 查詢景點資料
         AttrVO attr = attrService.findById(attrId);
         
