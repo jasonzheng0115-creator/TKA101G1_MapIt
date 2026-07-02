@@ -11,6 +11,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.message.model.MessageService;
 
+import java.io.File;
 import java.io.IOException;
 
 @Controller
@@ -36,10 +37,10 @@ public class EmpMessageController {
         try {
             String msgPicPath = null;
             if (msgPic != null && !msgPic.isEmpty()) {
-                // 取得家目錄並建立專屬資料夾
+                // 取得目錄並建立專屬資料夾
                 String userHome = System.getProperty("user.home");
-                String uploadDirectory = userHome + java.io.File.separator + "upload" + java.io.File.separator + "messagePic";
-                java.io.File folder = new java.io.File(uploadDirectory);
+                String uploadDirectory = userHome + File.separator + "upload" + File.separator + "messagePic";
+                File folder = new File(uploadDirectory);
                 if (!folder.exists()) {
                     folder.mkdirs();
                 }
@@ -51,12 +52,12 @@ public class EmpMessageController {
                     fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
                 }
                 String newFileName = "msg_" + System.currentTimeMillis() + fileExtension;
-                java.io.File saveFile = new java.io.File(uploadDirectory, newFileName);
+                File saveFile = new File(uploadDirectory, newFileName);
                 
                 // 存檔至本地端硬碟
                 msgPic.transferTo(saveFile);
-                // 取得絕對路徑準備存入資料庫
-                msgPicPath = saveFile.getAbsolutePath();
+                // 取得檔名準備存入資料庫，避免跨平台相容性問題
+                msgPicPath = newFileName;
             }
 
             if ("true".equals(sendToAll)) {
