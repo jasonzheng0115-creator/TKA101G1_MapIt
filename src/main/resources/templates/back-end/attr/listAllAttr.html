@@ -13,7 +13,30 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
         <!-- Core theme CSS (includes Bootstrap)-->
         <link href="/css/styles.css" rel="stylesheet" />
-    
+        
+        <style>
+            /* 覆蓋分頁按鈕為景點管理同款橘色系 */
+            .page-link {
+                color: #ff5722 !important;
+                border-color: #dee2e6 !important;
+            }
+            .page-link:hover {
+                color: #e64a19 !important;
+                background-color: #fff5f2 !important;
+                border-color: #dee2e6 !important;
+            }
+            .page-item.active .page-link {
+                background-color: #ff5722 !important;
+                border-color: #ff5722 !important;
+                color: white !important;
+                font-weight: bold;
+            }
+            .page-item.disabled .page-link {
+                color: #6c757d !important;
+                background-color: #fff !important;
+                border-color: #dee2e6 !important;
+            }
+        </style>
 </head>
 <body>
     <!-- 引入共用後台導覽列片段 -->
@@ -181,12 +204,14 @@
                                         <span th:if="${attr.avgStars == null}" class="text-muted">尚無評分</span>
                                     </td>
                                     <td class="text-center">
-                                        <a th:href="@{/attr/edit/{id}(id=${attr.attrId})}" class="btn btn-sm btn-warning me-1">
-                                            <i class="bi bi-pencil-square"></i> 編輯
-                                        </a>
-                                        <a th:href="@{/attr/image/list/{id}(id=${attr.attrId})}" class="btn btn-sm btn-info me-1">
-                                            <i class="bi bi-images"></i> 管理圖片
-                                        </a>
+                                        <div class="d-flex flex-column gap-1 align-items-center">
+                                            <a th:href="@{/attr/edit/{id}(id=${attr.attrId})}" class="btn btn-sm btn-warning" style="width: 110px;">
+                                                <i class="bi bi-pencil-square"></i> 編輯
+                                            </a>
+                                            <a th:href="@{/attr/image/list/{id}(id=${attr.attrId})}" class="btn btn-sm btn-info" style="width: 110px;">
+                                                <i class="bi bi-images"></i> 管理圖片
+                                            </a>
+                                        </div>
                                     </td>
                                 </tr>
                                 
