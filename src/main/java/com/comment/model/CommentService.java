@@ -32,11 +32,6 @@ public class CommentService {
     
     // ========== 評論新增方法 ==========
     
-    /**
-     * 新增評論
-     * @param commentVO 評論物件
-     * @return 儲存後的評論物件
-     */
     public CommentVO addComment(CommentVO commentVO) {
         // 設定評論時間為當前時間
         if (commentVO.getCommentTime() == null) {
@@ -46,7 +41,11 @@ public class CommentService {
         if (commentVO.getCommentStatus() == null) {
             commentVO.setCommentStatus("0");
         }
-        return commentRepository.save(commentVO);
+        CommentVO saved = commentRepository.saveAndFlush(commentVO);
+        if ("1".equals(saved.getCommentStatus()) && saved.getAttrVO() != null && saved.getAttrVO().getAttrId() != null) {
+            recalculateStats(saved.getAttrVO().getAttrId());
+        }
+        return saved;
     }
     
     // ========== 評論更新方法 ==========
@@ -57,7 +56,11 @@ public class CommentService {
      * @return 更新後的評論物件
      */
     public CommentVO updateComment(CommentVO commentVO) {
-        return commentRepository.save(commentVO);
+        CommentVO saved = commentRepository.saveAndFlush(commentVO);
+        if (saved.getAttrVO() != null && saved.getAttrVO().getAttrId() != null) {
+            recalculateStats(saved.getAttrVO().getAttrId());
+        }
+        return saved;
     }
     
     // ========== 評論刪除方法 ==========
@@ -67,7 +70,15 @@ public class CommentService {
      * @param commentId 評論 ID
      */
     public void deleteComment(Integer commentId) {
-        commentRepository.deleteById(commentId);
+        CommentVO comment = getOneComment(commentId);
+        if (comment != null) {
+            Integer attrId = comment.getAttrVO() != null ? comment.getAttrVO().getAttrId() : null;
+            commentRepository.deleteById(commentId);
+            commentRepository.flush();
+            if (attrId != null) {
+                recalculateStats(attrId);
+            }
+        }
     }
     
     // ========== 評論查詢方法 ==========

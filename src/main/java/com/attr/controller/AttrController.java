@@ -71,6 +71,14 @@ public class AttrController {
         // 使用統一的篩選方法處理所有查詢組合
         Page<AttrVO> attrPage = attrService.findAttrByFilters(keyword, regionId, categoryId, pageable);
         
+        // 重新計算此分頁中所有景點的評分，以防資料同步落差 (自動修復機制)
+        for (AttrVO attr : attrPage.getContent()) {
+            commentService.recalculateStats(attr.getAttrId());
+        }
+        
+        // 重新查詢以獲取更新後的評分資料
+        attrPage = attrService.findAttrByFilters(keyword, regionId, categoryId, pageable);
+        
         // 將查詢參數傳回前端（用於表單回填和分頁連結）
         model.addAttribute("attrPage", attrPage);
         model.addAttribute("keyword", keyword);
