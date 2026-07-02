@@ -310,28 +310,78 @@ public class AttrController {
     @PostMapping("/addComment")
     public String addComment(@RequestParam("attrId") Integer attrId,
                             @RequestParam("commentContent") String commentContent,
-                            @RequestParam("commentScore") Integer commentScore) {
+                            @RequestParam("commentScore") Integer commentScore,
+                            @RequestParam(value = "commentId", required = false) Integer commentId,
+                            jakarta.servlet.http.HttpSession session) {
         
-        // 建立 CommentVO 物件
-        CommentVO commentVO = new CommentVO();
+        com.cust.model.CustVO loginCust = (com.cust.model.CustVO) session.getAttribute("loginCust");
+        if (loginCust == null) {
+            return "redirect:/customer/login";
+        }
+        Integer custId = loginCust.getCustId();
         
-        // 查詢景點並關聯
-        AttrVO attrVO = attrService.findById(attrId);
-        commentVO.setAttrVO(attrVO);
+        if (commentId != null) {
+            // 編輯/修改現有評論
+            CommentVO existing = commentService.getOneComment(commentId);
+            if (existing != null && existing.getCustId().equals(custId)) {
+                existing.setCommentContent(commentContent);
+                existing.setCommentScore(commentScore.byteValue());
+                existing.setCommentTime(java.time.LocalDateTime.now());
+                existing.setCommentStatus("1"); // 設為已上架
+                commentService.updateComment(existing);
+            }
+        } else {
+            // 新增評論 (加入防重覆保護機制)
+            java.util.Optional<CommentVO> duplicate = commentService.getCommentByCustAndAttr(custId, attrId);
+            if (duplicate.isPresent()) {
+                // 已有評論，自動轉為修改
+                CommentVO existing = duplicate.get();
+                existing.setCommentContent(commentContent);
+                existing.setCommentScore(commentScore.byteValue());
+                existing.setCommentTime(java.time.LocalDateTime.now());
+                existing.setCommentStatus("1");
+                commentService.updateComment(existing);
+            } else {
+                CommentVO commentVO = new CommentVO();
+                AttrVO attrVO = attrService.findById(attrId);
+                commentVO.setAttrVO(attrVO);
+                commentVO.setCommentContent(commentContent);
+                commentVO.setCommentScore(commentScore.byteValue());
+                commentVO.setCustId(custId);
+                commentVO.setCommentStatus("1");
+                commentVO.setCommentTime(java.time.LocalDateTime.now());
+                commentService.addComment(commentVO);
+            }
+        }
         
-        // 設定評論內容與分數
-        commentVO.setCommentContent(commentContent);
-        commentVO.setCommentScore(commentScore.byteValue());
+        return "redirect:/front/attr/detail/" + attrId;
+    }
+    
+    /**
+     * 處理前台會員刪除評論
+     * 路由：POST /attr/deleteComment
+     * 安全性：驗證登入狀態及評論所有權
+     */
+    @PostMapping("/deleteComment")
+    public String deleteComment(@RequestParam("commentId") Integer commentId,
+                                @RequestParam("attrId") Integer attrId,
+                                jakarta.servlet.http.HttpSession session) {
         
-        // 暫時寫死測試用資料
-        commentVO.setCustId(1);  // 測試用顧客 ID
-        commentVO.setCommentStatus("1");  // 直接上架以便立刻測試
-        commentVO.setCommentTime(java.time.LocalDateTime.now());
+        // 驗證會員登入狀態
+        com.cust.model.CustVO loginCust = (com.cust.model.CustVO) session.getAttribute("loginCust");
+        if (loginCust == null) {
+            return "redirect:/customer/login";
+        }
+        Integer custId = loginCust.getCustId();
         
-        // 儲存評論
-        commentService.addComment(commentVO);
+        // 獲取該評論，確認該評論確實為此登入會員所寫 (安全驗證)
+        CommentVO comment = commentService.getOneComment(commentId);
+        if (comment != null && comment.getCustId().equals(custId)) {
+            // 執行刪除 (Service 內部會自動重新計算景點的 AVG_STARS 評分)
+            commentService.deleteComment(commentId);
+        }
         
-        // 重新導向回詳情頁
+        // 重新導向回景點詳情頁
         return "redirect:/front/attr/detail/" + attrId;
     }
     

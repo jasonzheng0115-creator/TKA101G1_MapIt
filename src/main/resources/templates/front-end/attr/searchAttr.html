@@ -391,11 +391,16 @@
                 },
                 body: 'attrId=' + attrId
             })
-            .then(response => {
-                if (response.ok) {
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
                     showToast('成功加入收藏！', 'success');
                 } else {
-                    showToast('加入收藏失敗，請稍後再試', 'danger');
+                    showToast(data.message || '加入收藏失敗，請稍後再試', 'danger');
+                    if (data.message === '請先登入會員') {
+                        const currentUrl = window.location.pathname + window.location.search;
+                        window.location.href = '/customer/login?redirect=' + encodeURIComponent(currentUrl);
+                    }
                 }
             })
             .catch(error => {

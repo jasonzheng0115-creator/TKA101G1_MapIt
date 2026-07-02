@@ -112,6 +112,13 @@ public class CommentService {
         return commentRepository.findApprovedCommentsByAttrId(attrId);
     }
     
+    /**
+     * 根據會員 ID 和景點 ID 查詢該會員的評論
+     */
+    public java.util.Optional<CommentVO> getCommentByCustAndAttr(Integer custId, Integer attrId) {
+        return commentRepository.findByCustIdAndAttrVO_AttrId(custId, attrId);
+    }
+    
     // ========== 評論狀態切換方法 ==========
     
     /**

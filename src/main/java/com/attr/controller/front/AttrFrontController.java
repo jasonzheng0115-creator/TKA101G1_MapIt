@@ -155,6 +155,12 @@ public class AttrFrontController {
         com.cust.model.CustVO loginCust = (com.cust.model.CustVO) session.getAttribute("loginCust");
         if (loginCust != null) {
             model.addAttribute("userName", loginCust.getCustName());
+            
+            // 取得當前登入會員對該景點的評論 (如果有)
+            java.util.Optional<CommentVO> myCommentOpt = commentService.getCommentByCustAndAttr(loginCust.getCustId(), attrId);
+            if (myCommentOpt.isPresent()) {
+                model.addAttribute("myComment", myCommentOpt.get());
+            }
         }
         // 自動重新計算評分，以防資料同步落差 (自動修復機制)
         commentService.recalculateStats(attrId);

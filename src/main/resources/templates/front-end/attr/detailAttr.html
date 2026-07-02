@@ -452,7 +452,7 @@
                 <!-- 新增評論表單 -->
                 <div class="info-card mt-4">
                     <h5 class="mb-3 d-flex align-items-center justify-content-between">
-                        <span><i class="bi bi-pencil-square"></i> 發表評論</span>
+                        <span><i class="bi bi-pencil-square"></i> <span th:text="${myComment != null ? '修改您的評論與評分' : '發表評論'}">發表評論</span></span>
                         <!-- 未登入時顯示登入按鈕 -->
                         <a th:unless="${userName}" href="/customer/login" class="btn btn-sm btn-outline-warning rounded-pill px-3 fw-bold shadow-sm">
                             <i class="bi bi-box-arrow-in-right"></i> 登入會員以新增評論
@@ -461,17 +461,19 @@
                     <form action="/attr/addComment" method="post">
                         <!-- 隱藏的景點 ID -->
                         <input type="hidden" name="attrId" th:value="${attr.attrId}">
+                        <!-- 隱藏的評論 ID (編輯修改時需要) -->
+                        <input type="hidden" name="commentId" th:value="${myComment != null ? myComment.commentId : ''}">
                         
                         <!-- 評分選擇 -->
                         <div class="mb-3">
                             <label for="commentScore" class="form-label">評分 <span class="text-danger">*</span></label>
                             <select class="form-select" id="commentScore" name="commentScore" required th:disabled="${userName == null}">
                                 <option value="">請選擇評分</option>
-                                <option value="5">⭐⭐⭐⭐⭐ 5 分 - 非常好</option>
-                                <option value="4">⭐⭐⭐⭐ 4 分 - 很好</option>
-                                <option value="3">⭐⭐⭐ 3 分 - 普通</option>
-                                <option value="2">⭐⭐ 2 分 - 不好</option>
-                                <option value="1">⭐ 1 分 - 非常不好</option>
+                                <option value="5" th:selected="${myComment != null and myComment.commentScore == 5}">⭐⭐⭐⭐⭐ 5 分 - 非常好</option>
+                                <option value="4" th:selected="${myComment != null and myComment.commentScore == 4}">⭐⭐⭐⭐ 4 分 - 很好</option>
+                                <option value="3" th:selected="${myComment != null and myComment.commentScore == 3}">⭐⭐⭐ 3 分 - 普通</option>
+                                <option value="2" th:selected="${myComment != null and myComment.commentScore == 2}">⭐⭐ 2 分 - 不好</option>
+                                <option value="1" th:selected="${myComment != null and myComment.commentScore == 1}">⭐ 1 分 - 非常不好</option>
                             </select>
                         </div>
                         
@@ -479,15 +481,28 @@
                         <div class="mb-3">
                             <label for="commentContent" class="form-label">評論內容 <span class="text-danger">*</span></label>
                             <textarea class="form-control" id="commentContent" name="commentContent" 
-                                      rows="4" th:placeholder="${userName == null} ? '請先登入會員以發表您的評論...' : '請分享您的遊玩體驗...'" required th:disabled="${userName == null}"></textarea>
+                                      rows="4" th:placeholder="${userName == null} ? '請先登入會員以發表您的評論...' : '請分享您的遊玩體驗...'" 
+                                      required th:disabled="${userName == null}"
+                                      th:text="${myComment != null ? myComment.commentContent : ''}"></textarea>
                         </div>
                         
-                        <!-- 送出按鈕 -->
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-primary btn-lg" th:disabled="${userName == null}">
-                                <i class="bi bi-send-fill"></i> 送出評論
+                        <!-- 送出與刪除按鈕 -->
+                        <div class="d-flex gap-3">
+                            <button type="submit" class="btn btn-primary btn-lg flex-grow-1" th:disabled="${userName == null}">
+                                <i class="bi bi-send-fill"></i> <span th:text="${myComment != null ? '儲存修改' : '送出評論'}">送出評論</span>
+                            </button>
+                            <!-- 刪除評論按鈕 (僅在修改模式下顯示) -->
+                            <button th:if="${myComment != null}" type="button" class="btn btn-danger btn-lg px-4" 
+                                    onclick="if(confirm('確定要刪除您的評論嗎？此操作無法復原。')) { document.getElementById('deleteCommentForm').submit(); }">
+                                <i class="bi bi-trash-fill"></i> 刪除評論
                             </button>
                         </div>
+                    </form>
+                    
+                    <!-- 用於安全刪除評論的獨立隱藏表單 (僅在有評論時渲染) -->
+                    <form th:if="${myComment != null}" id="deleteCommentForm" action="/attr/deleteComment" method="post" style="display: none;">
+                        <input type="hidden" name="commentId" th:value="${myComment.commentId}">
+                        <input type="hidden" name="attrId" th:value="${attr.attrId}">
                     </form>
                 </div>
             </div>

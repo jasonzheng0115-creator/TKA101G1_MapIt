@@ -24,6 +24,11 @@ public interface CommentRepository extends JpaRepository<CommentVO, Integer> {
     List<CommentVO> findApprovedCommentsByAttrId(@Param("attrId") Integer attrId);
     
     /**
+     * 根據會員 ID 和景點 ID 查詢該會員對該景點的評論
+     */
+    java.util.Optional<CommentVO> findByCustIdAndAttrVO_AttrId(Integer custId, Integer attrId);
+    
+    /**
      * 重新計算指定景點的平均評分
      * 只計算已上架 (COMMENT_STATUS = '1') 的評論
      * 更新 ATTRACTION 表的 AVG_STARS, ATTR_VOTES, ATTR_STARS 欄位
