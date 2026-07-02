@@ -53,15 +53,29 @@ public class CartController {
 			HttpSession session) {
 		
 		String key = getCartKey(session);  // 取得key,判斷是否登入交給getCartKey
-		
 		String field = String.valueOf(productId); // 此會員購物車裡的某一個商品
 		
-		// 官方標準寫法：去這個 key 的 Hash 結構裡，把這個商品欄位數量累加
-		// 舉例:("cart:member:1", "101", quantity) -> 括號內參數解釋為:(1號會員的購物車,商品編號101,數量增加)
-		redisTemplate.opsForHash().increment(key, field, quantity);
+		// 計算剩餘可用庫存
+		ProdVO product = prodSvc.getOneProd(productId);
 		
-		// 購物車過期指令 30天未登入會清空
-		redisTemplate.expire(key, Duration.ofDays(30));
+		if (product != null) {
+			// 商品目前在購物車的已加數量
+			String currentQtyStr = (String) redisTemplate.opsForHash().get(key, field);
+			int currentQty = (currentQtyStr != null) ? Integer.parseInt(currentQtyStr) : 0;
+			
+			// 計算剩餘可用庫存 (總數量 - 已售數量)
+			int purchased = (product.getPurchasedQty() == null) ? 0 : product.getPurchasedQty();
+			int remainingStock = product.getProductQty() - purchased;
+			
+			// 新的總數 = 當前已加數量 + 這次要加數量，但不能超過剩餘庫存
+			int newQty = Math.min(currentQty + quantity, remainingStock);
+			
+			// 寫入 Redis
+			redisTemplate.opsForHash().put(key, field, String.valueOf(newQty));
+			
+			// 購物車過期指令 30天未登入會清空
+			redisTemplate.expire(key, Duration.ofDays(30));
+		}
 		
 		return "redirect:/cart/show";
 	}
@@ -125,17 +139,34 @@ public class CartController {
 			HttpSession session) {
 		
 		String key = getCartKey(session);  // 取得key,判斷是否登入交給getCartKey()
-		
 		String field = String.valueOf(productId);
 		
 		if (quantity <= 0) {
 			redisTemplate.opsForHash().delete(key, field); // 數量變 0 直接移除
 		} else {
-			// 直接用新數量覆蓋
-			redisTemplate.opsForHash().put(key, field, String.valueOf(quantity));
+
+		 	// 商品目前在購物車的已加數量
+			ProdVO product = prodSvc.getOneProd(productId);
+			int finalQty = quantity;
+			
+			if (product != null) {
+				// 計算剩餘可用庫存 (總數量 - 已售數量)
+				int purchased = (product.getPurchasedQty() == null) ? 0 : product.getPurchasedQty();
+				int remainingStock = product.getProductQty() - purchased;
+				
+				// 限制在剩餘可用庫存值
+				if (quantity > remainingStock) {
+					finalQty = Math.max(0, remainingStock);
+				}
+			}
+			
+			// 以安全數量覆蓋寫入 Redis
+			redisTemplate.opsForHash().put(key, field, String.valueOf(finalQty));
+			
 			// 購物車過期指令 30天未登入會清空
-		    redisTemplate.expire(key, Duration.ofDays(30));
+			redisTemplate.expire(key, Duration.ofDays(30));
 		}
+
 		return "redirect:/cart/show";
 	}
 	

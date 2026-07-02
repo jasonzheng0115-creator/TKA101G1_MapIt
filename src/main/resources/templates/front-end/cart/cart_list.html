@@ -301,7 +301,8 @@
 						<form th:action="@{/cart/update}" method="POST" style="margin: 0;">
 				            <input type="hidden" name="productId" th:value="${cartVO.product.productId}">
 				            <input type="hidden" name="quantity" th:value="${cartVO.quantity + 1}">
-				            <button type="submit" class="qty-btn">＋</button>
+				            <button type="submit" class="qty-btn"
+				            		th:disabled="${cartVO.quantity >= (cartVO.product.productQty - cartVO.product.purchasedQty)}">＋</button>
 				        </form>
 						
 					</div>
