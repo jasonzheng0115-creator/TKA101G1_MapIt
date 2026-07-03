@@ -435,6 +435,8 @@
             <!-- 放一次即可，因為使用者不能修改帳號密碼，所以讓舊資料原封不動送進SQL檢查 -->
             <input type="hidden" th:field="*{custAccount}">
             <input type="hidden" th:field="*{custPassword}">
+            <!-- 保存原本的頭像檔名，避免驗證失敗時遺失 -->
+            <input type="hidden" th:field="*{custImg}">
             <div class="error-message" th:if="${errorMsg != null}" th:text="${errorMsg}"></div>
 
             <div class="form-group" style="text-align: center;">
