@@ -504,14 +504,14 @@
 
                             <!-- 擁有者頭像區塊 -->
                             <div class="avatar-item" style="position: relative; width: 28px; height: 28px;">
-                                <!-- 優先載入圖片頭像 (預設隱藏) -->
+                                <!-- 優先載入圖片頭像 (資料庫有頭像時) -->
                                 <img th:if="${trip.custVO.custImg != null && !#strings.isEmpty(trip.custVO.custImg)}"
                                     th:src="@{'/customer/avatar/' + ${trip.custVO.custId}}"
                                     class="rounded-circle border border-2 border-white shadow-sm"
-                                    style="width: 28px; height: 28px; object-fit: cover; display: none;"
-                                    onload="this.style.display='block'; this.nextElementSibling.style.display='none';">
-                                <!-- 文字首字頭像 (當載入失敗或無頭像時顯示) -->
-                                <div class="rounded-circle border border-2 border-white d-flex align-items-center justify-content-center text-white fw-bold shadow-sm"
+                                    style="width: 28px; height: 28px; object-fit: cover;">
+                                <!-- 文字首字頭像 (資料庫無頭像時) -->
+                                <div th:unless="${trip.custVO.custImg != null && !#strings.isEmpty(trip.custVO.custImg)}"
+                                    class="rounded-circle border border-2 border-white d-flex align-items-center justify-content-center text-white fw-bold shadow-sm"
                                     th:style="'width: 28px; height: 28px; font-size: 11px; background-color: #ff5722;'"
                                     th:text="${trip.custVO.custName != null && !#strings.isEmpty(trip.custVO.custName) ? #strings.substring(trip.custVO.custName, 0, 1) : '👤'}">
                                     森
@@ -521,14 +521,14 @@
                             <!-- 協作者頭像區塊 -->
                             <th:block th:each="collab : ${trip.collaborators}">
                                 <div class="avatar-item" style="position: relative; width: 28px; height: 28px;">
-                                    <!-- 優先載入圖片頭像 (預設隱藏) -->
+                                    <!-- 優先載入圖片頭像 (資料庫有頭像時) -->
                                     <img th:if="${collab.custImg != null && !#strings.isEmpty(collab.custImg)}"
                                         th:src="@{'/customer/avatar/' + ${collab.custId}}"
                                         class="rounded-circle border border-2 border-white shadow-sm"
-                                        style="width: 28px; height: 28px; object-fit: cover; display: none;"
-                                        onload="this.style.display='block'; this.nextElementSibling.style.display='none';">
-                                    <!-- 文字首字頭像 (當載入失敗或無頭像時顯示) -->
-                                    <div class="rounded-circle border border-2 border-white d-flex align-items-center justify-content-center text-white fw-bold shadow-sm"
+                                        style="width: 28px; height: 28px; object-fit: cover;">
+                                    <!-- 文字首字頭像 (資料庫無頭像時) -->
+                                    <div th:unless="${collab.custImg != null && !#strings.isEmpty(collab.custImg)}"
+                                        class="rounded-circle border border-2 border-white d-flex align-items-center justify-content-center text-white fw-bold shadow-sm"
                                         th:style="'width: 28px; height: 28px; font-size: 11px; background-color: #ffb300;'"
                                         th:text="${collab.custName != null && !#strings.isEmpty(collab.custName) ? #strings.substring(collab.custName, 0, 1) : '👤'}">
                                         友
