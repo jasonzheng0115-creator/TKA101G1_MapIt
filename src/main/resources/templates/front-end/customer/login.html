@@ -131,6 +131,40 @@
         .eye-icon:hover {
             color: var(--primary-color);
         }
+        
+        /* 第三方 Google 登入按鈕樣式 */
+        .google-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 1rem;
+            background-color: #ffffff;
+            color: #374151;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.1s, border-color 0.3s;
+            margin-top: 1rem;
+            text-decoration: none;
+            box-sizing: border-box;
+        }
+        .google-btn:hover {
+            background-color: #f9fafb;
+            border-color: #9ca3af;
+            color: #111827;
+            text-decoration: none;
+        }
+        .google-btn:active {
+            transform: scale(0.98);
+        }
+        .google-btn i {
+            margin-right: 0.75rem;
+            font-size: 1.3rem;
+            color: #ea4335; /* Google 品牌紅 */
+        }
     </style>
 </head>
 <body>
@@ -173,8 +207,11 @@
             </div>
 
             <button type="submit" class="submit-btn">會員登入</button>
-            <!-- 待完成的功能 -->
-           <!--  <button type="submit" class="submit-btn">第三方登入-待完成</button> -->
+            
+            <!-- 第三方 Google 登入按鈕 -->
+            <a th:href="@{https://accounts.google.com/o/oauth2/v2/auth(client_id='170444220331-mhdbf1tfqvglc4mb5jj07tbihpmvkm41.apps.googleusercontent.com',redirect_uri='http://localhost:8080/customer/google-callback',response_type='code',scope='email profile')}" class="google-btn">
+                <i class="bi bi-google"></i>使用 Google 帳號登入
+            </a>
             
             <div
             style="text-align: center; margin-top: 2rem; font-size: 1.1rem;">

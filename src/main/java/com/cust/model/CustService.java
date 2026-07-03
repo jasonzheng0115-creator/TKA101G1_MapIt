@@ -52,5 +52,8 @@ public class CustService {
 		return repository.findByAccount(account);
 	}
 	
-	
+	// 透過信箱尋找會員(Google 第三方登入用到)
+	public CustVO findByEmail(String email) {
+		return repository.findByCustEmail(email);
+	}
 }
