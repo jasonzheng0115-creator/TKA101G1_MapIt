@@ -52,10 +52,12 @@ public class CustController {
 	
 	@GetMapping("/login") // 登入功能，指向前端的登入html
 	public String loginPage(HttpServletRequest request, HttpSession session) {
-	    // 取得來源網頁的網址
-	    String referer = request.getHeader("Referer");
-	    if (referer != null && !referer.contains("/customer/login") && !referer.contains("/customer/register")) {
-	        session.setAttribute("location", referer);
+	    // 只有在 Session 中沒有被過濾器/攔截器記下的跳轉目標時，才使用 Referer
+	    if (session.getAttribute("location") == null) {
+	        String referer = request.getHeader("Referer");
+	        if (referer != null && !referer.contains("/customer/login") && !referer.contains("/customer/register")) {
+	            session.setAttribute("location", referer);
+	        }
 	    }
 	    return "front-end/customer/login";
 	}
