@@ -192,9 +192,9 @@
                                     <td th:text="${attr.attrAddress}">台北市信義區信義路五段7號</td>
                                     <td class="text-center">
                                         <span th:if="${attr.isOpen == '營業中'}" class="badge bg-success" th:text="${attr.isOpen}">營業中</span>
-                                        <span th:if="${attr.isOpen == '休息中'}" class="badge bg-warning text-dark" th:text="${attr.isOpen}">休息中</span>
+                                        <span th:if="${attr.isOpen == '暫停開放'}" class="badge bg-warning text-dark" th:text="${attr.isOpen}">暫停開放</span>
                                         <span th:if="${attr.isOpen == '已歇業'}" class="badge bg-danger" th:text="${attr.isOpen}">已歇業</span>
-                                        <span th:if="${attr.isOpen != '營業中' && attr.isOpen != '休息中' && attr.isOpen != '已歇業'}" class="badge bg-secondary" th:text="${attr.isOpen}">未知</span>
+                                        <span th:if="${attr.isOpen != '營業中' && attr.isOpen != '暫停開放' && attr.isOpen != '已歇業'}" class="badge bg-secondary" th:text="${attr.isOpen}">未知</span>
                                     </td>
                                     <td class="text-center">
                                         <span th:if="${attr.avgStars != null}" class="text-warning">

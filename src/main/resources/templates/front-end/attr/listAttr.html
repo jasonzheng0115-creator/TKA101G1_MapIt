@@ -301,8 +301,8 @@
                             ${attraction.openTime ? `<p style="margin-bottom: 5px;"><strong>營業時間：</strong>${attraction.openTime}</p>` : ''}
                             <p style="margin-bottom: 5px;">
                                 <strong>狀態：</strong>
-                                <span class="badge ${attraction.isOpen === '營業中' ? 'bg-success' : 'bg-secondary'}">
-                                    ${attraction.isOpen || '未知'}
+                                <span class="badge ${(attraction.isOpen === '營業中' || attraction.isOpen === '正常營業' || attraction.isOpen === 'Y') ? 'bg-success' : (attraction.isOpen === '暫停開放' ? 'bg-warning text-dark' : 'bg-danger')}">
+                                    ${attraction.isOpen === 'Y' ? '正常營業' : (attraction.isOpen || '暫停營業')}
                                 </span>
                             </p>
                             ${attraction.avgStars ? `

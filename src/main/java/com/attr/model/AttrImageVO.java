@@ -95,8 +95,7 @@ public class AttrImageVO implements Serializable {
         this.isMain = isMain;
     }
     
-    @NotNull(message = "上傳時間: 請勿空白")
-    @Column(name = "UPLOAD_TIME", nullable = false)
+    @Column(name = "UPLOAD_TIME")
     public LocalDateTime getUploadTime() {
         return uploadTime;
     }
