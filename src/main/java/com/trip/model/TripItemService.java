@@ -45,6 +45,13 @@ public class TripItemService {
         newItem.setAttraction(attr);
         newItem.setSeqNo(nextSeqNo);
 
+        // 預設到達與離開時間為行程出發日期的 00:00
+        if (trip.getTripDate() != null) {
+            java.time.LocalDateTime startOfDay = trip.getTripDate().toLocalDate().atStartOfDay();
+            newItem.setArrivalTime(startOfDay);
+            newItem.setDepTime(startOfDay);
+        }
+
         tripItemRepository.save(newItem);
     }
 
@@ -59,6 +66,7 @@ public class TripItemService {
             map.put("seqNo", item.getSeqNo());
             map.put("attrName", item.getAttraction().getAttrName());
             map.put("attrAddress", item.getAttraction().getAttrAddress());
+            map.put("openTime", item.getAttraction().getOpenTime());
             // 處理備註空值
             map.put("itemNote", item.getItemNote() != null ? item.getItemNote() : "");
 
