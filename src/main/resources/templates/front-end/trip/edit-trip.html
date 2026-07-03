@@ -176,20 +176,32 @@
         }
 
         /* 客製化滾動條 */
-        .left-panel::-webkit-scrollbar {
+        .left-panel::-webkit-scrollbar,
+        .modal-content::-webkit-scrollbar,
+        #collabList::-webkit-scrollbar,
+        #collabSuggestions::-webkit-scrollbar {
             width: 6px;
         }
 
-        .left-panel::-webkit-scrollbar-track {
+        .left-panel::-webkit-scrollbar-track,
+        .modal-content::-webkit-scrollbar-track,
+        #collabList::-webkit-scrollbar-track,
+        #collabSuggestions::-webkit-scrollbar-track {
             background: transparent;
         }
 
-        .left-panel::-webkit-scrollbar-thumb {
+        .left-panel::-webkit-scrollbar-thumb,
+        .modal-content::-webkit-scrollbar-thumb,
+        #collabList::-webkit-scrollbar-thumb,
+        #collabSuggestions::-webkit-scrollbar-thumb {
             background: #cbd5e1;
             border-radius: 10px;
         }
 
-        .left-panel::-webkit-scrollbar-thumb:hover {
+        .left-panel::-webkit-scrollbar-thumb:hover,
+        .modal-content::-webkit-scrollbar-thumb:hover,
+        #collabList::-webkit-scrollbar-thumb:hover,
+        #collabSuggestions::-webkit-scrollbar-thumb:hover {
             background: #94a3b8;
         }
 
@@ -680,7 +692,7 @@
                 <!-- 右側：功能按鈕群 -->
                 <div class="d-flex gap-2">
                     <button class="btn btn-outline-orange btn-sm rounded-pill px-3 fw-bold" onclick="openCollabModal()">
-                        <i class="bi bi-people-fill"></i> 旅群管理
+                        <i class="bi bi-people-fill"></i> 群組管理
                     </button>
                     <button class="btn btn-gradient btn-sm rounded-pill px-3 fw-bold d-flex align-items-center gap-1"
                         onclick="openModal()">
@@ -739,7 +751,7 @@
             <!-- 新增協作者區塊 -->
             <div id="addCollabSection" style="margin-bottom: 20px; display: none;">
                 <label
-                    style="font-size: 13px; color: #64748b; display: block; margin-bottom: 8px; font-weight: 600;">邀請好友加入協作</label>
+                    style="font-size: 13px; color: #64748b; display: block; margin-bottom: 8px; font-weight: 600;">邀請好友加入旅遊群組</label>
                 <div class="search-box">
                     <div style="position: relative; flex: 1;">
                         <input type="text" id="collabAccountInput" placeholder="輸入好友的帳號 (Account)" autocomplete="off"
@@ -756,7 +768,7 @@
             <!-- 協作者清單 -->
             <div style="border-top: 1px solid #e2e8f0; padding-top: 15px;">
                 <h4 style="font-size: 14px; color: #334155; margin-bottom: 12px; font-weight: 700;">群組成員列表</h4>
-                <div id="collabList">
+                <div id="collabList" style="max-height: 260px; overflow-y: auto; padding-right: 5px;">
                     <p style="color: #94a3b8; text-align: center; font-weight: 300;"><i
                             class="bi bi-hourglass-split"></i> 載入中，請稍候...</p>
                 </div>

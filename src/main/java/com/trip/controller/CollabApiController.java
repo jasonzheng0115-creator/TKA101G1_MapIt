@@ -35,7 +35,7 @@ public class CollabApiController {
 
         // 權限檢查：確認目前登入者對此行程具有編輯權限（建立者或協作者）
         if (!collabItemService.hasEditPermission(tripId, loginCust.getCustId())) {
-            return ResponseEntity.status(403).body("你沒有權限檢視此行程的協作者"); // 回傳 403 被拒絕
+            return ResponseEntity.status(403).body("你沒有權限檢視此群組的成員"); // 回傳 403 被拒絕
         }
 
         try {
@@ -73,7 +73,7 @@ public class CollabApiController {
         // 從前端傳來的 JSON 包裹中取得要新增的「帳號」
         String custAccount = requestData.get("custAccount");
         if (custAccount == null || custAccount.trim().isEmpty()) {
-            return ResponseEntity.status(400).body("請輸入協作者帳號");
+            return ResponseEntity.status(400).body("請輸入好友帳號");
         }
 
         try {
@@ -108,12 +108,12 @@ public class CollabApiController {
             // 透過我們在步驟 2 寫的方法找出該協作紀錄
             CollabItemVO collab = collabItemService.getCollabById(collabId);
             if (collab == null) {
-                return ResponseEntity.status(404).body("找不到此協作紀錄");
+                return ResponseEntity.status(404).body("找不到此成員");
             }
 
             // 權限檢查：只有行程「擁有者（建立者）」才可以主動移除其他人！
             if (!collab.getTripVO().getCustVO().getCustId().equals(loginCust.getCustId())) {
-                return ResponseEntity.status(403).body("只有行程擁有者可以管理共同編輯人！");
+                return ResponseEntity.status(403).body("只有行程擁有者可以管理群組成員！");
             }
 
             // 執行移除

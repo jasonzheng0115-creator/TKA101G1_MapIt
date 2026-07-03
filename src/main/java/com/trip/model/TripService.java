@@ -44,7 +44,7 @@ public class TripService {
             }
         }
 
-        // 1.5 為清單中的所有行程載入協作者 (排除擁有者自己，避免重複)
+        // 1.5 為清單中的所有行程載入群組成員 (排除擁有者自己，避免重複)
         for (TripVO trip : allTrips) {
             List<CollabItemVO> collabs = collabItemRepository.findByTripVO_TripId(trip.getTripId());
             List<CustVO> collabCusts = new java.util.ArrayList<>();
@@ -70,7 +70,7 @@ public class TripService {
         return tripRepository.save(trip);
     }
 
-    // 3. 取得特定行程的編輯畫面 (放寬權限防護：擁有者與協作者皆可進入)
+    // 3. 取得特定行程的編輯畫面 (放寬權限防護：擁有者與群組成員皆可進入)
     public TripVO getTripByIdAndPermission(Integer tripId, Integer loginCustId) {
         // 1. 從資料庫找行程，並收到一個 Optional 禮物盒
         Optional<TripVO> optionalTrip = tripRepository.findById(tripId);
@@ -92,20 +92,20 @@ public class TripService {
         return trip;
     }
 
-    // 4. 物理刪除行程（連同明細和共同編輯者一起清掉）
+    // 4. 物理刪除行程（連同明細和群組成員一起清掉）
     @Transactional
     public void deleteTrip(Integer tripId, Integer loginCustId) {
         // 防呆 1：先確認行程存在
         TripVO trip = tripRepository.findById(tripId)
                 .orElseThrow(() -> new RuntimeException("找不到行程"));
 
-        // 防呆 2：只有行程「擁有者」才能刪除（共同編輯者不行）
+        // 防呆 2：只有行程「擁有者」才能刪除（群組成員不行）
         if (!trip.getCustVO().getCustId().equals(loginCustId)) {
             throw new RuntimeException("只有行程擁有者才能刪除行程！");
         }
 
         // ★ 刪除順序很重要：先刪子表，再刪母表
-        // 第一步：刪掉所有共同編輯者紀錄（COLLAB_ITEM）
+        // 第一步：刪掉所有群組成員紀錄（COLLAB_ITEM）
         collabItemRepository.deleteByTripVO_TripId(tripId);
 
         // 第二步：刪掉所有景點明細（TRIP_ITEM）
@@ -123,7 +123,7 @@ public class TripService {
         TripVO trip = tripRepository.findById(tripId)
                 .orElseThrow(() -> new RuntimeException("找不到行程"));
 
-        // 權限防護：要有編輯權限才可以修改 (包含擁有者與協作者)
+        // 權限防護：要有編輯權限才可以修改 (包含擁有者與群組成員)
         if (!collabItemService.hasEditPermission(tripId, loginCustId)) {
             throw new RuntimeException("你沒有權限修改此行程！");
         }

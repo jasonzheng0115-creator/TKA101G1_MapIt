@@ -20,7 +20,7 @@ public class CollabItemService {
     @Autowired
     private CustRepository custRepository;
 
-    // 1. 檢查某個會員是否有權限編輯某個行程（是擁有者 或 是共同編輯者）
+    // 1. 檢查某個會員是否有權限編輯某個行程（是擁有者 或 是群組成員）
     public boolean hasEditPermission(Integer tripId, Integer custId) {
         // 第一關：先檢查是不是行程的「擁有者」
         TripVO trip = tripRepository.findById(tripId).orElse(null);
@@ -28,23 +28,23 @@ public class CollabItemService {
             return true; // 是擁有者，直接放行
         }
 
-        // 第二關：如果不是擁有者，再檢查是不是「共同編輯者」
+        // 第二關：如果不是擁有者，再檢查是不是「群組成員」
         CollabItemVO collab = collabItemRepository.findByTripVO_TripIdAndCustVO_CustId(tripId, custId);
         return collab != null; // 找得到代表有權限，找不到代表沒有
     }
 
-    // 2. 取得某個行程的所有共同編輯者清單
+    // 2. 取得某個行程的所有群組成員清單
     public List<CollabItemVO> getCollaborators(Integer tripId) {
         return collabItemRepository.findByTripVO_TripId(tripId);
     }
 
-    // 3. 新增一位共同編輯者
+    // 3. 新增一位群組成員
     @Transactional
     public CollabItemVO addCollaborator(Integer tripId, Integer custId) {
-        // 防呆：檢查這個人是不是已經是共同編輯者了
+        // 防呆：檢查這個人是不是已經是群組成員了
         CollabItemVO existing = collabItemRepository.findByTripVO_TripIdAndCustVO_CustId(tripId, custId);
         if (existing != null) {
-            throw new RuntimeException("此會員已經是共同編輯者！");
+            throw new RuntimeException("此會員已經是群組成員了！");
         }
 
         // 找出行程和會員
@@ -53,9 +53,9 @@ public class CollabItemService {
         CustVO cust = custRepository.findById(custId)
                 .orElseThrow(() -> new RuntimeException("找不到會員"));
 
-        // 防呆：不能把行程擁有者加為共同編輯者（他本來就有權限）
+        // 防呆：不能把行程擁有者加為群組成員（他本來就有權限）
         if (trip.getCustVO().getCustId().equals(custId)) {
-            throw new RuntimeException("行程擁有者不需要被加為共同編輯者！");
+            throw new RuntimeException("行程擁有者不需要被加為群組成員！");
         }
 
         // 建立並儲存
@@ -65,19 +65,19 @@ public class CollabItemService {
         return collabItemRepository.save(newCollab);
     }
 
-    // 4. 移除一位共同編輯者
+    // 4. 移除一位群組成員
     @Transactional
     public void removeCollaborator(Integer collabId) {
         collabItemRepository.deleteById(collabId);
     }
 
-    // 5. 刪除某個行程的所有共同編輯者（給行程物理刪除時用）
+    // 5. 刪除某個行程的所有群組成員（給行程物理刪除時用）
     @Transactional
     public void removeAllCollaboratorsByTripId(Integer tripId) {
         collabItemRepository.deleteByTripVO_TripId(tripId);
     }
 
-    // 6. 透過「帳號」新增一位共同編輯者
+    // 6. 透過「帳號」新增一位群組成員
     @Transactional
     public CollabItemVO addCollaboratorByAccount(Integer tripId, String custAccount, Integer loggedInCustId) {
 
@@ -86,7 +86,7 @@ public class CollabItemService {
                 .orElseThrow(() -> new RuntimeException("找不到行程"));
 
         if (!trip.getCustVO().getCustId().equals(loggedInCustId)) {
-            throw new RuntimeException("只有行程建立者可以管理共同編輯人！");
+            throw new RuntimeException("只有行程建立者可以管理群組成員！");
         }
 
         // 透過我們剛剛加的魔法方法，用字串去資料庫抓出朋友的會員實體
@@ -104,18 +104,18 @@ public class CollabItemService {
         return collabItemRepository.findById(collabId).orElse(null);
     }
 
-    // 8. 退出協作 (協作者在列表點擊「退出編輯」時執行)
+    // 8. 退出群組 (群組成員在列表點擊「退出編輯」時執行)
     @Transactional
     public void exitCollaboration(Integer tripId, Integer custId) {
         // 先根據行程 ID 和會員 ID 找出該筆協作紀錄
         CollabItemVO collab = collabItemRepository.findByTripVO_TripIdAndCustVO_CustId(tripId, custId);
 
-        // 防呆：如果根本找不到這筆紀錄，代表他本來就不是協作者
+        // 防呆：如果根本找不到這筆紀錄，代表他本來就不是群組成員
         if (collab != null) {
             // 從資料庫中刪除這筆協作關係
             collabItemRepository.delete(collab);
         } else {
-            throw new RuntimeException("你本來就不是此行程的協作者！");
+            throw new RuntimeException("你本來就不是此行程的群組成員！");
         }
     }
 
