@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html lang="zh-TW" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <title>修改個人資料</title>
     <!-- 同首頁的導覽列 -->
-	<link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
-	<link href="/css/styles.css" rel="stylesheet" />
-	<!-- ========== -->
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+    <link href="/css/styles.css" rel="stylesheet" />
+    <!-- ========== -->
     <style>
         :root {
             --primary-color: #ff5722;
@@ -16,33 +17,38 @@
             --card-bg: #ffffff;
             --error-color: #ef4444;
         }
-        body { 
-            font-family: 'Segoe UI', Tahoma, sans-serif; 
+
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
             background: var(--bg-gradient);
-            display: flex; 
-            justify-content: center; 
+            display: flex;
+            justify-content: center;
             /* 預留高度給未來可能加入的導覽列，並取消 align-items: center 避免長表單被裁切 */
             padding: 120px 20px 40px;
-            min-height: 100vh; 
-            margin: 0; 
+            min-height: 100vh;
+            margin: 0;
             box-sizing: border-box;
         }
-        
+
         /* 手動控制下拉選單 */
         .nav-item.dropdown .dropdown-menu {
             display: none;
             margin-top: 8px;
         }
+
         .nav-item.dropdown .dropdown-menu.show {
             display: block;
         }
+
         .dropdown-item {
             transition: background-color 0.2s, color 0.2s;
         }
+
         .dropdown-item:hover {
             background-color: #fff5f2 !important;
             color: #ff5722 !important;
         }
+
         .dropdown-item:hover i {
             color: #ff5722 !important;
         }
@@ -54,33 +60,56 @@
             box-shadow: 0 10px 30px rgba(255, 87, 34, 0.08);
             border: 1px solid #feede8;
             width: 100%;
-            max-width: 520px; 
+            max-width: 520px;
             margin: auto;
         }
-        h2 { text-align: center; color: #1f2937; margin-bottom: 2rem; font-size: 2.2rem; font-weight: 700; }
-        
-        .form-group { margin-bottom: 1.5rem; }
-        label {  display: block;  margin-bottom: 0.6rem; color: #4b5563; font-weight: 600; font-size: 1.1rem; }
-        input[type="text"], input[type="file"], input[type="password"] { 
-            width: 100%; 
-            padding: 1rem; 
-            border: 1px solid #d1d5db; 
-            border-radius: 10px; 
+
+        h2 {
+            text-align: center;
+            color: #1f2937;
+            margin-bottom: 2rem;
+            font-size: 2.2rem;
+            font-weight: 700;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.6rem;
+            color: #4b5563;
+            font-weight: 600;
             font-size: 1.1rem;
-            box-sizing: border-box; 
+        }
+
+        input[type="text"],
+        input[type="file"],
+        input[type="password"] {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            box-sizing: border-box;
             transition: border-color 0.3s, box-shadow 0.3s;
         }
-        input[type="text"]:focus, input[type="file"]:focus, input[type="password"]:focus {
+
+        input[type="text"]:focus,
+        input[type="file"]:focus,
+        input[type="password"]:focus {
             outline: none;
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(255, 87, 34, 0.15);
         }
-        
+
         .radio-group {
             display: flex;
             gap: 15px;
             padding: 8px 0;
         }
+
         .radio-group label {
             display: flex;
             align-items: center;
@@ -88,46 +117,57 @@
             margin-bottom: 0;
             cursor: pointer;
         }
+
         .radio-group input[type="radio"] {
-            width: auto; 
+            width: auto;
             margin: 0 5px 0 0;
         }
-        
-        .btn-submit { 
-            width: 100%; 
-            padding: 1rem; 
-            background-color: var(--primary-color); 
-            color: white; 
-            border: none; 
-            border-radius: 10px; 
+
+        .btn-submit {
+            width: 100%;
+            padding: 1rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 10px;
             font-size: 1.2rem;
-            font-weight: 600; 
-            cursor: pointer; 
+            font-weight: 600;
+            cursor: pointer;
             transition: background-color 0.3s, transform 0.1s;
             margin-top: 2rem;
             letter-spacing: 1px;
         }
-        .btn-submit:hover { background-color: var(--primary-hover); }
-        .btn-submit:active { transform: scale(0.98); }
-        
-        .btn-cancel { 
-            width: 100%; 
-            padding: 1rem; 
-            background-color: #f1f1f1; 
-            color: #333; border: none; 
-            border-radius: 10px; 
+
+        .btn-submit:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-submit:active {
+            transform: scale(0.98);
+        }
+
+        .btn-cancel {
+            width: 100%;
+            padding: 1rem;
+            background-color: #f1f1f1;
+            color: #333;
+            border: none;
+            border-radius: 10px;
             font-size: 1.2rem;
-            font-weight: 600; 
-            cursor: pointer; 
-            margin-top: 15px; 
-            display: block; 
-            text-align: center; 
-            text-decoration: none; 
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 15px;
+            display: block;
+            text-align: center;
+            text-decoration: none;
             box-sizing: border-box;
             transition: background-color 0.3s;
         }
-        .btn-cancel:hover { background-color: #e5e7eb; }
-        
+
+        .btn-cancel:hover {
+            background-color: #e5e7eb;
+        }
+
         #btnDeleteAvatar {
             padding: 8px 20px;
             background-color: #fee2e2;
@@ -137,40 +177,54 @@
             cursor: pointer;
             font-weight: 600;
             font-size: 1rem;
-            margin-top: 0; /* 移除先前的 margin-top */
+            margin-top: 0;
+            /* 移除先前的 margin-top */
             transition: background-color 0.3s;
         }
-        #btnDeleteAvatar:hover { background-color: #fca5a5; }
-        
-        .field-error {color: #d9534f; font-size: 12px; margin-top: 5px;display: block;}
-		
-		.error-message { 
-		color: #d9534f; 
-		background-color: #fdf2f2; 
-		padding: 10px; 
-		border-radius: 6px; 
-		margin-bottom: 20px; 
-		text-align: center; 
-		font-size: 14px;}
-		/* 會員頭貼與按鈕排版 */
-		.avatar-container {
-		    margin-bottom: 1rem;
-		    text-align: center;
-		}
-		.avatar-preview {
+
+        #btnDeleteAvatar:hover {
+            background-color: #fca5a5;
+        }
+
+        .field-error {
+            color: #d9534f;
+            font-size: 12px;
+            margin-top: 5px;
+            display: block;
+        }
+
+        .error-message {
+            color: #d9534f;
+            background-color: #fdf2f2;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        /* 會員頭貼與按鈕排版 */
+        .avatar-container {
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .avatar-preview {
             width: 120px;
             height: 120px;
             border-radius: 50%;
             object-fit: cover;
             border: 4px solid white;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);		
-		}
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
         .avatar-actions {
             display: flex;
             justify-content: center;
             gap: 1rem;
             margin-top: 1rem;
         }
+
         .btn-upload {
             padding: 8px 20px;
             background-color: var(--primary-color);
@@ -180,51 +234,232 @@
             font-weight: 600;
             font-size: 1rem;
             transition: background-color 0.3s;
-            margin-bottom: 0; /* Override any global label margin */
+            margin-bottom: 0;
+            /* Override any global label margin */
             display: flex;
             align-items: center;
         }
-        .btn-upload:hover { background-color: var(--primary-hover); }
-		
+
+        .btn-upload:hover {
+            background-color: var(--primary-hover);
+        }
+
+        /* 變更密碼按鈕 (外觀與大小與儲存修改相同，避免突兀) */
+        .btn-change-pwd {
+            width: 100%;
+            padding: 1rem;
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s, transform 0.1s;
+            margin-top: 1.5rem;
+            letter-spacing: 1px;
+            box-sizing: border-box;
+            display: block;
+            text-align: center;
+        }
+
+        .btn-change-pwd:hover {
+            background-color: var(--primary-color);
+            color: #ffffff;
+        }
+
+        .btn-change-pwd:active {
+            transform: scale(0.98);
+        }
+
+        /* 密碼包裝器與眼睛圖示樣式 */
+        .password-wrapper {
+            position: relative;
+        }
+
+        .password-wrapper input {
+            padding-right: 45px !important;
+        }
+
+        .eye-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            user-select: none;
+            color: #64748b;
+            font-size: 1.2rem;
+            transition: color 0.2s;
+        }
+
+        .eye-icon:hover {
+            color: var(--primary-color);
+        }
+
+        /* 自訂彈出視窗 (Modal) 樣式 */
+        .custom-modal {
+            display: none;
+            /* 預設隱藏 */
+            position: fixed;
+            z-index: 2000;
+            /* 高於導覽列 */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+            /* 半透明黑色背景 */
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 點擊顯示時的樣式 (用 flex 置中彈窗) */
+        .custom-modal.show-modal {
+            display: flex;
+        }
+
+        /* 彈窗主體 */
+        .custom-modal-content {
+            background-color: #ffffff;
+            padding: 3rem 2.5rem 2rem;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            position: relative;
+            box-sizing: border-box;
+        }
+
+        /* 關閉按鈕 X */
+        .custom-close-btn {
+            position: absolute;
+            top: 15px;
+            right: 25px;
+            color: #9ca3af;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .custom-close-btn:hover {
+            color: #4b5563;
+        }
+
+        /* 彈窗標題 */
+        .custom-modal-content h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            color: #1f2937;
+            text-align: center;
+        }
+
+        /* 彈窗內的輸入框 */
+        .custom-modal-content input[type="password"] {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            font-size: 1.05rem;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+
+        .custom-modal-content input[type="password"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(255, 87, 34, 0.15);
+        }
+
+        /* 彈窗按鈕排列 */
+        .modal-actions {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 2rem;
+        }
+
+        /* 彈窗取消按鈕 */
+        .btn-modal-cancel {
+            flex: 1;
+            padding: 0.8rem;
+            background-color: #f1f1f1;
+            color: #333333;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-modal-cancel:hover {
+            background-color: #e5e7eb;
+        }
+
+        /* 彈窗變更按鈕 */
+        .btn-modal-change {
+            flex: 1;
+            padding: 0.8rem;
+            background-color: var(--primary-color);
+            /* 維持與專案主配色一致 */
+            color: #ffffff;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-modal-change:hover {
+            background-color: var(--primary-hover);
+        }
     </style>
-    
+
 </head>
+
 <body>
-	<!-- 組合式固定導覽列 (整合主選單與次選單) -->
-	<header th:replace="~{layouts/frontend :: navbar}"></header>
+    <!-- 組合式固定導覽列 (整合主選單與次選單) -->
+    <header th:replace="~{layouts/frontend :: navbar}"></header>
 
     <div class="profile-card">
         <h2>✏️ 修改個人資料</h2>
 
         <!-- th:action 去找 Controller，以及 th:object 綁定資料箱子 -->
-        <form th:action="@{/customer/updateProfile}" method="post" th:object="${loginCust}" enctype="multipart/form-data">
-	        <!-- 放一次即可，因為使用者不能修改帳號密碼，所以讓舊資料原封不動送進SQL檢查 -->
-			<input type="hidden" th:field="*{custAccount}">
-			<input type="hidden" th:field="*{custPassword}">     
+        <form th:action="@{/customer/updateProfile}" method="post" th:object="${loginCust}"
+            enctype="multipart/form-data">
+            <!-- 放一次即可，因為使用者不能修改帳號密碼，所以讓舊資料原封不動送進SQL檢查 -->
+            <input type="hidden" th:field="*{custAccount}">
+            <input type="hidden" th:field="*{custPassword}">
             <div class="error-message" th:if="${errorMsg != null}" th:text="${errorMsg}"></div>
-         	
-          	<div class="form-group" style="text-align: center;">
+
+            <div class="form-group" style="text-align: center;">
                 <label style="text-align: left;">會員頭像：</label>
                 <div class="avatar-container">
                     <img id="avatarPreview" class="avatar-preview"
-                         th:src="@{${#strings.isEmpty(loginCust.custImg) ? '/custDefaultAvatar/default_custAvatar.jpg' : '/customer/avatar'}}">
+                        th:src="@{${#strings.isEmpty(loginCust.custImg) ? '/custDefaultAvatar/default_custAvatar.jpg' : '/customer/avatar'}}">
                 </div>
-                
+
                 <div class="avatar-actions">
-                    <input type="file" name="cust_img_file" id="cust_img_file" accept="image/*" onchange="previewImage(this)" style="display: none;">
+                    <input type="file" name="cust_img_file" id="cust_img_file" accept="image/*"
+                        onchange="previewImage(this)" style="display: none;">
                     <!-- 利用 label 的特性，點擊它就等於點擊被隱藏的 input -->
                     <label for="cust_img_file" class="btn-upload">更換照片</label>
-                    
+
                     <input type="hidden" id="remove_img_flag" name="remove_img_flag" value="false">
                     <button type="button" id="btnDeleteAvatar" onclick="removeAvatar()">刪除</button>
                 </div>
-          	</div>
-				
+            </div>
+
             <div class="form-group">
                 <label>姓名：</label>
                 <input type="text" th:field="*{custName}" placeholder="請輸入姓名">
                 <span class="field-error" th:if="${#fields.hasErrors('custName')}" th:errors="*{custName}"></span>
-				       
+
             </div>
 
             <div class="form-group">
@@ -234,79 +469,218 @@
                     <label><input type="radio" th:field="*{custSex}" value="F"> 女性</label>
                     <label><input type="radio" th:field="*{custSex}" value="不透露"> 不透露</label>
                 </div>
-                <span class="field-error" th:if="${#fields.hasErrors('custSex')}" th:errors="*{custSex}"></span>          
+                <span class="field-error" th:if="${#fields.hasErrors('custSex')}" th:errors="*{custSex}"></span>
             </div>
-			
-			<div class="form-group">
+
+            <div class="form-group">
                 <label>電話：</label>
-                <input type="text" th:field="*{custTel}" placeholder="請輸入手機號碼">  
+                <input type="text" th:field="*{custTel}" placeholder="請輸入手機號碼">
                 <span class="field-error" th:if="${#fields.hasErrors('custTel')}" th:errors="*{custTel}"></span>
             </div>
-            
+
             <div class="form-group">
                 <label>電子信箱：</label>
-                <input type="text" th:field="*{custEmail}" placeholder="請輸入電子信箱">   
-                <span class="field-error" th:if="${#fields.hasErrors('custEmail')}" th:errors="*{custEmail}"></span>    
+                <input type="text" th:field="*{custEmail}" placeholder="請輸入電子信箱">
+                <span class="field-error" th:if="${#fields.hasErrors('custEmail')}" th:errors="*{custEmail}"></span>
             </div>
-            
+
             <div class="form-group">
                 <label>身分證字號：</label>
-                <input type="text" th:field="*{custIdCard}" placeholder="請輸入身分證字號">     
-                <span class="field-error" th:if="${#fields.hasErrors('custIdCard')}" th:errors="*{custIdCard}"></span>     
+                <input type="text" th:field="*{custIdCard}" placeholder="請輸入身分證字號">
+                <span class="field-error" th:if="${#fields.hasErrors('custIdCard')}" th:errors="*{custIdCard}"></span>
             </div>
-            
+
             <div class="form-group">
                 <label>生日：</label>
                 <input type="text" th:field="*{custBirthday}" placeholder="請輸入生日">
-                <span class="field-error" th:if="${#fields.hasErrors('custBirthday')}" th:errors="*{custBirthday}"></span>               
+                <span class="field-error" th:if="${#fields.hasErrors('custBirthday')}"
+                    th:errors="*{custBirthday}"></span>
             </div>
-            
+
             <div class="form-group">
                 <label>信用卡號：</label>
                 <input type="text" th:field="*{custCard}" placeholder="請輸入信用卡號">
-                <span class="field-error" th:if="${#fields.hasErrors('custCard')}" th:errors="*{custCard}"></span>   
+                <span class="field-error" th:if="${#fields.hasErrors('custCard')}" th:errors="*{custCard}"></span>
             </div>
-            
+
             <div class="form-group">
                 <label>聯絡地址：</label>
                 <input type="text" th:field="*{custAddress}" placeholder="請輸入聯絡地址">
-                <span class="field-error" th:if="${#fields.hasErrors('custAddress')}" th:errors="*{custAddress}"></span>             
+                <span class="field-error" th:if="${#fields.hasErrors('custAddress')}" th:errors="*{custAddress}"></span>
             </div>
-			
-			
+
+            <button type="button" class="btn-change-pwd" onclick="openPasswordModal()">🔑 變更密碼</button>
+
             <button type="submit" class="btn-submit">💾 儲存修改</button>
             <a th:href="@{/}" class="btn-cancel">取消返回</a>
         </form>
     </div>
-    
+
     <script>
-    	/* 接html裡previewImage(this)，this=input=上傳的照片 */
-	    function previewImage(input){
-    		/* 只要使用者選照片了，就把值改為false */
-    		document.getElementById("remove_img_flag").value = "false"
-	    	if(input.files && input.files[0]){
-	    		var reader = new FileReader(); /* 建立檔案讀取器 */
-	    		/* reader.onload(當圖片讀取完成)，就觸發產生event(事件)*/
-	    		reader.onload = function(event){ /* target:讀取器，把result(讀取結果)拿出來 */
-	    			document.getElementById("avatarPreview").src = event.target.result;
-	    		}
-	    		/* 將reader用JS內建的方法將圖片的二進位轉換成Base64文字網址，再把網址給th:src還原 */
-	    		reader.readAsDataURL(input.files[0]);
-	    	}
-	    }
-    	
-    	function removeAvatar(){
-    		//將畫面的預覽圖換成預設頭像
-    		document.getElementById("avatarPreview").src="/images/default_custAvatar.jpg";
-    		//清空檔案上傳按鈕裡面的選取檔案
-    		document.getElementById("cust_img_file").value="";
-    		//將隱藏信封改為true
-    		document.getElementById("remove_img_flag").value="true";
-    		
-    	}
+        /* 接html裡previewImage(this)，this=input=上傳的照片 */
+        function previewImage(input) {
+            /* 只要使用者選照片了，就把值改為false */
+            document.getElementById("remove_img_flag").value = "false"
+            if (input.files && input.files[0]) {
+                var reader = new FileReader(); /* 建立檔案讀取器 */
+                /* reader.onload(當圖片讀取完成)，就觸發產生event(事件)*/
+                reader.onload = function (event) { /* target:讀取器，把result(讀取結果)拿出來 */
+                    document.getElementById("avatarPreview").src = event.target.result;
+                }
+                /* 將reader用JS內建的方法將圖片的二進位轉換成Base64文字網址，再把網址給th:src還原 */
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function removeAvatar() {
+            //將畫面的預覽圖換成預設頭像
+            document.getElementById("avatarPreview").src = "/images/default_custAvatar.jpg";
+            //清空檔案上傳按鈕裡面的選取檔案
+            document.getElementById("cust_img_file").value = "";
+            //將隱藏信封改為true
+            document.getElementById("remove_img_flag").value = "true";
+
+        }
+
+        // 切換密碼顯示/隱藏
+        function togglePasswordVisibility(inputId, iconId) {
+            var passwordInput = document.getElementById(inputId);
+            var toggleIcon = document.getElementById(iconId);
+
+            if (passwordInput.type == "password") {
+                passwordInput.type = "text";
+                toggleIcon.classList.remove("bi-eye");
+                toggleIcon.classList.add("bi-eye-slash");
+            } else {
+                passwordInput.type = "password";
+                toggleIcon.classList.remove("bi-eye-slash");
+                toggleIcon.classList.add("bi-eye");
+            }
+        }
+
+        // 開啟變更密碼彈窗
+        function openPasswordModal() {
+            // 清空舊輸入與錯誤訊息
+            document.getElementById("oldPassword").value = "";
+            document.getElementById("newPassword").value = "";
+            document.getElementById("confirmPassword").value = "";
+            var errorDiv = document.getElementById("modalErrorMessage");
+            errorDiv.style.display = "none";
+            errorDiv.innerText = "";
+
+            // 重設密碼框為隱藏狀態，且圖示重設為開眼
+            document.getElementById("oldPassword").type = "password";
+            document.getElementById("newPassword").type = "password";
+
+            var oldEye = document.getElementById("toggleOldPassword");
+            oldEye.classList.remove("bi-eye-slash");
+            oldEye.classList.add("bi-eye");
+
+            var newEye = document.getElementById("toggleNewPassword");
+            newEye.classList.remove("bi-eye-slash");
+            newEye.classList.add("bi-eye");
+
+            // 顯示彈窗
+            document.getElementById("passwordModal").classList.add("show-modal");
+        }
+
+        // 關閉變更密碼彈窗
+        function closePasswordModal() {
+            document.getElementById("passwordModal").classList.remove("show-modal");
+        }
+
+        // 送出變更密碼請求
+        function submitPasswordChange() {
+            var oldPassword = document.getElementById("oldPassword").value;
+            var newPassword = document.getElementById("newPassword").value;
+            var confirmPassword = document.getElementById("confirmPassword").value;
+            var errorDiv = document.getElementById("modalErrorMessage");
+
+            // 1. 空白檢查
+            if (oldPassword == "" || newPassword == "" || confirmPassword == "") {
+                errorDiv.style.display = "block";
+                errorDiv.innerText = "所有密碼欄位皆為必填！";
+                return;
+            }
+
+            // 2. 兩次密碼一致性檢查
+            if (newPassword != confirmPassword) {
+                errorDiv.style.display = "block";
+                errorDiv.innerText = "新密碼與確認密碼不一致！";
+                return;
+            }
+
+            // 3. 準備發送 POST 參數
+            var url = "/customer/changePassword";
+            var params = "oldPassword=" + encodeURIComponent(oldPassword) +
+                "&newPassword=" + encodeURIComponent(newPassword);
+
+            // 使用 fetch 發送 POST
+            fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: params
+            })
+                .then(function (response) {
+                    // 將後端回傳的結果讀取為「純文字」
+                    return response.text();
+                })
+                .then(function (resultText) {
+                    // 直接判斷文字是否為 "success"
+                    if (resultText == "success") {
+                        alert("密碼變更成功！請以新密碼重新登入。");
+                        window.location.href = "/customer/logout";
+                    } else {
+                        // 如果不是 success，代表是錯誤訊息，直接顯示
+                        errorDiv.style.display = "block";
+                        errorDiv.innerText = resultText;
+                    }
+                });
+        }
     </script>
-    
+
+    <!-- 變更密碼彈出視窗 (Modal) -->
+    <div id="passwordModal" class="custom-modal">
+        <div class="custom-modal-content">
+            <!-- 關閉按鈕 X -->
+            <span class="custom-close-btn" onclick="closePasswordModal()">&times;</span>
+
+            <h2>變更密碼</h2>
+
+            <!-- 用來顯示錯誤訊息的區域 -->
+            <div id="modalErrorMessage" class="error-message" style="display: none;"></div>
+
+            <!-- 密碼輸入表單 -->
+            <div class="form-group" style="margin-bottom: 1rem;">
+                <div class="password-wrapper">
+                    <input type="password" id="oldPassword" placeholder="輸入舊密碼">
+                    <i id="toggleOldPassword" class="bi bi-eye eye-icon"
+                        onclick="togglePasswordVisibility('oldPassword', 'toggleOldPassword')"></i>
+                </div>
+            </div>
+            <div class="form-group" style="margin-bottom: 1rem;">
+                <div class="password-wrapper">
+                    <input type="password" id="newPassword" placeholder="輸入新密碼">
+                    <i id="toggleNewPassword" class="bi bi-eye eye-icon"
+                        onclick="togglePasswordVisibility('newPassword', 'toggleNewPassword')"></i>
+                </div>
+            </div>
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <input type="password" id="confirmPassword" placeholder="確認新密碼">
+            </div>
+
+            <!-- 按鈕區域 -->
+            <div class="modal-actions">
+                <button type="button" class="btn-modal-cancel" onclick="closePasswordModal()">取消</button>
+                <button type="button" class="btn-modal-change" onclick="submitPasswordChange()">變更</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Bootstrap core JS-->
     <th:block th:replace="~{layouts/frontend :: scripts}"></th:block>
 </body>
+
 </html>

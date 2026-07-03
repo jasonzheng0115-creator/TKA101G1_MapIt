@@ -346,6 +346,39 @@ public class CustController {
 		return "redirect:/";
 	}
 
+	@PostMapping("/changePassword")
+	@ResponseBody
+	public String changePassword(
+			@RequestParam("oldPassword") String oldPassword,
+			@RequestParam("newPassword") String newPassword,
+			HttpSession session) {
+		
+		// 1. 取得目前登入的會員資料
+		CustVO loginCust = (CustVO) session.getAttribute("loginCust");
+		if (loginCust == null) {
+			return "您尚未登入或登入已逾期，請重新登入！";
+		}
+		
+		// 2. 驗證舊密碼是否正確
+		if (!loginCust.getCustPassword().equals(oldPassword)) {
+			return "舊密碼輸入錯誤！";
+		}
+		
+		// 3. 驗證新密碼長度與格式限制 (對齊實體類別 CustVO 的 @Pattern 驗證限制)
+		String passwordPattern = "^(?=.*[A-Z])(?=.*[a-z])[A-Za-z0-9!@#$%^&*()_+=?><:;\\]\\[]{8,20}$";
+		if (newPassword == null || !newPassword.matches(passwordPattern)) {
+			return "密碼格式不符！長度必須在 8 到 20 碼之間，且必須包含大小寫英文字母，不允許空白。";
+		}
+		
+		// 4. 更新密碼到資料庫與 Session
+		loginCust.setCustPassword(newPassword);
+		custService.updateProfile(loginCust);
+		session.setAttribute("loginCust", loginCust);
+		
+		// 成功時，回傳 "success" 代表成功
+		return "success";
+	}
+
 	@GetMapping("/empCustomerList") // 後台查詢所有會員資料功能，進入後台頁面，預設顯示所有會員
 	public String empCustomerList(ModelMap model) {
 		// 預設一個空的查找條件，讓複合查詢撈出所有已存在會員的資料
