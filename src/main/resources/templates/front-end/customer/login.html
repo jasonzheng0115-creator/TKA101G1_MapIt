@@ -194,6 +194,12 @@
             this.classList.toggle('bi-eye-slash');
         });
     </script>
+    
+    <!-- 成功提示彈窗 (無語法糖，用於忘記密碼、信箱驗證等功能重導後的提示) -->
+    <script th:inline="javascript" th:if="${successMsg != null}">
+        alert([[${successMsg}]]);
+    </script>
+
     <!-- Bootstrap core JS-->
     <th:block th:replace="~{layouts/frontend :: scripts}"></th:block>
 </body>
