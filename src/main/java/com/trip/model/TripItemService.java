@@ -92,7 +92,7 @@ public class TripItemService {
 
         Integer tripId = itemToDelete.getTrip().getTripId();
 
-        // 權限防護：不是擁有者也不是共同編輯者，就不准刪！
+        // 權限防護：不是擁有者也不是群組成員，就不准刪！
         if (!collabItemService.hasEditPermission(tripId, loggedInCustId)) {
             throw new RuntimeException("你沒有權限修改此行程！");
         }
@@ -147,7 +147,7 @@ public class TripItemService {
                 .orElseThrow(() -> new RuntimeException("找不到景點明細"));
         Integer tripId = firstItem.getTrip().getTripId();
 
-        // 2. 權限防護：檢查是否有編輯權限（建立者或協作者）
+        // 2. 權限防護：檢查是否有編輯權限（建立者或群組成員）
         if (!collabItemService.hasEditPermission(tripId, loginCustId)) {
             throw new RuntimeException("你沒有權限修改此行程！");
         }

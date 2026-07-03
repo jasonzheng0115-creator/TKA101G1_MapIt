@@ -8,13 +8,13 @@ import com.cust.model.CustVO;
 @Repository
 public interface CollabItemRepository extends JpaRepository<CollabItemVO, Integer> {
 
-    // 1. 找出某個行程的所有共同編輯者
+    // 1. 找出某個行程的所有群組成員
     List<CollabItemVO> findByTripVO_TripId(Integer tripId);
 
-    // 2. 查詢某個會員是否是某行程的共同編輯者（用來做權限檢查）
+    // 2. 查詢某個會員是否是某行程的群組成員（用來做權限檢查）
     CollabItemVO findByTripVO_TripIdAndCustVO_CustId(Integer tripId, Integer custId);
 
-    // 3. 刪除某個行程下的所有共同編輯者（行程被物理刪除時，要連協作者一起清掉）
+    // 3. 刪除某個行程下的所有群組成員（行程被物理刪除時，要連群組成員一起清掉）
     void deleteByTripVO_TripId(Integer tripId);
 
     // 4. 根據「會員（CustVO）」找出他被加入的所有協作紀錄
