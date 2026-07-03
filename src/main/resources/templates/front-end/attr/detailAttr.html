@@ -383,8 +383,8 @@
                         </div>
                         <div>
                             <span class="badge badge-custom"
-                                  th:classappend="${attr.isOpen == 'Y' or attr.isOpen == '正常營業'} ? 'bg-success' : 'bg-secondary'"
-                                  th:text="${attr.isOpen == 'Y' or attr.isOpen == '正常營業'} ? '正常營業' : '暫停營業'">
+                                  th:classappend="${attr.isOpen == '營業中' or attr.isOpen == '正常營業' or attr.isOpen == 'Y'} ? 'bg-success' : (${attr.isOpen == '暫停開放'} ? 'bg-warning text-dark' : 'bg-danger')"
+                                  th:text="${attr.isOpen == 'Y'} ? '正常營業' : (${attr.isOpen != null} ? ${attr.isOpen} : '暫停營業')">
                                 營業狀態
                             </span>
                         </div>

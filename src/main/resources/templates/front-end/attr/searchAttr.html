@@ -283,6 +283,9 @@
             <p class="lead mb-0 mt-2" th:if="${keyword != null && !keyword.isEmpty()}" style="font-size: 1.05rem; opacity: 0.9;">
                 關鍵字：「<span th:text="${keyword}"></span>」
             </p>
+            <p class="lead mb-0 mt-2" th:if="${area != null && !area.isEmpty()}" style="font-size: 1.05rem; opacity: 0.9;">
+                區域：「<span th:text="${area}"></span>」
+            </p>
         </div>
     </div>
 
