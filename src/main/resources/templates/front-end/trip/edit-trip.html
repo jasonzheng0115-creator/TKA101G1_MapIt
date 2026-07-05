@@ -956,7 +956,7 @@
                     let html = '<ul style="list-style: none; padding: 0; margin: 0;">';
 
                     data.forEach(attr => {
-                        const openTimeHtml = getOpenStatusHtml(attr.openTime);
+                        const openTimeHtml = getOpenStatusHtml(attr.openTime, attr.isOpen);
 
                         html += `
                         <li style="border-bottom: 1px solid #f1f5f9; padding: 16px 0; display: flex; justify-content: space-between; align-items: center; gap: 16px;">
@@ -1082,7 +1082,8 @@
                                     <div>
                                         <h4 style="margin: 0 0 3px 0; color: #1e293b; font-weight: 600; font-size: 14px;">${item.attrName}</h4>
                                         <p style="margin: 0; font-size: 11px; color: #64748b; font-weight: 400; word-break: break-all; margin-bottom: 4px;">${item.attrAddress}</p>
-                                        <p style="margin: 0; font-size: 11px; color: #64748b; font-weight: 500;"><i class="bi bi-clock me-1"></i>${item.openTime ? item.openTime : '無營業時間資訊'}</p>
+                                        <p style="margin: 0; font-size: 11px; font-weight: 500;">
+                                            <i class="bi bi-clock me-1" style="color: #64748b;"></i>${item.openTime === '已歇業' ? '<span style="color: #ef4444; font-weight: 500;">⛔ 已歇業</span>' : item.openTime === '暫停開放' ? '<span style="color: #f59e0b; font-weight: 500;">⚠️ 暫停開放</span>' : item.openTime ? `<span style="color: #64748b;">${item.openTime}</span>` : '<span style="color: #94a3b8;">無營業時間資訊</span>'}</p>
                                     </div>
                                 </div>
                                 <button onclick="deleteTripItem(${item.itemId})" style="background: transparent; border: none; font-size: 15px; cursor: pointer; color: #ef4444; padding: 5px; flex-shrink: 0;" title="移除景點"><i class="bi bi-trash-fill"></i></button>
@@ -1296,10 +1297,14 @@
                 });
         }
 
-        function getOpenStatusHtml(openTimeStr) {
+        function getOpenStatusHtml(openTimeStr, isOpenStr) {
+            if (isOpenStr === '已歇業') return `<span style="color: #ef4444; font-weight: 500;">⛔ 已歇業</span>`;
+            if (isOpenStr === '暫停開放') return `<span style="color: #f59e0b; font-weight: 500;">⚠️ 暫停開放</span>`;
+
             if (!openTimeStr) return `<span style="color: #94a3b8;">無營業時間資訊</span>`;
             if (openTimeStr === '24小時開放') return `<span style="color: #10b981;">24小時開放</span>`;
-            if (openTimeStr === '已歇業') return `<span style="color: #ef4444; font-weight: 500;">已歇業</span>`;
+            if (openTimeStr === '已歇業') return `<span style="color: #ef4444; font-weight: 500;">⛔ 已歇業</span>`;
+            if (openTimeStr === '暫停開放') return `<span style="color: #f59e0b; font-weight: 500;">⚠️ 暫停開放</span>`;
 
             const timeRegex = /^(\d{2}):(\d{2})-(\d{2}):(\d{2})$/;
             const match = openTimeStr.match(timeRegex);

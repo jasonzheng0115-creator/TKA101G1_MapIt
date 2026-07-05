@@ -70,6 +70,7 @@ public class AttrApiController {
             map.put("attrName", attr.getAttrName());
             map.put("attrAddress", attr.getAttrAddress());
             map.put("openTime", attr.getOpenTime());
+            map.put("isOpen", attr.getIsOpen());
             map.put("attrVotes", attr.getAttrVotes() != null ? attr.getAttrVotes() : 0);
             map.put("avgStars", attr.getAvgStars() != null ? attr.getAvgStars() : 0.0);
 

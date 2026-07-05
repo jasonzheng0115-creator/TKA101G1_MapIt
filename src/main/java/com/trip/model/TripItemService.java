@@ -67,6 +67,7 @@ public class TripItemService {
             map.put("attrName", item.getAttraction().getAttrName());
             map.put("attrAddress", item.getAttraction().getAttrAddress());
             map.put("openTime", item.getAttraction().getOpenTime());
+            map.put("isOpen", item.getAttraction().getIsOpen());
             // 處理備註空值
             map.put("itemNote", item.getItemNote() != null ? item.getItemNote() : "");
 
