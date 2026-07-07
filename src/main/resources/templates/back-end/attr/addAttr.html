@@ -100,14 +100,19 @@
                                     <label for="attrAddress" class="form-label">
                                         景點地址 <span class="text-danger">*</span>
                                     </label>
-                                    <input type="text" 
-                                           class="form-control" 
-                                           id="attrAddress" 
-                                           th:field="*{attrAddress}"
-                                           th:classappend="${#fields.hasErrors('attrAddress')} ? 'is-invalid' : ''"
-                                           placeholder="請輸入景點地址">
-                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('attrAddress')}" th:errors="*{attrAddress}">
-                                        景點地址錯誤訊息
+                                    <div class="input-group">
+                                        <input type="text" 
+                                               class="form-control" 
+                                               id="attrAddress" 
+                                               th:field="*{attrAddress}"
+                                               th:classappend="${#fields.hasErrors('attrAddress')} ? 'is-invalid' : ''"
+                                               placeholder="請輸入景點地址">
+                                        <button class="btn btn-outline-primary" type="button" id="btnGeocode">
+                                            <i class="bi bi-geo-alt"></i> 查詢座標
+                                        </button>
+                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('attrAddress')}" th:errors="*{attrAddress}">
+                                            景點地址錯誤訊息
+                                        </div>
                                     </div>
                                 </div>
 
@@ -211,6 +216,79 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
         <!-- Core theme JS-->
         <script src="/js/scripts.js"></script>
+        
+        <!-- 自動經緯度查詢功能 (Nominatim API) -->
+        <script th:inline="javascript">
+            document.addEventListener('DOMContentLoaded', function() {
+                const addressInput = document.getElementById('attrAddress');
+                const latInput = document.getElementById('lat');
+                const lngInput = document.getElementById('lng');
+                const geocodeBtn = document.getElementById('btnGeocode');
+                
+                if (geocodeBtn && addressInput) {
+                    geocodeBtn.addEventListener('click', function() {
+                        const address = addressInput.value.trim();
+                        if (!address) {
+                            alert('請先輸入景點地址！');
+                            addressInput.focus();
+                            return;
+                        }
+                        
+                        // 變更按鈕狀態為讀取中
+                        const originalBtnHtml = geocodeBtn.innerHTML;
+                        geocodeBtn.disabled = true;
+                        geocodeBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> 查詢中...';
+                        
+                        // 呼叫後台地理編碼代理端點 (自動解析 Thymeleaf 專案 context-path，避開 localhost 阻擋)
+                        const url = /*[[@{/api/attractions/geocode}]]*/ '/api/attractions/geocode';
+                        
+                        fetch(url, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ address: address })
+                        })
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('網路回應錯誤');
+                                }
+                                return response.json();
+                            })
+                            .then(data => {
+                                if (data && data.success) {
+                                    const latitude = parseFloat(data.lat).toFixed(8);
+                                    const longitude = parseFloat(data.lon).toFixed(8);
+                                    
+                                    latInput.value = latitude;
+                                    lngInput.value = longitude;
+                                    
+                                    // 觸發變更事件以供其他前端驗證使用
+                                    latInput.dispatchEvent(new Event('change'));
+                                    lngInput.dispatchEvent(new Event('change'));
+                                    
+                                    // 移除錯誤樣式 (如果有的話)
+                                    latInput.classList.remove('is-invalid');
+                                    lngInput.classList.remove('is-invalid');
+                                    
+                                    alert(`成功取得座標！\n緯度：${latitude}\n經度：${longitude}\n取得地名：${data.display_name}`);
+                                } else {
+                                    alert(`${data.message || '找不到該地址的經緯度'} \n\n【除錯資訊】\n後端收到的地址: "${data.received_address}"\n後端發送的 API 網址: ${data.encoded_url}`);
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Geocoding error:', error);
+                                alert('查詢失敗，請檢查網路連線，或手動輸入座標。');
+                            })
+                            .finally(() => {
+                                // 恢復按鈕狀態
+                                geocodeBtn.disabled = false;
+                                geocodeBtn.innerHTML = originalBtnHtml;
+                            });
+                    });
+                }
+            });
+        </script>
     
 </body>
 </html>
