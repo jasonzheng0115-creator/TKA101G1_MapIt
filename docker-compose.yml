@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  # MySQL 資料庫服務 (8.0 版本)
+  db:
+    image: mysql:8.0
+    container_name: mapit-mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: mapIt
+      MYSQL_ROOT_PASSWORD: 123456
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p123456" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis 快取服務 (7.0 版本)
+  redis:
+    image: redis:7.0-alpine
+    container_name: mapit-redis
+    restart: always
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Spring Boot 應用程式服務
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mapit-app
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      # 自動指向同一個 compose 網路中的 db 容器
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/mapIt?serverTimezone=Asia/Taipei&useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 123456
+      # 自動指向同一個 compose 網路中的 redis 容器
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+      # 上傳資料夾對應容器內 /upload 目錄
+      SPRING_WEB_RESOURCES_STATIC_LOCATIONS: classpath:/static/,file:/upload/
+    volumes:
+      - app_uploads:/upload
+
+volumes:
+  mysql_data:
+  redis_data:
+  app_uploads:

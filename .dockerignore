@@ -1,0 +1,13 @@
+.git
+.gitignore
+.project
+.classpath
+.settings/
+bin/
+target/
+.idea/
+*.iml
+.vscode/
+*.log
+Dockerfile
+.dockerignore
