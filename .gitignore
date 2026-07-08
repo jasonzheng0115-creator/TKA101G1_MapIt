@@ -91,9 +91,6 @@ Thumbs.db
 uploads/
 /.apt_generated/
 /.apt_generated_tests/
-/docker-compose.yml
-/Dockerfile
-/.dockerignore
 /extract_css.py
 /fix_expression.py
 /fix_logged_in_nav.py
