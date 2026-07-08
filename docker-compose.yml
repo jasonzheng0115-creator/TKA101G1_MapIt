@@ -6,6 +6,7 @@ services:
     image: mysql:8.0
     container_name: mapit-mysql
     restart: always
+    command: --lower-case-table-names=1
     environment:
       MYSQL_DATABASE: mapIt
       MYSQL_ROOT_PASSWORD: 123456
