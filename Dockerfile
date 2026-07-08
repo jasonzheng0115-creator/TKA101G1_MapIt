@@ -19,8 +19,8 @@ FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 
 # 從建構階段複製打包好的 jar 檔案
-# 根據 pom.xml 定義，產出的 jar 應該為 TKA101G1-0.0.1-SNAPSHOT.jar
-COPY --from=builder /app/target/TKA101G1-0.0.1-SNAPSHOT.jar app.jar
+# 根據 pom.xml 定義，產出的 jar 應該為 TKA101G1_MapIt-0.0.1-SNAPSHOT.war
+COPY --from=builder /app/target/TKA101G1_MapIt-0.0.1-SNAPSHOT.war app.jar
 
 # 暴露應用程式的埠號 (Spring Boot 預設 8080)
 EXPOSE 8080

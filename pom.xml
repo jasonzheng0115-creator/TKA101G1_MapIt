@@ -9,12 +9,12 @@
 		<version>4.0.6</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>demo</groupId>
-	<artifactId>demo</artifactId>
+	<groupId>TKA101G1_MapIt</groupId>
+	<artifactId>TKA101G1_MapIt</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
-	<name>demo</name>
-	<description>demo</description>
+	<name>TKA101G1_MapIt</name>
+	<description>TKA101G1_MapIt</description>
 	<properties>
 		<java.version>17</java.version>
 	</properties>
