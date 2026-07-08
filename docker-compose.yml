@@ -57,10 +57,10 @@ services:
       # 自動指向同一個 compose 網路中的 redis 容器
       SPRING_DATA_REDIS_HOST: redis
       SPRING_DATA_REDIS_PORT: 6379
-      # 上傳資料夾對應容器內 /upload 目錄
-      SPRING_WEB_RESOURCES_STATIC_LOCATIONS: classpath:/static/,file:/upload/
+      # 上傳資料夾對應容器內 /root/upload 目錄
+      SPRING_WEB_RESOURCES_STATIC_LOCATIONS: classpath:/static/,file:/root/upload/
     volumes:
-      - app_uploads:/upload
+      - app_uploads:/root/upload
 
 volumes:
   mysql_data:
