@@ -1367,22 +1367,22 @@ CREATE TABLE EMPLOYEE (
 INSERT INTO EMPLOYEE (EMP_NAME, EMP_SEX, EMP_TEL, EMP_EMAIL, DEPT_ID, EMP_ACC, EMP_PWD, EMP_STATUS) VALUES
 
 -- 【資訊部 (DEPT_ID = 3)】
-('莊孝維', 'M', '0912345678', 'zhuang@example.com', 3, 'ituser01', 'test1234', TRUE),
-('史珍香', 'F', '0923456789', 'shi@example.com', 3, 'ituser02', 'test1234', TRUE),
+('周杰倫', 'M', '0912345678', 'jay@example.com', 3, 'ituser01', 'test1234', TRUE),
+('蔡依林', 'F', '0923456789', 'jolin@example.com', 3, 'ituser02', 'test1234', TRUE),
 
 -- 【行政部 (DEPT_ID = 1)】
-('殷櫻美', 'F', '0934567890', 'yin@example.com', 1, 'admin001', 'test1234', TRUE),
+('林志玲', 'F', '0934567890', 'lin@example.com', 1, 'admin001', 'test1234', TRUE),
 
 -- 【財務部 (DEPT_ID = 2)】
-('甄郝野', 'F', '0945678901', 'zhen@example.com', 2, 'finuser1', 'test1234', TRUE),
+('張惠妹', 'F', '0945678901', 'amei@example.com', 2, 'finuser1', 'test1234', TRUE),
 
 -- 【行銷部 (DEPT_ID = 4)】
-('賈正經', 'M', '0956789012', 'jia@example.com', 4, 'mktuser1', 'test1234', TRUE),
-('盧筱筱', 'F', '0967890123', 'lu@example.com', 4, 'mktuser2', 'test1234', TRUE),
+('劉德華', 'M', '0956789012', 'andy@example.com', 4, 'mktuser1', 'test1234', TRUE),
+('陳綺貞', 'F', '0967890123', 'cheer@example.com', 4, 'mktuser2', 'test1234', TRUE),
 
 -- 【客服部 (DEPT_ID = 5)】
-('侯賽雷', 'M', '0978901234', 'hou@example.com', 5, 'csuser01', 'test1234', TRUE),
-('吳法度', 'M', '0989012345', 'wu@example.com', 5, 'csuser02', 'test1234', FALSE); -- 測試停權狀態
+('金城武', 'M', '0978901234', 'takeshi@example.com', 5, 'csuser01', 'test1234', TRUE),
+('彭于晏', 'M', '0989012345', 'eddie@example.com', 5, 'csuser02', 'test1234', FALSE); -- 測試停權狀態
 
 -- =======================================================
 -- 18. 建立通知中心資料表 (MESSAGE)
