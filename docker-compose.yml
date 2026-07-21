@@ -60,7 +60,7 @@ services:
       # 上傳資料夾對應容器內 /root/upload 目錄
       SPRING_WEB_RESOURCES_STATIC_LOCATIONS: classpath:/static/,file:/root/upload/
     volumes:
-      - app_uploads:/root/upload
+      - ./upload:/root/upload
 
 volumes:
   mysql_data:
