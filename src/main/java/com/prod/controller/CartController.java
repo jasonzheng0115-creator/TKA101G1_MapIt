@@ -27,20 +27,18 @@ import jakarta.servlet.http.HttpSession;
 public class CartController {
 	
 	@Autowired
-	private ProdService prodSvc; // 用來查 MySQL 商品資訊
+	private ProdService prodSvc;
 	
 	@Autowired
-	private StringRedisTemplate redisTemplate; // Spring Boot 內建操作 Redis 的工具
+	private StringRedisTemplate redisTemplate; // Spring Boot 內建 Redis
 	
-	// 輔助方法：定義 Redis 的專屬號碼箱（Key）
+	// 定義會員跟旅客的key
 	private String getCartKey(HttpSession session) {
 		CustVO loginCust = (CustVO) session.getAttribute("loginCust");
 		
 		if (loginCust != null) {
-	        // 有登入，動態返回該會員專屬的 Key
 	        return "cart:member:" + loginCust.getCustId();
 	    } else {
-	        // 沒登入，session.getId()讓每個瀏覽器(不同遊客)都會拿到不同key，才不會把A遊客的資料帶去B遊客的畫面
 	        return "cart:guest:" + session.getId();
 	    }
 	}
@@ -48,22 +46,25 @@ public class CartController {
 	// 加入購物車 (數量自動累加)
 	@PostMapping("/add")
 	public String addToCart(
-			@RequestParam("productId") Integer productId, 
-			@RequestParam("quantity") Integer quantity,
-			HttpSession session) {
+		@RequestParam("productId") Integer productId, 
+		@RequestParam("quantity") Integer quantity,
+		HttpSession session) {
 		
-		String key = getCartKey(session);  // 取得key,判斷是否登入交給getCartKey
-		String field = String.valueOf(productId); // 此會員購物車裡的某一個商品
+		// 防止被繞過前端的數量限制
+		if (productId == null || quantity == null || quantity <= 0) {
+		    return "redirect:/cart/show";
+		}
 		
-		// 計算剩餘可用庫存
-		ProdVO product = prodSvc.getOneProd(productId);
+		String key = getCartKey(session);  // key代表購物車的ID
+		String field = String.valueOf(productId); // field代表這個購物車裡的東西
+		ProdVO product = prodSvc.getOneProd(productId); // product代表商品所有資料=商品物件
 		
-		if (product != null) {
-			// 商品目前在購物車的已加數量
+		if (product != null) {  // product != null表示該商品有資料存在，非下架狀態或不存在的狀態
+			// 取出"key"的購物車資料
 			String currentQtyStr = (String) redisTemplate.opsForHash().get(key, field);
 			int currentQty = (currentQtyStr != null) ? Integer.parseInt(currentQtyStr) : 0;
 			
-			// 計算剩餘可用庫存 (總數量 - 已售數量)
+			// 庫存數量=總數量-已購買數量
 			int purchased = (product.getPurchasedQty() == null) ? 0 : product.getPurchasedQty();
 			int remainingStock = product.getProductQty() - purchased;
 			
@@ -73,72 +74,67 @@ public class CartController {
 			// 寫入 Redis
 			redisTemplate.opsForHash().put(key, field, String.valueOf(newQty));
 			
-			// 購物車過期指令 30天未登入會清空
+			// 購物車過期:30天未登入清空
 			redisTemplate.expire(key, Duration.ofDays(30));
 		}
 		
 		return "redirect:/cart/show";
 	}
 	
-	// 顯示購物車 ( Redis + Function 資料轉換 Stream)
+	// 顯示購物車
 	@GetMapping("/show")
 	public String showCart(ModelMap model, HttpSession session) {
 		
-		String key = getCartKey(session);  // 取得key,判斷是否登入交給getCartKey()
+		String key = getCartKey(session);
 		
-		// 官方標準寫法：直接把這個 key 的所有 {商品ID: 數量} 倒出來
+		// .entries()回傳型別Map<Object, Object>是固定寫法
 		Map<Object, Object> redisCart = redisTemplate.opsForHash().entries(key);
 		
 		// Stream 資料轉換 (將 Redis 的字串轉為 CartVO 物件)
 		// redisCart是Map不可直接stream()，需透過entrySet()
 		List<CartVO> cartList = redisCart.entrySet().stream()
-				.map(entry -> {
-					Integer productId = Integer.parseInt((String) entry.getKey());
-					Integer qty = Integer.parseInt((String) entry.getValue());
-					
-					// 去 MySQL 撈出最新的商品詳情
-					ProdVO product = prodSvc.getOneProd(productId);
-					
-					// 【Function 轉換】：如果商品存在，轉化為前端畫面的 CartVO 物件
-					return (product != null) ? new CartVO(product, qty) : null;
+			.map(entry -> {
+				Integer productId = Integer.parseInt((String) entry.getKey());
+				Integer qty = Integer.parseInt((String) entry.getValue());
+				ProdVO product = prodSvc.getOneProd(productId);
+				return (product != null) ? new CartVO(product, qty) : null;  // 商品存在就return給前端，轉為CartVO
 				})
-				.filter(Objects::nonNull) // 過濾失效或被下架的商品
-				.collect(Collectors.toList());
+				.filter(Objects::nonNull) // 過濾下架商品
+				.collect(Collectors.toList()); // 打包成新的資料
 		
 		// 計算總金額
-		int totalAmount = cartList.stream()
-				.mapToInt(CartVO::getSubtotal)
-				.sum();
+		int totalAmount = cartList.stream().mapToInt(CartVO::getSubtotal).sum();
 		
 		CustVO loginCust = (CustVO) session.getAttribute("loginCust");
 		
 		if (loginCust != null) {
-			// 有登入，傳入會員名字
-		    model.addAttribute("userName", loginCust.getCustName());
+		    model.addAttribute("userName", loginCust.getCustName());  // 登入，傳會員名字
 	    } else {
-	        // 未登入不傳
-	        // 前端的 th:unless="${userName}" 會成立，右上角顯示「註冊 / 登入」
-	        model.addAttribute("userName", null);
+	        model.addAttribute("userName", null); // 未登入，不傳，前端的 th:unless="${userName}" 會成立，右上角顯示「註冊 / 登入」
 	    }
 		
-		// 推薦商品區塊顯示，把所有旅遊商品從資料庫撈出來，裝進 frontProdList 
-		// 隨機撈取功能，限制只撈取 4 筆上架中的商品作為推薦商品
+		// 補充:推薦商品區塊
 		List<ProdVO> frontProdList = prodSvc.getRandomProducts(4);
 		model.addAttribute("frontProdList", frontProdList);
-		
 		model.addAttribute("cartList", cartList);
 		model.addAttribute("totalAmount", totalAmount);
+		
 		return "front-end/cart/cart_list";
 	}
 	
 	// 修改數量
 	@PostMapping("/update")
 	public String updateCart(
-			@RequestParam("productId") Integer productId, 
-			@RequestParam("quantity") Integer quantity,
-			HttpSession session) {
+		@RequestParam("productId") Integer productId, 
+		@RequestParam("quantity") Integer quantity,
+		HttpSession session) {
 		
-		String key = getCartKey(session);  // 取得key,判斷是否登入交給getCartKey()
+		// 防止被繞過前端的數量限制
+		if (productId == null || quantity == null || quantity <= 0) {
+		    return "redirect:/cart/show";
+		}
+		
+		String key = getCartKey(session);
 		String field = String.valueOf(productId);
 		
 		if (quantity <= 0) {
@@ -150,33 +146,29 @@ public class CartController {
 			int finalQty = quantity;
 			
 			if (product != null) {
-				// 計算剩餘可用庫存 (總數量 - 已售數量)
 				int purchased = (product.getPurchasedQty() == null) ? 0 : product.getPurchasedQty();
 				int remainingStock = product.getProductQty() - purchased;
 				
-				// 限制在剩餘可用庫存值
 				if (quantity > remainingStock) {
-					finalQty = Math.max(0, remainingStock);
+					finalQty = Math.max(0, remainingStock); // 預防出現負數 & 限制在庫存最大值
 				}
 			}
 			
-			// 以安全數量覆蓋寫入 Redis
 			redisTemplate.opsForHash().put(key, field, String.valueOf(finalQty));
 			
-			// 購物車過期指令 30天未登入會清空
 			redisTemplate.expire(key, Duration.ofDays(30));
 		}
 
 		return "redirect:/cart/show";
 	}
 	
-	// 手動刪除
+	// 刪除
 	@PostMapping("/delete")
 	public String deleteFormCart(
-			@RequestParam("productId") Integer productId,
-			HttpSession session) {
+		@RequestParam("productId") Integer productId,
+		HttpSession session) {
 		
-		String key = getCartKey(session);  // 取得key,判斷是否登入交給getCartKey()
+		String key = getCartKey(session);
 	    
 		redisTemplate.opsForHash().delete(key, String.valueOf(productId));
 		return "redirect:/cart/show";
@@ -189,7 +181,5 @@ public class CartController {
 		redisTemplate.delete(key);      // 刪除此會員的 Redis 
 		return "redirect:/cart/show"; 
 	}
-	
-	
 	
 }

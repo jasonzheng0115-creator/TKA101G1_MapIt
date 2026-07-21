@@ -5,6 +5,7 @@
 <title>我的購物車</title>
 
 <th:block th:replace="~{layouts/frontend :: head}"></th:block>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 <style>
 	body {
@@ -262,53 +263,40 @@
 </head>
 <body>
 
-		<!-- 引入共同導覽列 -->
+	<!-- 引入共同導覽列 -->
 	<header th:replace="~{layouts/frontend :: navbar}"></header>
-
-
 	
 	<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
 		<h1 style="margin: 0;">購物車商品明細</h1>
-		
 		<form th:if="${not #lists.isEmpty(cartList)}" th:action="@{/cart/clear}" method="POST" style="margin: 0;">
 			<button type="submit" class="clear-btn">
-				🗑️ 清空購物車
+				<i class="fa-regular fa-trash-can"></i> 清空購物車
 			</button>
 		</form>
-	
 	</div>
 		
 	<div class="cart-container" th:if="${not #lists.isEmpty(cartList)}">
-	
 		<div class="cart-items">
 			<div class="item-row" th:each="cartVO : ${cartList}">
 				<img th:src="@{/upload/{imgName}(imgName=${cartVO.product.productImg})}" class="item-img" th:alt="${cartVO.product.productName}">
-				
 				<div class="item-info">
 					<h3 th:text="${cartVO.product.productName}">台北101景觀台門票 placeholder</h3>
-					
 					<div style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
-						
 						<form th:action="@{/cart/update}" method="POST" style="margin: 0;">
 				            <input type="hidden" name="productId" th:value="${cartVO.product.productId}">
 				            <input type="hidden" name="quantity" th:value="${cartVO.quantity - 1}">
 				            <button type="submit" class="qty-btn" th:disabled="${cartVO.quantity <= 1}">－</button>
 				        </form>
-						
 						<span style="font-size: 16px; font-weight:bold; min-width: 20px; text-align: center;"
 							  th:text="${cartVO.quantity}">1</span>
-						
 						<form th:action="@{/cart/update}" method="POST" style="margin: 0;">
 				            <input type="hidden" name="productId" th:value="${cartVO.product.productId}">
 				            <input type="hidden" name="quantity" th:value="${cartVO.quantity + 1}">
 				            <button type="submit" class="qty-btn"
 				            		th:disabled="${cartVO.quantity >= (cartVO.product.productQty - cartVO.product.purchasedQty)}">＋</button>
 				        </form>
-						
 					</div>
-				
 				</div>
-				
 				<div class="item-price-box">
 					<span class="item-price" th:text="'NT$ ' + ${cartVO.subtotal}">NT$999999999 placeholder</span>
 					<form th:action="@{/cart/delete}" method="POST" style="margin: 0;">
@@ -317,10 +305,9 @@
 					</form>
 				</div>
 			</div>
-			
 			<a th:href="@{/frontend/product/listAll}" 
 		       style="margin-top: 20px; display: inline-block; text-decoration: none; color: orange; font-size: 16px; font-weight: bold; padding: 8px 16px; border: 1px solid dodgerblue; border-radius: 4px; transition: all 0.2s;">
-		       ← 繼續購物 (回商品列表)
+		       <i class="fa-solid fa-arrow-rotate-left"></i> 繼續購物 (回商品列表)
 		    </a>
 		</div>
 		
@@ -334,45 +321,35 @@
 			    <button type="button" class="checkout-btn">前往結帳</button>
 			</a>
 		</div>
-		
 	</div>
 	
     <div th:if="${#lists.isEmpty(cartList)}"
     	 style="background-color: white; border: 1px solid lightgray; border-radius: 8px; padding: 60px; text-align: center; max-width: 600px; margin: 40px auto;">
-    
-    	<div style="font-size: 60px; margin-bottom: 20px;">🛒</div>
-    	
+    	<div style="font-size: 60px; margin-bottom: 20px;"><i class="fa-solid fa-cart-shopping"></i></div>
     	<h2 style="color: black; margin-bottom: 10px;">您的購物車目前沒有商品</h2>
     	<p style="color: gray; margin-bottom: 30px; font-size: 14px;">看來您還沒加入任何好玩的旅遊行程呢!</p>
-    	
     	<a th:href="@{/frontend/product/listAll}"
     	   style="display: inline-block; background-color: orange; color: white; text-decoration: none; padding: 12px 28px; border-radius: 25px; font-size: 16px; font-weight:bold;">
     	   立刻前往精選商品逛逛!
     	</a>
-    
     </div>
     
     <div class="recommend-section" th:if="${frontProdList != null and not #lists.isEmpty(frontProdList)}">
 		<div class="recommend-title">✨ 熱門推薦行程</div>
-		
 		<div class="recommend-grid">
 			<div class="recommend-card" th:each="recProd, iterStat : ${frontProdList}" th:if="${iterStat.index < 4}">
-				
 				<form th:action="@{/frontend/product/getOne_For_Display}" method="POST" style="margin: 0; padding: 0; cursor: pointer; width: 100%;">
 					<input type="hidden" name="productId" th:value="${recProd.productId}"/>
-					
 					<button type="submit" style="background: none; border: none; padding: 0; margin: 0; width: 100%; text-align: left; cursor: pointer;">
 						<img th:src="@{/upload/{imgName}(imgName=${recProd.productImg})}" class="rec-img" alt="推薦商品圖片">
 						<div class="rec-name" th:text="${recProd.productName}">推薦旅遊商品名稱 placeholder</div>
 					</button>
 				</form>
-				
 				<div class="rec-price" th:text="'NT$ ' + ${recProd.productPrice}">NT$ 999</div>
 			</div>
 		</div>
 	</div>
 
-	
 	<th:block th:replace="~{layouts/frontend :: scripts}"></th:block>
 </body>
 </html>
