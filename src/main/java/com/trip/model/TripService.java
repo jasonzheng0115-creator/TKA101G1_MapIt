@@ -1,12 +1,15 @@
 package com.trip.model;
 
-import com.cust.model.CustVO;
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
+import com.cust.model.CustVO;
 
 @Service
 public class TripService {
@@ -29,12 +32,12 @@ public class TripService {
         List<TripVO> myTrips = tripRepository.findByCustVO(custVO);
 
         // 1.2 建立一個新的 ArrayList 合併清單，並把自己的行程放進去
-        List<TripVO> allTrips = new java.util.ArrayList<>(myTrips);
+        List<TripVO> allTrips = new ArrayList<>(myTrips);
 
         // 1.3 透過 collabItemRepository，找出所有跟「這個會員(custVO)」有關的協作紀錄
         List<CollabItemVO> collabItems = collabItemRepository.findByCustVO(custVO);
 
-        // 1.4 用簡單的 for 迴圈，把共享行程一筆一筆加進合併清單
+        // 1.4 用 for 迴圈，把當前會員被邀請加入的行程一筆一筆加進合併清單
         for (CollabItemVO collab : collabItems) {
             TripVO collabTrip = collab.getTripVO(); // 取得該筆協作對應的行程物件
 
@@ -44,10 +47,10 @@ public class TripService {
             }
         }
 
-        // 1.5 為清單中的所有行程載入群組成員 (排除擁有者自己，避免重複)
+        // 1.5 為清單中的所有行程載入群組成員 (排除行程建立者，避免重複)
         for (TripVO trip : allTrips) {
             List<CollabItemVO> collabs = collabItemRepository.findByTripVO_TripId(trip.getTripId());
-            List<CustVO> collabCusts = new java.util.ArrayList<>();
+            List<CustVO> collabCusts = new ArrayList<>();
             for (CollabItemVO collab : collabs) {
                 CustVO collabCust = collab.getCustVO();
                 if (collabCust != null && !collabCust.getCustId().equals(trip.getCustVO().getCustId())) {
@@ -57,34 +60,33 @@ public class TripService {
             trip.setCollaborators(collabCusts);
         }
 
-        // 1.6 回傳合併完成 hometown行程清單
+        // 1.6 回傳合併完成的行程清單
         return allTrips;
     }
 
     // 2. 新增行程
-    @Transactional // 加上交易控管，確保資料庫寫入安全
+    @Transactional // 交易控管，確保資料庫寫入安全
     public TripVO createTrip(TripVO trip, CustVO owner) {
-        // 綁定行程的擁有者
+        // 綁定行程的建立者
         trip.setCustVO(owner);
         // 存入資料庫並回傳 (因為回傳的物件才會有資料庫自動生成的 TripId)
         return tripRepository.save(trip);
     }
 
-    // 3. 取得特定行程的編輯畫面 (放寬權限防護：擁有者與群組成員皆可進入)
+    // 3. 取得特定行程的編輯畫面 (擁有者與群組成員皆可進入)
     public TripVO getTripByIdAndPermission(Integer tripId, Integer loginCustId) {
-        // 1. 從資料庫找行程，並收到一個 Optional 禮物盒
+        // 1. 從資料庫找行程，並收到一個 Optional (可能為null，另外處理)
         Optional<TripVO> optionalTrip = tripRepository.findById(tripId);
 
-        // 2. 使用 isEmpty() 檢查這個盒子是不是空的 (即資料庫根本沒這筆行程)
+        // 2. isEmpty() 檢查這個盒子是不是空的 (=資料庫根本沒這筆行程)
         if (optionalTrip.isEmpty()) {
-            return null;// 如果是空盒子，直接回傳 null (防呆 1)
+            return null;// 如果是空盒子，直接回傳 null
         }
 
-        // 3. 確定裡面有禮物後，呼叫 get() 打開盒子，拿出真正的 TripVO 物件
+        // 3. 確定裡面有東西後，呼叫 get() 打開盒子，拿出真正的 TripVO 物件
         TripVO trip = optionalTrip.get();
 
-        // 防呆 2 (權限控管)：確認登入的會員是否具有編輯此行程的權限
-        // 將參數由左至右傳遞給 collabItemService.hasEditPermission 方法進行檢查
+        // 確認登入的會員是否具有編輯此行程的權限
         if (!collabItemService.hasEditPermission(tripId, loginCustId)) {
             return null; // 沒有編輯權限，回傳 null 拒絕存取
         }
@@ -92,7 +94,7 @@ public class TripService {
         return trip;
     }
 
-    // 4. 物理刪除行程（連同明細和群組成員一起清掉）
+    // 4. 刪除行程（連同行程明細和群組成員明細一起刪除）
     @Transactional
     public void deleteTrip(Integer tripId, Integer loginCustId) {
         // 防呆 1：先確認行程存在
@@ -117,13 +119,13 @@ public class TripService {
 
     // 5. 更新行程基本資訊
     @Transactional
-    public void updateTripInfo(Integer tripId, String tripName, java.sql.Date tripDate, Boolean tripStatus,
+    public void updateTripInfo(Integer tripId, String tripName, Date tripDate, Boolean tripStatus,
             Integer loginCustId) {
         // 找出要更新的行程
         TripVO trip = tripRepository.findById(tripId)
                 .orElseThrow(() -> new RuntimeException("找不到行程"));
 
-        // 權限防護：要有編輯權限才可以修改 (包含擁有者與群組成員)
+        // 要有編輯權限才可以修改 (包含擁有者與群組成員)
         if (!collabItemService.hasEditPermission(tripId, loginCustId)) {
             throw new RuntimeException("你沒有權限修改此行程！");
         }

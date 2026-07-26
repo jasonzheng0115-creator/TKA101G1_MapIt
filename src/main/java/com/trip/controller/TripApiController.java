@@ -11,7 +11,7 @@ import java.util.Map;
 
 /* 專門處理 行程主體 (TripVO) 的 JSON 資料更新。*/
 @RestController // 標註這是專門回傳資料 (JSON 或純文字) 的 API 控制器
-@RequestMapping("/api/trips") // 統一這個控制器的網址開頭
+@RequestMapping("/api/trips") // 統一這個控制器的網址開頭，沒有經過filter
 public class TripApiController {
 
     @Autowired

@@ -58,7 +58,7 @@ public class TripController {
     public String processCreateTrip(TripVO trip, HttpSession session) {
         CustVO loginCust = (CustVO) session.getAttribute("loginCust");
 
-        // 將存檔與綁定使用者的髒活交給 Service，並取得包含 ID 的新行程
+        // 將存檔與綁定使用者交給 Service，並取得包含 ID 的新行程
         TripVO savedTrip = tripService.createTrip(trip, loginCust);
 
         return "redirect:/trip/edit/" + savedTrip.getTripId();
@@ -81,7 +81,7 @@ public class TripController {
 
         model.addAttribute("userName", loginCust.getCustName());
         model.addAttribute("trip", trip);
-        // 新增這行：將目前登入的會員 ID 傳給編輯頁，用來判定是否顯示管理協作者的權限
+        // 將目前登入的會員 ID 傳給編輯頁，用來判定是否顯示管理協作者的權限
         model.addAttribute("loginCustId", loginCust.getCustId());
         return "front-end/trip/edit-trip";
     }
@@ -105,17 +105,17 @@ public class TripController {
         return "redirect:/trip/my-trips";
     }
 
-    // 6. 退出行程協作 (接收來自「我的行程」列表中，協作者卡片的 POST 請求)
+    // 6. 退出行程群組 (接收來自「我的行程」列表中，協作者卡片的 POST 請求)
     @PostMapping("/exit-collab")
     public String exitCollab(@RequestParam("tripId") Integer tripId, HttpSession session) {
         // 權限檢查：是否登入
         CustVO loginCust = (CustVO) session.getAttribute("loginCust");
 
         try {
-            // 呼叫服務層方法，傳入「行程ID」與「目前登入者會員ID」進行刪除
+            // 呼叫 Service，傳入「行程ID」與「目前登入者會員ID」進行刪除
             collabItemService.exitCollaboration(tripId, loginCust.getCustId());
         } catch (RuntimeException e) {
-            System.out.println("退出協作失敗：" + e.getMessage());
+            System.out.println("退出群組失敗：" + e.getMessage());
         }
 
         // 完成退出後，將瀏覽器重新導向回「我的行程」列表頁

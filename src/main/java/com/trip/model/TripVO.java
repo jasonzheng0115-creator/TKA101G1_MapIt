@@ -1,7 +1,11 @@
 package com.trip.model;
 
+import java.io.Serializable;
 import java.sql.Date;
+import java.util.List;
+
 import com.cust.model.CustVO;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -17,7 +21,7 @@ import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "TRIP")
-public class TripVO implements java.io.Serializable {
+public class TripVO implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -41,7 +45,7 @@ public class TripVO implements java.io.Serializable {
 	private Boolean tripStatus = false; // 預設為私有;
 
 	@Transient
-	private java.util.List<CustVO> collaborators;
+	private List<CustVO> collaborators;
 
 	public Integer getTripId() {
 		return tripId;
@@ -87,11 +91,11 @@ public class TripVO implements java.io.Serializable {
 		return serialVersionUID;
 	}
 
-	public java.util.List<CustVO> getCollaborators() {
+	public List<CustVO> getCollaborators() {
 		return collaborators;
 	}
 
-	public void setCollaborators(java.util.List<CustVO> collaborators) {
+	public void setCollaborators(List<CustVO> collaborators) {
 		this.collaborators = collaborators;
 	}
 }

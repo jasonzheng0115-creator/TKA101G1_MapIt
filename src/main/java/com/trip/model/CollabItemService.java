@@ -1,4 +1,4 @@
-package com.trip.model; // 嚴格遵守：Service 放在 model 套件中
+package com.trip.model;
 
 import com.cust.model.CustVO;
 import com.cust.model.CustRepository;
@@ -25,7 +25,7 @@ public class CollabItemService {
         // 第一關：先檢查是不是行程的「擁有者」
         TripVO trip = tripRepository.findById(tripId).orElse(null);
         if (trip != null && trip.getCustVO().getCustId().equals(custId)) {
-            return true; // 是擁有者，直接放行
+            return true; // 是擁有者
         }
 
         // 第二關：如果不是擁有者，再檢查是不是「群組成員」
@@ -55,7 +55,7 @@ public class CollabItemService {
 
         // 防呆：不能把行程擁有者加為群組成員（他本來就有權限）
         if (trip.getCustVO().getCustId().equals(custId)) {
-            throw new RuntimeException("行程擁有者不需要被加為群組成員！");
+            throw new RuntimeException("此會員是行程建立者！");
         }
 
         // 建立並儲存
@@ -71,13 +71,13 @@ public class CollabItemService {
         collabItemRepository.deleteById(collabId);
     }
 
-    // 5. 刪除某個行程的所有群組成員（給行程物理刪除時用）
+    // 5. 刪除某個行程的所有群組成員
     @Transactional
     public void removeAllCollaboratorsByTripId(Integer tripId) {
         collabItemRepository.deleteByTripVO_TripId(tripId);
     }
 
-    // 6. 透過「帳號」新增一位群組成員
+    // 6. 透過「帳號名稱」新增一位群組成員
     @Transactional
     public CollabItemVO addCollaboratorByAccount(Integer tripId, String custAccount, Integer loggedInCustId) {
 
@@ -95,7 +95,7 @@ public class CollabItemService {
             throw new RuntimeException("找不到此帳號，請確認朋友的帳號是否正確！");
         }
 
-        // 直接呼叫我們在階段 A 寫好的方法 (原本就具備防呆機制，例如不能重複加)
+        // 直接呼叫前面的addCollaborator方法 (具有檢查機制，例如不能重複加)
         return addCollaborator(tripId, friend.getCustId());
     }
 

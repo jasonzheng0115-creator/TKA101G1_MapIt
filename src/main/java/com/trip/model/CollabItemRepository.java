@@ -14,10 +14,10 @@ public interface CollabItemRepository extends JpaRepository<CollabItemVO, Intege
     // 2. 查詢某個會員是否是某行程的群組成員（用來做權限檢查）
     CollabItemVO findByTripVO_TripIdAndCustVO_CustId(Integer tripId, Integer custId);
 
-    // 3. 刪除某個行程下的所有群組成員（行程被物理刪除時，要連群組成員一起清掉）
+    // 3. 刪除某個行程下的所有群組成員（行程被刪除時，要連群組成員一起清掉）
     void deleteByTripVO_TripId(Integer tripId);
 
-    // 4. 根據「會員（CustVO）」找出他被加入的所有協作紀錄
+    // 4. 根據「會員（CustVO）」找出他被加入的所有旅遊行程紀錄
     List<CollabItemVO> findByCustVO(CustVO custVO);
 
 }

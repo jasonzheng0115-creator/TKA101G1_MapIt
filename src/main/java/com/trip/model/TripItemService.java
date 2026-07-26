@@ -1,17 +1,19 @@
 package com.trip.model; // 嚴格遵守：Service 放在 model 套件中
 
-import com.attr.model.AttrRepository;
-import com.attr.model.AttrVO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Service // 標註為 Spring 管理的 Service 元件
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.attr.model.AttrRepository;
+import com.attr.model.AttrVO;
+
+@Service // Spring 管理的 Service 元件
 public class TripItemService {
 
     @Autowired
@@ -27,7 +29,7 @@ public class TripItemService {
     private CollabItemService collabItemService;
 
     // 1. 負責「將景點加入行程」的核心邏輯
-    @Transactional // 加上這行：保證過程中如果出錯，資料庫會自動還原，不會存入一半的髒資料
+    @Transactional // // 交易控管，確保資料庫寫入安全
     public void addArrcToTrip(Integer tripId, Integer attrId) {
         // 尋找行程與景點，找不到就拋出錯誤讓 Controller 去接
         TripVO trip = tripRepository.findById(tripId)
@@ -47,7 +49,10 @@ public class TripItemService {
 
         // 預設到達與離開時間為行程出發日期的 00:00
         if (trip.getTripDate() != null) {
-            java.time.LocalDateTime startOfDay = trip.getTripDate().toLocalDate().atStartOfDay();
+            // 資料庫Date : 2026-01-01
+            // toLocalDate()
+            // Java LocalDateTime : 2026-01-01T00:00:00
+            LocalDateTime startOfDay = trip.getTripDate().toLocalDate().atStartOfDay();
             newItem.setArrivalTime(startOfDay);
             newItem.setDepTime(startOfDay);
         }
@@ -71,7 +76,7 @@ public class TripItemService {
             // 處理備註空值
             map.put("itemNote", item.getItemNote() != null ? item.getItemNote() : "");
 
-            // 新增：把 LocalDateTime 轉換成字串回傳給前端 (處理空值)
+            // 把 LocalDateTime 轉換成字串回傳給前端 (處理空值)
             map.put("arrivalTime", item.getArrivalTime() != null ? item.getArrivalTime().toString() : "");
             map.put("depTime", item.getDepTime() != null ? item.getDepTime().toString() : "");
             // 經緯度
@@ -93,18 +98,18 @@ public class TripItemService {
 
         Integer tripId = itemToDelete.getTrip().getTripId();
 
-        // 權限防護：不是擁有者也不是群組成員，就不准刪！
+        // 權限防護：不是擁有者也不是群組成員，無法刪除
         if (!collabItemService.hasEditPermission(tripId, loggedInCustId)) {
             throw new RuntimeException("你沒有權限修改此行程！");
         }
 
-        // 記下被刪除的序號
+        // 記下被刪除的行程明細的序號
         int deletedSeqNo = itemToDelete.getSeqNo();
 
         // 刪除該明細
         tripItemRepository.delete(itemToDelete);
 
-        // ★ 核心邏輯：將原本排在它後面的景點，順序全部往前遞減 1
+        // 將原本排在它後面的景點，順序全部往前遞減 1
         List<TripItemVO> remainingItems = tripItemRepository.findByTrip_TripIdOrderBySeqNoAsc(tripId);
         for (TripItemVO item : remainingItems) {
             if (item.getSeqNo() > deletedSeqNo) {
@@ -153,7 +158,7 @@ public class TripItemService {
             throw new RuntimeException("你沒有權限修改此行程！");
         }
 
-        // 3. 用簡單的 for 迴圈，依據傳入的順序更新資料庫中的 seqNo
+        // 3. 用 for 迴圈，依據傳入的順序 更新資料庫中的 seqNo
         for (int i = 0; i < itemIds.size(); i++) {
             Integer itemId = itemIds.get(i);
             TripItemVO item = tripItemRepository.findById(itemId)
@@ -161,7 +166,7 @@ public class TripItemService {
 
             // 安全防呆：防範跨行程非法修改他人明細
             if (!item.getTrip().getTripId().equals(tripId)) {
-                throw new RuntimeException("非法操作：不允許跨行程修改順序！");
+                throw new RuntimeException("非法操作：不允許跨行程修改他人順序！");
             }
 
             item.setSeqNo(i + 1); // 序號從 1 開始遞增
