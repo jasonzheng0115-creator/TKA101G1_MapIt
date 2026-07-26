@@ -14,8 +14,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@RestController // 標註這是專門回傳 JSON 資料的 API
-@RequestMapping("/api/collabs") // 統一此控制器的網址開頭為 /api/collabs
+@RestController // 專門回傳 JSON 資料的 API
+@RequestMapping("/api/collabs") // 統一此控制器的網址開頭為 /api/collabs，沒有經過filter
 public class CollabApiController {
 
     @Autowired
@@ -33,7 +33,7 @@ public class CollabApiController {
             return ResponseEntity.status(401).body("請先登入"); // 回傳 401 未授權
         }
 
-        // 權限檢查：確認目前登入者對此行程具有編輯權限（建立者或協作者）
+        // 權限檢查：確認目前登入者對此行程有編輯權限（建立者或協作者）
         if (!collabItemService.hasEditPermission(tripId, loginCust.getCustId())) {
             return ResponseEntity.status(403).body("你沒有權限檢視此群組的成員"); // 回傳 403 被拒絕
         }
@@ -77,7 +77,7 @@ public class CollabApiController {
         }
 
         try {
-            // 呼叫 Service 透過帳號進行查詢並新增 (該方法內部已寫好「必須是行程擁有者」與「不能重複加」的防護)
+            // 呼叫 Service 透過帳號進行查詢並新增 (方法內部有寫「必須是行程擁有者」與「不能重複加」的判斷)
             CollabItemVO newCollab = collabItemService.addCollaboratorByAccount(tripId, custAccount,
                     loginCust.getCustId());
 
@@ -105,7 +105,7 @@ public class CollabApiController {
         }
 
         try {
-            // 透過我們在步驟 2 寫的方法找出該協作紀錄
+            // 透過getCollabById方法找出該協作紀錄
             CollabItemVO collab = collabItemService.getCollabById(collabId);
             if (collab == null) {
                 return ResponseEntity.status(404).body("找不到此成員");

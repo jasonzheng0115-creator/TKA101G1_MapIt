@@ -46,26 +46,22 @@ public class TripItemVO implements Serializable {
 
     @Column(name = "TRAVEL_TIME")
     private Integer travelTime;
-    
+
     @Column(name = "ITEM_NOTE", length = 500)
     private String itemNote;
 
     // ==========================================
     // 1. 建構子 (Constructors)
     // ==========================================
-    
-    // Hibernate 強烈建議一定要有無參數建構子 (No-Arg Constructor)
+
     public TripItemVO() {
     }
 
     // 全參數建構子 (方便在程式中直接 new 物件)
-//    public TripItem(Integer itemId, TripVO trip, AttrVO attraction, Integer seqNo, 
-//                    LocalDateTime arrivalTime, LocalDateTime depTime, Integer travelTime) {
-    public TripItemVO(Integer itemId, TripVO trip, Integer seqNo, 
-                    LocalDateTime arrivalTime, LocalDateTime depTime, Integer travelTime) {
+    public TripItemVO(Integer itemId, TripVO trip, Integer seqNo,
+            LocalDateTime arrivalTime, LocalDateTime depTime, Integer travelTime) {
         this.itemId = itemId;
         this.trip = trip;
-//        this.attraction = attraction;
         this.seqNo = seqNo;
         this.arrivalTime = arrivalTime;
         this.depTime = depTime;
@@ -92,11 +88,11 @@ public class TripItemVO implements Serializable {
         this.trip = trip;
     }
 
-    public com.attr.model.AttrVO getAttraction() {
+    public AttrVO getAttraction() {
         return attraction;
     }
-    
-    public void setAttraction(com.attr.model.AttrVO attraction) {
+
+    public void setAttraction(AttrVO attraction) {
         this.attraction = attraction;
     }
 
@@ -131,7 +127,7 @@ public class TripItemVO implements Serializable {
     public void setTravelTime(Integer travelTime) {
         this.travelTime = travelTime;
     }
-    
+
     public String getItemNote() {
         return itemNote;
     }

@@ -1,17 +1,26 @@
 package com.trip.controller;
 
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.cust.model.CustVO;
 import com.trip.model.TripItemService;
 
 import jakarta.servlet.http.HttpSession;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/trip-items")
@@ -29,7 +38,7 @@ public class TripItemApiController {
         Map<String, Object> response = new HashMap<>();
 
         try {
-            // 將髒活全部交給 Service 處理
+            // 將加入景點交給 Service 處理
             tripItemService.addArrcToTrip(tripId, attrId);
 
             response.put("success", true);
@@ -46,7 +55,7 @@ public class TripItemApiController {
     // 接收前端讀取明細清單的請求
     @GetMapping("/{tripId}")
     public List<Map<String, Object>> getTripItems(@PathVariable("tripId") Integer tripId) {
-        // 直接向 Service 索取已經包裝好的精美包裹
+        // 直接向 Service 拿已經包裝好的行程明細
         return tripItemService.getTripItemsFormatForFrontend(tripId);
     }
 
@@ -83,11 +92,11 @@ public class TripItemApiController {
             String itemNote = requestData.get("itemNote");
 
             // 把字串轉換成 LocalDateTime
-            java.time.LocalDateTime arrTime = (arrivalTimeStr != null && !arrivalTimeStr.isEmpty())
-                    ? java.time.LocalDateTime.parse(arrivalTimeStr)
+            LocalDateTime arrTime = (arrivalTimeStr != null && !arrivalTimeStr.isEmpty())
+                    ? LocalDateTime.parse(arrivalTimeStr)
                     : null;
-            java.time.LocalDateTime depTime = (depTimeStr != null && !depTimeStr.isEmpty())
-                    ? java.time.LocalDateTime.parse(depTimeStr)
+            LocalDateTime depTime = (depTimeStr != null && !depTimeStr.isEmpty())
+                    ? LocalDateTime.parse(depTimeStr)
                     : null;
 
             // 呼叫 Service
