@@ -44,7 +44,7 @@ public class TripItemApiController {
             response.put("success", true);
             response.put("message", "成功加入行程！");
         } catch (Exception e) {
-            // 如果 Service 拋出例外，這裡負責捕捉並回傳錯誤訊息給前端
+            // 如果 Service 拋出例外，這裡負責接到並回傳錯誤訊息給前端
             response.put("success", false);
             response.put("message", "加入失敗：" + e.getMessage());
         }
@@ -61,6 +61,7 @@ public class TripItemApiController {
 
     // 3. 刪除單一景點明細
     @DeleteMapping("/{itemId}")
+    // 使用ResponseEntity<?>，因為可以根據不同的結果回應不同的狀態碼搭配泛型
     public ResponseEntity<?> deleteTripItem(@PathVariable Integer itemId, HttpSession session) {
         CustVO loginCust = (CustVO) session.getAttribute("loginCust");
         if (loginCust == null) {

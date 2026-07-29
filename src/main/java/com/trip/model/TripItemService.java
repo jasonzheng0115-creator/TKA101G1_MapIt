@@ -1,4 +1,4 @@
-package com.trip.model; // 嚴格遵守：Service 放在 model 套件中
+package com.trip.model;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -28,8 +28,8 @@ public class TripItemService {
     @Autowired
     private CollabItemService collabItemService;
 
-    // 1. 負責「將景點加入行程」的核心邏輯
-    @Transactional // // 交易控管，確保資料庫寫入安全
+    // 1. 將景點加入行程
+    @Transactional
     public void addArrcToTrip(Integer tripId, Integer attrId) {
         // 尋找行程與景點，找不到就拋出錯誤讓 Controller 去接
         TripVO trip = tripRepository.findById(tripId)

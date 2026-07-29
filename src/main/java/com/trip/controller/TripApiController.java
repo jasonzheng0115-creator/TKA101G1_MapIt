@@ -1,13 +1,20 @@
 package com.trip.controller;
 
-import com.cust.model.CustVO;
-import com.trip.model.TripService;
-import jakarta.servlet.http.HttpSession;
+import java.sql.Date;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Map;
+import com.cust.model.CustVO;
+import com.trip.model.TripService;
+
+import jakarta.servlet.http.HttpSession;
 
 /* 專門處理 行程主體 (TripVO) 的 JSON 資料更新。*/
 @RestController // 標註這是專門回傳資料 (JSON 或純文字) 的 API 控制器
@@ -19,6 +26,7 @@ public class TripApiController {
 
     // 1. 更新行程基本資訊
     @PutMapping("/{tripId}")
+    // 使用ResponseEntity<?>，因為可以根據不同的結果回應不同的狀態碼搭配泛型
     public ResponseEntity<?> updateTripInfo(@PathVariable Integer tripId,
             @RequestBody Map<String, String> requestData,
             HttpSession session) {
@@ -36,9 +44,9 @@ public class TripApiController {
             Boolean tripStatus = Boolean.valueOf(requestData.get("tripStatus"));
 
             // 把字串轉換成資料庫需要的 java.sql.Date 格式
-            java.sql.Date tripDate = null;
+            Date tripDate = null;
             if (tripDateStr != null && !tripDateStr.isEmpty()) {
-                tripDate = java.sql.Date.valueOf(tripDateStr);
+                tripDate = Date.valueOf(tripDateStr);
             }
 
             // 呼叫我們tripService
