@@ -1,9 +1,7 @@
-package com.trip.model; // 嚴格遵守：VO 放在 model 套件中
+package com.trip.model;
 
 import java.io.Serializable;
-
 import com.cust.model.CustVO;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

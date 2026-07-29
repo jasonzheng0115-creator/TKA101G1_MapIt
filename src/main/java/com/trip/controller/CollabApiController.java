@@ -26,6 +26,7 @@ public class CollabApiController {
 
     // 1. 撈取特定行程的所有協作者 (GET /api/collabs/{tripId})
     @GetMapping("/{tripId}")
+    // 使用ResponseEntity<?>，因為可以根據不同的結果回應不同的狀態碼搭配泛型
     public ResponseEntity<?> getCollaborators(@PathVariable Integer tripId, HttpSession session) {
         // 權限檢查：確認有登入
         CustVO loginCust = (CustVO) session.getAttribute("loginCust");
@@ -105,7 +106,7 @@ public class CollabApiController {
         }
 
         try {
-            // 透過getCollabById方法找出該協作紀錄
+            // 透過getCollabById方法找出該協作紀錄，有找到記錄才代表他是群組成員
             CollabItemVO collab = collabItemService.getCollabById(collabId);
             if (collab == null) {
                 return ResponseEntity.status(404).body("找不到此成員");
